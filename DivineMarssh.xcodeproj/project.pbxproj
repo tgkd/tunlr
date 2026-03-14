@@ -50,6 +50,12 @@
 		E80C391E44A3D00F71AD5B05 /* ConnectionEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5B3A76DC18E11A6C4EE191 /* ConnectionEditorView.swift */; };
 		EFA7A8C6FDF50B9AF179C8C7 /* HostKeyVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */; };
 		FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */; };
+		AA11B0C5F890ABCD12345001 /* KeyManagerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11B0C5F890ABCD12345101 /* KeyManagerViewModel.swift */; };
+		AA11B0C5F890ABCD12345002 /* KeyManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11B0C5F890ABCD12345102 /* KeyManagerView.swift */; };
+		AA11B0C5F890ABCD12345003 /* KeyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11B0C5F890ABCD12345103 /* KeyDetailView.swift */; };
+		AA11B0C5F890ABCD12345004 /* HostVerificationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11B0C5F890ABCD12345104 /* HostVerificationSheet.swift */; };
+		AA11B0C5F890ABCD12345005 /* HostKeyMismatchWarning.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11B0C5F890ABCD12345105 /* HostKeyMismatchWarning.swift */; };
+		AA11B0C5F890ABCD12345006 /* KeyManagerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11B0C5F890ABCD12345106 /* KeyManagerViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +110,12 @@
 		F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStore.swift; sourceTree = "<group>"; };
 		F7C052B361AFB7594E6E138D /* KnownHostsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownHostsStore.swift; sourceTree = "<group>"; };
 		FC5B3A76DC18E11A6C4EE191 /* ConnectionEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionEditorView.swift; sourceTree = "<group>"; };
+		AA11B0C5F890ABCD12345101 /* KeyManagerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerViewModel.swift; sourceTree = "<group>"; };
+		AA11B0C5F890ABCD12345102 /* KeyManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerView.swift; sourceTree = "<group>"; };
+		AA11B0C5F890ABCD12345103 /* KeyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailView.swift; sourceTree = "<group>"; };
+		AA11B0C5F890ABCD12345104 /* HostVerificationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostVerificationSheet.swift; sourceTree = "<group>"; };
+		AA11B0C5F890ABCD12345105 /* HostKeyMismatchWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyMismatchWarning.swift; sourceTree = "<group>"; };
+		AA11B0C5F890ABCD12345106 /* KeyManagerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,7 +193,9 @@
 			isa = PBXGroup;
 			children = (
 				7F2691FB1C8F1EA60EEC2961 /* FingerprintFormatter.swift */,
+				AA11B0C5F890ABCD12345105 /* HostKeyMismatchWarning.swift */,
 				EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */,
+				AA11B0C5F890ABCD12345104 /* HostVerificationSheet.swift */,
 			);
 			path = HostVerification;
 			sourceTree = "<group>";
@@ -241,6 +255,14 @@
 			);
 			sourceTree = "<group>";
 		};
+		AA11B0C5F890ABCD12345202 /* KeyManagerTests */ = {
+			isa = PBXGroup;
+			children = (
+				AA11B0C5F890ABCD12345106 /* KeyManagerViewModelTests.swift */,
+			);
+			path = KeyManagerTests;
+			sourceTree = "<group>";
+		};
 		A7AC1478077679D6EE8EFF58 /* DivineMarsshTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -248,6 +270,7 @@
 				00E0D1FC84D90FB52F088503 /* ConnectionTests */,
 				ED0DB843D241EB938C8BA1AD /* CryptoTests */,
 				0E0C080AC3C1DAC301D394E7 /* HostVerificationTests */,
+				AA11B0C5F890ABCD12345202 /* KeyManagerTests */,
 				BC11E95CA91C91FA2EB3C0AA /* SSHTests */,
 				1D6C23B50F8E0A8F44BEE068 /* StorageTests */,
 				C68E27CBA2257B0DF8A228B2 /* TerminalTests */,
@@ -286,11 +309,22 @@
 			path = TerminalTests;
 			sourceTree = "<group>";
 		};
+		AA11B0C5F890ABCD12345201 /* KeyManager */ = {
+			isa = PBXGroup;
+			children = (
+				AA11B0C5F890ABCD12345103 /* KeyDetailView.swift */,
+				AA11B0C5F890ABCD12345102 /* KeyManagerView.swift */,
+				AA11B0C5F890ABCD12345101 /* KeyManagerViewModel.swift */,
+			);
+			path = KeyManager;
+			sourceTree = "<group>";
+		};
 		C9847DB39C6F648B620F2168 /* Features */ = {
 			isa = PBXGroup;
 			children = (
 				A4B7EE23027DBF271195BFD9 /* Connection */,
 				4C3D4986AEE6546275335F65 /* HostVerification */,
+				AA11B0C5F890ABCD12345201 /* KeyManager */,
 				383F2DA3797E6CEE31124E79 /* Terminal */,
 			);
 			path = Features;
@@ -442,6 +476,11 @@
 				CC4FCE47DB7C71DBFA6F9370 /* SecureEnclaveKeyManager.swift in Sources */,
 				A8552C0C91F78A0EC351820B /* TerminalViewController.swift in Sources */,
 				E44C6BB1D045F61D3E2262A0 /* TerminalViewRepresentable.swift in Sources */,
+				AA11B0C5F890ABCD12345001 /* KeyManagerViewModel.swift in Sources */,
+				AA11B0C5F890ABCD12345002 /* KeyManagerView.swift in Sources */,
+				AA11B0C5F890ABCD12345003 /* KeyDetailView.swift in Sources */,
+				AA11B0C5F890ABCD12345004 /* HostVerificationSheet.swift in Sources */,
+				AA11B0C5F890ABCD12345005 /* HostKeyMismatchWarning.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,6 +500,7 @@
 				34E7B1C40E86B71969904166 /* SSHSessionTests.swift in Sources */,
 				266962B636058A568FCB8F5C /* SSHTerminalDataSourceTests.swift in Sources */,
 				C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */,
+				AA11B0C5F890ABCD12345006 /* KeyManagerViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

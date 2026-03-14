@@ -212,14 +212,14 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Features/HostVerification/HostKeyMismatchWarning.swift`
 - Create: `Tests/KeyManagerTests/KeyManagerViewModelTests.swift`
 
-- [ ] Implement `KeyManagerView` — list of `SSHIdentity` with key type badges
-- [ ] Add key: SE key generation or imported key (paste PEM / document picker)
-- [ ] `KeyDetailView` — public key display, copy authorized_keys line, QR code of pubkey
-- [ ] Delete with biometric confirmation
-- [ ] Implement `HostVerificationSheet` — modal for first connection: hostname, port, key type, full fingerprint (SHA256 + hex), Trust & Connect / Cancel
-- [ ] Implement `HostKeyMismatchWarning` — full-screen red warning, no quick dismiss
-- [ ] Write tests for KeyManagerViewModel (list, add, delete flows)
-- [ ] Run project test suite — must pass before task 12
+- [x] Implement `KeyManagerView` — list of `SSHIdentity` with key type badges
+- [x] Add key: SE key generation or imported key (paste PEM / document picker)
+- [x] `KeyDetailView` — public key display, copy authorized_keys line, QR code of pubkey
+- [x] Delete with biometric confirmation
+- [x] Implement `HostVerificationSheet` — modal for first connection: hostname, port, key type, full fingerprint (SHA256 + hex), Trust & Connect / Cancel
+- [x] Implement `HostKeyMismatchWarning` — full-screen red warning, no quick dismiss
+- [x] Write tests for KeyManagerViewModel (list, add, delete flows)
+- [x] Run project test suite — must pass before task 12
 
 ### Task 12: Terminal view and session lifecycle
 
