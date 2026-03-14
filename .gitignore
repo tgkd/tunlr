@@ -8,5 +8,5 @@
 # Xcode user data
 xcuserdata/
 
-# Docker-generated authorized_keys
-tests-ssh-keys/authorized_keys
+# Test SSH keys (generated locally, not committed)
+tests-ssh-keys/
