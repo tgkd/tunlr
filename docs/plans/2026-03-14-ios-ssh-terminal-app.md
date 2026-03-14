@@ -120,16 +120,16 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `Tests/HostVerificationTests/KnownHostsStoreTests.swift`
 - Create: `Tests/HostVerificationTests/FingerprintFormatterTests.swift`
 
-- [ ] Implement `KnownHostsStore` actor — JSON file in `Library/Application Support/`
-- [ ] `lookup(hostname:port:keyType:) -> SSHHostKey?`, `trust(hostKey:for:port:)`, `revoke(hostname:port:)`
-- [ ] Exclude file from iCloud backup via `isExcludedFromBackupKey`
-- [ ] Implement `FingerprintFormatter` — SHA256 base64 format matching OpenSSH output
-- [ ] Implement `HostKeyVerifier` conforming to Citadel's host authentication callback
-- [ ] First connect: return `.needsUserApproval(fingerprint)` for UI to handle
-- [ ] Reconnect: silent match on known key; hard block on mismatch
-- [ ] Write tests for KnownHostsStore CRUD and mismatch detection
-- [ ] Write tests for fingerprint formatting (SHA256 base64 matches OpenSSH)
-- [ ] Run project test suite — must pass before task 7
+- [x] Implement `KnownHostsStore` actor — JSON file in `Library/Application Support/`
+- [x] `lookup(hostname:port:keyType:) -> SSHHostKey?`, `trust(hostKey:for:port:)`, `revoke(hostname:port:)`
+- [x] Exclude file from iCloud backup via `isExcludedFromBackupKey`
+- [x] Implement `FingerprintFormatter` — SHA256 base64 format matching OpenSSH output
+- [x] Implement `HostKeyVerifier` conforming to Citadel's host authentication callback
+- [x] First connect: return `.needsUserApproval(fingerprint)` for UI to handle
+- [x] Reconnect: silent match on known key; hard block on mismatch
+- [x] Write tests for KnownHostsStore CRUD and mismatch detection
+- [x] Write tests for fingerprint formatting (SHA256 base64 matches OpenSSH)
+- [x] Run project test suite — must pass before task 7
 
 ### Task 7: SSH session actor and channel management
 
