@@ -68,6 +68,9 @@
 		C1D2E3F4A5B60718394A5B6C /* FingerprintURIParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60718394A5B6D /* FingerprintURIParser.swift */; };
 		C1D2E3F4A5B60718394A5B6E /* QRFingerprintScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60718394A5B6F /* QRFingerprintScanner.swift */; };
 		C1D2E3F4A5B60718394A5B70 /* FingerprintURIParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60718394A5B71 /* FingerprintURIParserTests.swift */; };
+		D1E2F3A4B5C60001394A5B00 /* SSHConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C60001394A5B01 /* SSHConnectionTests.swift */; };
+		D1E2F3A4B5C60001394A5B02 /* HostKeyVerificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C60001394A5B03 /* HostKeyVerificationTests.swift */; };
+		D1E2F3A4B5C60001394A5B04 /* ReconnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C60001394A5B05 /* ReconnectionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -140,6 +143,9 @@
 		C1D2E3F4A5B60718394A5B6D /* FingerprintURIParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintURIParser.swift; sourceTree = "<group>"; };
 		C1D2E3F4A5B60718394A5B6F /* QRFingerprintScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRFingerprintScanner.swift; sourceTree = "<group>"; };
 		C1D2E3F4A5B60718394A5B71 /* FingerprintURIParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintURIParserTests.swift; sourceTree = "<group>"; };
+		D1E2F3A4B5C60001394A5B01 /* SSHConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConnectionTests.swift; sourceTree = "<group>"; };
+		D1E2F3A4B5C60001394A5B03 /* HostKeyVerificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyVerificationTests.swift; sourceTree = "<group>"; };
+		D1E2F3A4B5C60001394A5B05 /* ReconnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReconnectionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -312,6 +318,7 @@
 				00E0D1FC84D90FB52F088503 /* ConnectionTests */,
 				ED0DB843D241EB938C8BA1AD /* CryptoTests */,
 				0E0C080AC3C1DAC301D394E7 /* HostVerificationTests */,
+				D1E2F3A4B5C60001394A5B06 /* IntegrationTests */,
 				1A1C06B943A9D4369482B3E4 /* KeyManagerTests */,
 				B1A2C3D4E5F60001293A4B08 /* SecurityTests */,
 				BC11E95CA91C91FA2EB3C0AA /* SSHTests */,
@@ -319,6 +326,16 @@
 				C68E27CBA2257B0DF8A228B2 /* TerminalTests */,
 			);
 			path = DivineMarsshTests;
+			sourceTree = "<group>";
+		};
+		D1E2F3A4B5C60001394A5B06 /* IntegrationTests */ = {
+			isa = PBXGroup;
+			children = (
+				D1E2F3A4B5C60001394A5B03 /* HostKeyVerificationTests.swift */,
+				D1E2F3A4B5C60001394A5B05 /* ReconnectionTests.swift */,
+				D1E2F3A4B5C60001394A5B01 /* SSHConnectionTests.swift */,
+			);
+			path = IntegrationTests;
 			sourceTree = "<group>";
 		};
 		B1A2C3D4E5F60001293A4B08 /* SecurityTests */ = {
@@ -543,6 +560,7 @@
 				62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */,
 				C1D2E3F4A5B60718394A5B70 /* FingerprintURIParserTests.swift in Sources */,
 				378B8034F0BE8E7462F61FE8 /* FingerprintFormatterTests.swift in Sources */,
+				D1E2F3A4B5C60001394A5B02 /* HostKeyVerificationTests.swift in Sources */,
 				874197CDF2AAD1EECD493E76 /* KeyManagerTests.swift in Sources */,
 				68B6CE365228FB402E99CA9B /* KeyManagerViewModelTests.swift in Sources */,
 				D14F4724981E1504598EFE21 /* KeyboardAccessoryTests.swift in Sources */,
@@ -550,7 +568,9 @@
 				079C3FF7D065B99C9A027C15 /* KnownHostsStoreTests.swift in Sources */,
 				FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */,
 				1653E14758A802E34B2D3453 /* ProfileStoreTests.swift in Sources */,
+				D1E2F3A4B5C60001394A5B04 /* ReconnectionTests.swift in Sources */,
 				CEC85CEEF1042D46E21E8BCA /* SSHSessionManagerTests.swift in Sources */,
+				D1E2F3A4B5C60001394A5B00 /* SSHConnectionTests.swift in Sources */,
 				34E7B1C40E86B71969904166 /* SSHSessionTests.swift in Sources */,
 				266962B636058A568FCB8F5C /* SSHTerminalDataSourceTests.swift in Sources */,
 				C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */,

@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  ssh-server:
+    image: lscr.io/linuxserver/openssh-server:latest
+    container_name: divinemarssh-test-ssh
+    hostname: test-ssh-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - SUDO_ACCESS=false
+      - PASSWORD_ACCESS=true
+      - USER_PASSWORD=testpassword
+      - USER_NAME=testuser
+      - PUBLIC_KEY_DIR=/config/.ssh
+    volumes:
+      - ./tests-ssh-keys:/config/.ssh:ro
+    ports:
+      - "2222:2222"
+    restart: unless-stopped

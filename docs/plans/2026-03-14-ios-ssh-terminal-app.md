@@ -294,12 +294,12 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `Tests/IntegrationTests/HostKeyVerificationTests.swift`
 - Create: `Tests/IntegrationTests/ReconnectionTests.swift`
 
-- [ ] Set up Docker test SSH server (linuxserver/openssh-server on port 2222)
-- [ ] Write integration test: connect, authenticate (Ed25519), run command, disconnect
-- [ ] Write integration test: first connect accepts, second connect matches, changed key blocks
-- [ ] Write integration test: simulate background/foreground cycle, verify state restoration
-- [ ] Run full integration test suite
-- [ ] Run project test suite — must pass before task 17
+- [x] Set up Docker test SSH server (linuxserver/openssh-server on port 2222)
+- [x] Write integration test: connect, authenticate (Ed25519), run command, disconnect
+- [x] Write integration test: first connect accepts, second connect matches, changed key blocks
+- [x] Write integration test: simulate background/foreground cycle, verify state restoration
+- [x] Run full integration test suite
+- [x] Run project test suite — must pass before task 17
 
 ### Task 17: Verify acceptance criteria
 
