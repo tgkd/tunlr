@@ -245,12 +245,12 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Modify: `App/DivineMarsshApp.swift`
 - Create: `Tests/StorageTests/TerminalStateCacheTests.swift`
 
-- [ ] Implement `TerminalStateCache` — serialize/deserialize terminal state to `Library/Caches/`
-- [ ] App state restoration: restore active connection on relaunch if session was interrupted
-- [ ] Do not restore if app was explicitly quit by user
-- [ ] Verify passwords stored in Keychain (not profile JSON)
-- [ ] Write tests for terminal state serialization round-trip
-- [ ] Run project test suite — must pass before task 14
+- [x] Implement `TerminalStateCache` — serialize/deserialize terminal state to `Library/Caches/`
+- [x] App state restoration: restore active connection on relaunch if session was interrupted
+- [x] Do not restore if app was explicitly quit by user
+- [x] Verify passwords stored in Keychain (not profile JSON)
+- [x] Write tests for terminal state serialization round-trip
+- [x] Run project test suite — must pass before task 14
 
 ### Task 14: Security hardening
 

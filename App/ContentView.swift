@@ -47,5 +47,16 @@ struct ContentView: View {
                 }
             }
         }
+        .onChange(of: sessionManager.restoredProfileID) { _, profileID in
+            guard let profileID else { return }
+            Task {
+                await viewModel.loadProfiles()
+                if let profile = viewModel.profiles.first(where: { $0.id == profileID }) {
+                    selectedProfile = profile
+                    showTerminal = true
+                }
+                await sessionManager.clearRestoredSession()
+            }
+        }
     }
 }

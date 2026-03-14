@@ -20,6 +20,8 @@ struct DivineMarsshApp: App {
             approvalHandler: { _ in true }
         )
 
+        let terminalStateCache = try! TerminalStateCache()
+
         _sessionManager = StateObject(wrappedValue: SSHSessionManager(
             connectionHandlerFactory: {
                 CitadelConnectionHandler(
@@ -28,7 +30,8 @@ struct DivineMarsshApp: App {
                     profileStore: store
                 )
             },
-            profileStore: store
+            profileStore: store,
+            terminalStateCache: terminalStateCache
         ))
     }
 
@@ -39,6 +42,9 @@ struct DivineMarsshApp: App {
                 keyManager: keyManager,
                 sessionManager: sessionManager
             )
+            .task {
+                await sessionManager.checkForRestoredSession()
+            }
         }
     }
 }

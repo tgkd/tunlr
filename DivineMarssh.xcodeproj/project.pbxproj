@@ -59,6 +59,8 @@
 		E80C391E44A3D00F71AD5B05 /* ConnectionEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5B3A76DC18E11A6C4EE191 /* ConnectionEditorView.swift */; };
 		EFA7A8C6FDF50B9AF179C8C7 /* HostKeyVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */; };
 		FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */; };
+		A1B2C3D4E5F60718293A4B5C /* TerminalStateCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5D /* TerminalStateCache.swift */; };
+		A1B2C3D4E5F60718293A4B5E /* TerminalStateCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5F /* TerminalStateCacheTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,6 +124,8 @@
 		F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStore.swift; sourceTree = "<group>"; };
 		F7C052B361AFB7594E6E138D /* KnownHostsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownHostsStore.swift; sourceTree = "<group>"; };
 		FC5B3A76DC18E11A6C4EE191 /* ConnectionEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionEditorView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5D /* TerminalStateCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStateCache.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5F /* TerminalStateCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStateCacheTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,6 +183,7 @@
 			children = (
 				D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */,
 				787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */,
+				A1B2C3D4E5F60718293A4B5F /* TerminalStateCacheTests.swift */,
 			);
 			path = StorageTests;
 			sourceTree = "<group>";
@@ -247,6 +252,7 @@
 			children = (
 				F7C052B361AFB7594E6E138D /* KnownHostsStore.swift */,
 				F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */,
+				A1B2C3D4E5F60718293A4B5D /* TerminalStateCache.swift */,
 				7C4E4C9122683FC6AC7612AA /* Models */,
 			);
 			path = Storage;
@@ -492,6 +498,7 @@
 				DC5DC8A620D087485D216AD2 /* TerminalScreen.swift in Sources */,
 				A8552C0C91F78A0EC351820B /* TerminalViewController.swift in Sources */,
 				E44C6BB1D045F61D3E2262A0 /* TerminalViewRepresentable.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5C /* TerminalStateCache.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -513,6 +520,7 @@
 				34E7B1C40E86B71969904166 /* SSHSessionTests.swift in Sources */,
 				266962B636058A568FCB8F5C /* SSHTerminalDataSourceTests.swift in Sources */,
 				C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5E /* TerminalStateCacheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

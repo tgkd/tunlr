@@ -34,9 +34,11 @@ final class SSHSessionManager: ObservableObject, Sendable {
     @Published private(set) var state: SessionManagerState = .idle
     @Published private(set) var activeSession: SSHSession?
     @Published private(set) var activeProfile: SSHConnectionProfile?
+    @Published private(set) var restoredProfileID: UUID?
 
     private let connectionHandlerFactory: @Sendable () -> any SSHConnectionHandling
     private let profileStore: ProfileStore
+    private let terminalStateCache: TerminalStateCache?
     private let scenePhaseProvider: any ScenePhaseProviding
     private let networkPathProvider: any NetworkPathProviding
     private let backgroundTaskProvider: any BackgroundTaskProviding
@@ -47,12 +49,14 @@ final class SSHSessionManager: ObservableObject, Sendable {
     init(
         connectionHandlerFactory: @escaping @Sendable () -> any SSHConnectionHandling,
         profileStore: ProfileStore,
+        terminalStateCache: TerminalStateCache? = nil,
         scenePhaseProvider: any ScenePhaseProviding = DefaultScenePhaseProvider(),
         networkPathProvider: any NetworkPathProviding = DefaultNetworkPathProvider(),
         backgroundTaskProvider: any BackgroundTaskProviding = DefaultBackgroundTaskProvider()
     ) {
         self.connectionHandlerFactory = connectionHandlerFactory
         self.profileStore = profileStore
+        self.terminalStateCache = terminalStateCache
         self.scenePhaseProvider = scenePhaseProvider
         self.networkPathProvider = networkPathProvider
         self.backgroundTaskProvider = backgroundTaskProvider
@@ -74,9 +78,25 @@ final class SSHSessionManager: ObservableObject, Sendable {
 
     func disconnect() async {
         await cleanupCurrentSession()
+        await markExplicitQuit()
         state = .idle
         activeSession = nil
         activeProfile = nil
+    }
+
+    func checkForRestoredSession() async {
+        guard let cache = terminalStateCache else { return }
+        guard let cached = await cache.load() else { return }
+        guard !cached.wasExplicitQuit else {
+            await cache.clear()
+            return
+        }
+        restoredProfileID = cached.profileID
+    }
+
+    func clearRestoredSession() async {
+        restoredProfileID = nil
+        await terminalStateCache?.clear()
     }
 
     func handleScenePhaseChange(_ phase: ScenePhaseValue) async {
@@ -105,6 +125,9 @@ final class SSHSessionManager: ObservableObject, Sendable {
         backgroundTaskID = taskID
 
         state = .backgrounded(profileID: profile.id)
+
+        await saveTerminalState(profileID: profile.id, session: session, wasExplicitQuit: false)
+
         await session.disconnect()
 
         endBackgroundTaskIfNeeded()
@@ -171,6 +194,43 @@ final class SSHSessionManager: ObservableObject, Sendable {
                 await self?.handleScenePhaseChange(phase)
             }
         }
+    }
+
+    private func saveTerminalState(profileID: UUID, session: SSHSession, wasExplicitQuit: Bool) async {
+        guard let cache = terminalStateCache else { return }
+        let pty = await session.ptyConfiguration
+        let state = CachedTerminalState(
+            profileID: profileID,
+            ptyConfiguration: CachedTerminalState.CachedPTYConfiguration(
+                cols: pty.cols,
+                rows: pty.rows,
+                term: pty.term
+            ),
+            terminalTitle: "",
+            cursorRow: 0,
+            cursorCol: 0,
+            scrollbackLineCount: 0,
+            screenContent: [],
+            timestamp: Date(),
+            wasExplicitQuit: wasExplicitQuit
+        )
+        try? await cache.save(state)
+    }
+
+    private func markExplicitQuit() async {
+        guard let cache = terminalStateCache, let profile = activeProfile else { return }
+        let state = CachedTerminalState(
+            profileID: profile.id,
+            ptyConfiguration: CachedTerminalState.CachedPTYConfiguration(cols: 80, rows: 24),
+            terminalTitle: "",
+            cursorRow: 0,
+            cursorCol: 0,
+            scrollbackLineCount: 0,
+            screenContent: [],
+            timestamp: Date(),
+            wasExplicitQuit: true
+        )
+        try? await cache.save(state)
     }
 }
 
