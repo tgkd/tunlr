@@ -61,6 +61,10 @@
 		FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */; };
 		A1B2C3D4E5F60718293A4B5C /* TerminalStateCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5D /* TerminalStateCache.swift */; };
 		A1B2C3D4E5F60718293A4B5E /* TerminalStateCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5F /* TerminalStateCacheTests.swift */; };
+		B1A2C3D4E5F60001293A4B00 /* AlgorithmPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60001293A4B01 /* AlgorithmPolicy.swift */; };
+		B1A2C3D4E5F60001293A4B02 /* MemoryHygiene.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60001293A4B03 /* MemoryHygiene.swift */; };
+		B1A2C3D4E5F60001293A4B04 /* AlgorithmPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60001293A4B05 /* AlgorithmPolicyTests.swift */; };
+		B1A2C3D4E5F60001293A4B06 /* MemoryHygieneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60001293A4B07 /* MemoryHygieneTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +130,10 @@
 		FC5B3A76DC18E11A6C4EE191 /* ConnectionEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionEditorView.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B5D /* TerminalStateCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStateCache.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B5F /* TerminalStateCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStateCacheTests.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F60001293A4B01 /* AlgorithmPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmPolicy.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F60001293A4B03 /* MemoryHygiene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryHygiene.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F60001293A4B05 /* AlgorithmPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmPolicyTests.swift; sourceTree = "<group>"; };
+		B1A2C3D4E5F60001293A4B07 /* MemoryHygieneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryHygieneTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -203,6 +211,7 @@
 		39A255D7F7A7AD62D9E0C604 /* SSH */ = {
 			isa = PBXGroup;
 			children = (
+				B1A2C3D4E5F60001293A4B01 /* AlgorithmPolicy.swift */,
 				9B428FC24145CC0B43756EDB /* ConnectionState.swift */,
 				5D0D88A32DF62ECFAF577D31 /* SSHSession.swift */,
 				D9286C2B03FA0F033E38A698 /* SSHSessionManager.swift */,
@@ -295,11 +304,21 @@
 				ED0DB843D241EB938C8BA1AD /* CryptoTests */,
 				0E0C080AC3C1DAC301D394E7 /* HostVerificationTests */,
 				1A1C06B943A9D4369482B3E4 /* KeyManagerTests */,
+				B1A2C3D4E5F60001293A4B08 /* SecurityTests */,
 				BC11E95CA91C91FA2EB3C0AA /* SSHTests */,
 				1D6C23B50F8E0A8F44BEE068 /* StorageTests */,
 				C68E27CBA2257B0DF8A228B2 /* TerminalTests */,
 			);
 			path = DivineMarsshTests;
+			sourceTree = "<group>";
+		};
+		B1A2C3D4E5F60001293A4B08 /* SecurityTests */ = {
+			isa = PBXGroup;
+			children = (
+				B1A2C3D4E5F60001293A4B05 /* AlgorithmPolicyTests.swift */,
+				B1A2C3D4E5F60001293A4B07 /* MemoryHygieneTests.swift */,
+			);
+			path = SecurityTests;
 			sourceTree = "<group>";
 		};
 		B61B30D30FF578DC9B8EAEC2 /* Crypto */ = {
@@ -309,6 +328,7 @@
 				65CB9F284DEC861AED210B86 /* ImportedKeyAuthenticator.swift */,
 				CEAA06BC02431C42E488BA7C /* KeychainKeyManager.swift */,
 				65CBEA2E281AD276CBBFD52B /* KeyManager.swift */,
+				B1A2C3D4E5F60001293A4B03 /* MemoryHygiene.swift */,
 				9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */,
 				F1BD15FB37ED81BF14121F53 /* SEKeyAuthenticator.swift */,
 				7BD25E5F829FB49210857487 /* SSHAuthenticatable.swift */,
@@ -499,6 +519,8 @@
 				A8552C0C91F78A0EC351820B /* TerminalViewController.swift in Sources */,
 				E44C6BB1D045F61D3E2262A0 /* TerminalViewRepresentable.swift in Sources */,
 				A1B2C3D4E5F60718293A4B5C /* TerminalStateCache.swift in Sources */,
+				B1A2C3D4E5F60001293A4B00 /* AlgorithmPolicy.swift in Sources */,
+				B1A2C3D4E5F60001293A4B02 /* MemoryHygiene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -521,6 +543,8 @@
 				266962B636058A568FCB8F5C /* SSHTerminalDataSourceTests.swift in Sources */,
 				C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */,
 				A1B2C3D4E5F60718293A4B5E /* TerminalStateCacheTests.swift in Sources */,
+				B1A2C3D4E5F60001293A4B04 /* AlgorithmPolicyTests.swift in Sources */,
+				B1A2C3D4E5F60001293A4B06 /* MemoryHygieneTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

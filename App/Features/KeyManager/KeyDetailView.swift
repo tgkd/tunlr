@@ -72,6 +72,7 @@ struct KeyDetailView: View {
                 Button("Done") { dismiss() }
             }
         }
+        .screenshotProtected()
     }
 
     private func generateQRCode(from string: String) -> UIImage? {

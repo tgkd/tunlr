@@ -1,6 +1,40 @@
 import SwiftUI
 import CoreImage.CIFilterBuiltins
 
+struct ScreenshotProtectionModifier: ViewModifier {
+    @State private var isCaptured = false
+
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+                .opacity(isCaptured ? 0 : 1)
+
+            if isCaptured {
+                VStack(spacing: 16) {
+                    Image(systemName: "eye.slash.fill")
+                        .font(.largeTitle)
+                    Text("Content hidden during screen capture")
+                        .font(.headline)
+                }
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIScreen.capturedDidChangeNotification)) { _ in
+            isCaptured = UIScreen.main.isCaptured
+        }
+        .onAppear {
+            isCaptured = UIScreen.main.isCaptured
+        }
+    }
+}
+
+extension View {
+    func screenshotProtected() -> some View {
+        modifier(ScreenshotProtectionModifier())
+    }
+}
+
 struct KeyManagerView: View {
     @ObservedObject var viewModel: KeyManagerViewModel
     @Environment(\.dismiss) private var dismiss
@@ -78,6 +112,7 @@ struct KeyManagerView: View {
         .task {
             await viewModel.loadKeys()
         }
+        .screenshotProtected()
     }
 }
 

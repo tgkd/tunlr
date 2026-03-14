@@ -262,15 +262,15 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `Tests/SecurityTests/AlgorithmPolicyTests.swift`
 - Create: `Tests/SecurityTests/MemoryHygieneTests.swift`
 
-- [ ] Algorithm enforcement: configure Citadel/SwiftNIO SSH for modern-only KEX, ciphers, host key types
-- [ ] Add explicit rejection for legacy algorithm negotiation
-- [ ] Validate Terrapin (CVE-2023-48795) mitigation is active in SwiftNIO SSH version
-- [ ] Memory hygiene: use `[UInt8]` instead of `String` for passphrases, zero-fill after use
-- [ ] Disable logging of private key material, passphrases, raw terminal data
-- [ ] Disable screenshot/screen recording for key manager views
-- [ ] Write tests verifying algorithm policy rejects legacy ciphers
-- [ ] Write tests for memory zeroing behavior
-- [ ] Run project test suite — must pass before task 15
+- [x] Algorithm enforcement: configure Citadel/SwiftNIO SSH for modern-only KEX, ciphers, host key types
+- [x] Add explicit rejection for legacy algorithm negotiation
+- [x] Validate Terrapin (CVE-2023-48795) mitigation is active in SwiftNIO SSH version
+- [x] Memory hygiene: use `[UInt8]` instead of `String` for passphrases, zero-fill after use
+- [x] Disable logging of private key material, passphrases, raw terminal data
+- [x] Disable screenshot/screen recording for key manager views
+- [x] Write tests verifying algorithm policy rejects legacy ciphers
+- [x] Write tests for memory zeroing behavior
+- [x] Run project test suite — must pass before task 15
 
 ### Task 15: QR fingerprint import
 
