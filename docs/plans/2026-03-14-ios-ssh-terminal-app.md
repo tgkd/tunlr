@@ -85,14 +85,14 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Core/Crypto/BiometricPolicy.swift`
 - Create: `Tests/CryptoTests/KeychainKeyManagerTests.swift`
 
-- [ ] Implement `KeychainKeyManager` actor
-- [ ] `importKey(pemData:label:passphrase:) throws -> SSHIdentity` — parse PEM (Ed25519, RSA-4096, ECDSA), decrypt passphrase-protected keys, store as `kSecClassGenericPassword` with `biometryCurrentSet`
-- [ ] `loadKey(id:) async throws -> Data` — triggers biometric prompt automatically via Keychain
-- [ ] `deleteKey(id:)`, `listKeys() -> [SSHIdentity]`
-- [ ] Implement `BiometricPolicy` — configurable `LAContext` reuse duration (default 60s), graceful fallback to passcode, error handling for `.biometryLockout`, `.biometryNotAvailable`, `.userCancel`
-- [ ] Write tests for key import/load/delete with mock Keychain (simulator-compatible)
-- [ ] Write tests for PEM parsing (Ed25519, RSA, ECDSA formats)
-- [ ] Run project test suite — must pass before task 5
+- [x] Implement `KeychainKeyManager` actor
+- [x] `importKey(pemData:label:passphrase:) throws -> SSHIdentity` — parse PEM (Ed25519, RSA-4096, ECDSA), decrypt passphrase-protected keys, store as `kSecClassGenericPassword` with `biometryCurrentSet`
+- [x] `loadKey(id:) async throws -> Data` — triggers biometric prompt automatically via Keychain
+- [x] `deleteKey(id:)`, `listKeys() -> [SSHIdentity]`
+- [x] Implement `BiometricPolicy` — configurable `LAContext` reuse duration (default 60s), graceful fallback to passcode, error handling for `.biometryLockout`, `.biometryNotAvailable`, `.userCancel`
+- [x] Write tests for key import/load/delete with mock Keychain (simulator-compatible)
+- [x] Write tests for PEM parsing (Ed25519, RSA, ECDSA formats)
+- [x] Run project test suite — must pass before task 5
 
 ### Task 5: Key manager facade
 
