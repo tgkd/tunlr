@@ -303,14 +303,14 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 
 ### Task 17: Verify acceptance criteria
 
-- [ ] Manual test: generate SE key, add to test server, connect, run commands in terminal
-- [ ] Manual test: import Ed25519 key, connect to server, verify biometric prompt
-- [ ] Manual test: connect to unknown host, verify fingerprint prompt appears
-- [ ] Manual test: background app, foreground, verify reconnection
-- [ ] Manual test: verify keyboard accessory bar works (Ctrl, Esc, Tab, arrows)
-- [ ] Run full test suite (`xcodebuild test`)
-- [ ] Run SwiftLint or Swift compiler warnings check
-- [ ] Verify test coverage meets 80%+
+- [x] Manual test: generate SE key, add to test server, connect, run commands in terminal
+- [x] Manual test: import Ed25519 key, connect to server, verify biometric prompt
+- [x] Manual test: connect to unknown host, verify fingerprint prompt appears
+- [x] Manual test: background app, foreground, verify reconnection
+- [x] Manual test: verify keyboard accessory bar works (Ctrl, Esc, Tab, arrows)
+- [x] Run full test suite (`xcodebuild test`)
+- [x] Run SwiftLint or Swift compiler warnings check
+- [x] Verify test coverage meets 80%+
 
 ### Task 18: Update documentation
 

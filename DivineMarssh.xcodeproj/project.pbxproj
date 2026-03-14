@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		079C3FF7D065B99C9A027C15 /* KnownHostsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F7DAA139F14FBFB4F194DCB /* KnownHostsStoreTests.swift */; };
+		C0VERA6E0001B00570000001 /* CoverageBoostTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0VERA6E0001F00570000001 /* CoverageBoostTests.swift */; };
 		0DEBBFCAFF7A86632663F198 /* SSHHostKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */; };
 		145AADBA8576FC4C69BF1BC8 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 2405A6660E321E153729E2BD /* SwiftTerm */; };
 		1653E14758A802E34B2D3453 /* ProfileStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */; };
@@ -117,6 +118,7 @@
 		C43E97E11FB9DDC7943F85E8 /* FingerprintFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintFormatterTests.swift; sourceTree = "<group>"; };
 		C9A435866C8ECA26644D53B4 /* ConnectionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionListView.swift; sourceTree = "<group>"; };
 		CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshTests.swift; sourceTree = "<group>"; };
+		C0VERA6E0001F00570000001 /* CoverageBoostTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverageBoostTests.swift; sourceTree = "<group>"; };
 		CC14D026864E2E70E3AD617A /* KeyManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerView.swift; sourceTree = "<group>"; };
 		CEAA06BC02431C42E488BA7C /* KeychainKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainKeyManager.swift; sourceTree = "<group>"; };
 		D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
@@ -315,6 +317,7 @@
 			isa = PBXGroup;
 			children = (
 				CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */,
+				C0VERA6E0001F00570000001 /* CoverageBoostTests.swift */,
 				00E0D1FC84D90FB52F088503 /* ConnectionTests */,
 				ED0DB843D241EB938C8BA1AD /* CryptoTests */,
 				0E0C080AC3C1DAC301D394E7 /* HostVerificationTests */,
@@ -577,6 +580,7 @@
 				A1B2C3D4E5F60718293A4B5E /* TerminalStateCacheTests.swift in Sources */,
 				B1A2C3D4E5F60001293A4B04 /* AlgorithmPolicyTests.swift in Sources */,
 				B1A2C3D4E5F60001293A4B06 /* MemoryHygieneTests.swift in Sources */,
+				C0VERA6E0001B00570000001 /* CoverageBoostTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
