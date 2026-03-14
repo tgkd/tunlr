@@ -73,6 +73,8 @@
 		EFA7A8C6FDF50B9AF179C8C7 /* HostKeyVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */; };
 		F3830A3D5A1A57773DC0585B /* TerminalStateCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30FDEEBF0100D866023CFB16 /* TerminalStateCache.swift */; };
 		FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */; };
+		B2C3D4E5F6A7B8C9D0E1F2A3 /* RealSSHConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* RealSSHConnectionTests.swift */; };
+		D4E5F6A7B8C9D0E1F2A3B4C5 /* tests-ssh-keys in Resources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* tests-ssh-keys */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -150,6 +152,8 @@
 		F7C052B361AFB7594E6E138D /* KnownHostsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownHostsStore.swift; sourceTree = "<group>"; };
 		F9E9F1FAF6880BFB5263AC9E /* AlgorithmPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmPolicyTests.swift; sourceTree = "<group>"; };
 		FC5B3A76DC18E11A6C4EE191 /* ConnectionEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionEditorView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* RealSSHConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealSSHConnectionTests.swift; sourceTree = "<group>"; };
+		C3D4E5F6A7B8C9D0E1F2A3B4 /* tests-ssh-keys */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "tests-ssh-keys"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -320,6 +324,7 @@
 			children = (
 				E54B997BF8E7B824B58249E4 /* App */,
 				6F749051BCB631A79DF03EEB /* Tests */,
+				C3D4E5F6A7B8C9D0E1F2A3B4 /* tests-ssh-keys */,
 				0F0053E6A9792A9EEB035712 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -361,6 +366,7 @@
 			isa = PBXGroup;
 			children = (
 				F430BA2F6D0BB7F56D40DBBF /* HostKeyVerificationTests.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* RealSSHConnectionTests.swift */,
 				285E8DC01D32299E29A6E241 /* ReconnectionTests.swift */,
 				4F57D93D45F2499CF1E02E79 /* SSHConnectionTests.swift */,
 			);
@@ -438,6 +444,7 @@
 			buildConfigurationList = 1DB286DD0EA49F23BE21095F /* Build configuration list for PBXNativeTarget "DivineMarsshTests" */;
 			buildPhases = (
 				81032829A16F42A254C2D578 /* Sources */,
+				E5F6A7B8C9D0E1F2A3B4C5D6 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -520,6 +527,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E5F6A7B8C9D0E1F2A3B4C5D6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4E5F6A7B8C9D0E1F2A3B4C5 /* tests-ssh-keys in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -587,6 +602,7 @@
 				13A0FA1E609D39A27B4A9D1E /* MemoryHygieneTests.swift in Sources */,
 				FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */,
 				1653E14758A802E34B2D3453 /* ProfileStoreTests.swift in Sources */,
+				B2C3D4E5F6A7B8C9D0E1F2A3 /* RealSSHConnectionTests.swift in Sources */,
 				1AF72101DB5DD8BE9FE892D5 /* ReconnectionTests.swift in Sources */,
 				D660C9FAA47A828AE4B1BDB7 /* SSHConnectionTests.swift in Sources */,
 				CEC85CEEF1042D46E21E8BCA /* SSHSessionManagerTests.swift in Sources */,

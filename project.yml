@@ -60,6 +60,9 @@ targets:
     platform: iOS
     sources:
       - path: Tests/DivineMarsshTests
+    resources:
+      - path: tests-ssh-keys
+        buildPhase: resources
     dependencies:
       - target: DivineMarssh
     settings:

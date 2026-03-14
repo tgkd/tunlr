@@ -15,7 +15,7 @@ services:
       - USER_NAME=testuser
       - PUBLIC_KEY_DIR=/config/.ssh
     volumes:
-      - ./tests-ssh-keys:/config/.ssh:ro
+      - ./tests-ssh-keys:/config/.ssh
     ports:
       - "2222:2222"
     restart: unless-stopped
