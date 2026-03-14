@@ -314,6 +314,6 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 
 ### Task 18: Update documentation
 
-- [ ] Update README.md with project description, build instructions, and usage
-- [ ] Update CLAUDE.md if internal patterns changed
-- [ ] Move this plan to `docs/plans/completed/`
+- [x] Update README.md with project description, build instructions, and usage
+- [x] Update CLAUDE.md if internal patterns changed
+- [x] Move this plan to `docs/plans/completed/`
