@@ -68,11 +68,17 @@ final class SSHSessionManager: ObservableObject, Sendable {
         let session = SSHSession(connectionHandler: connectionHandlerFactory())
         activeSession = session
         activeProfile = profile
-        state = .active(profileID: profile.id)
 
-        try await session.connect(profile: profile)
-
-        startScenePhaseObservation()
+        do {
+            try await session.connect(profile: profile)
+            state = .active(profileID: profile.id)
+            startScenePhaseObservation()
+        } catch {
+            activeSession = nil
+            activeProfile = nil
+            state = .idle
+            throw error
+        }
     }
 
     func disconnect() async {

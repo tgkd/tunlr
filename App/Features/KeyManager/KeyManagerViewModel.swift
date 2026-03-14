@@ -55,14 +55,31 @@ class KeyManagerViewModel: ObservableObject {
 
     private func formatImportedPublicKey(_ identity: SSHIdentity) -> String {
         var blob = Data()
-        let keyTypeBytes = Data(identity.keyType.utf8)
-        var keyTypeLen = UInt32(keyTypeBytes.count).bigEndian
-        blob.append(Data(bytes: &keyTypeLen, count: 4))
-        blob.append(keyTypeBytes)
 
-        var pubKeyLen = UInt32(identity.publicKeyData.count).bigEndian
-        blob.append(Data(bytes: &pubKeyLen, count: 4))
-        blob.append(identity.publicKeyData)
+        func appendSSHString(_ string: String) {
+            var len = UInt32(string.utf8.count).bigEndian
+            blob.append(Data(bytes: &len, count: 4))
+            blob.append(Data(string.utf8))
+        }
+
+        func appendSSHData(_ data: Data) {
+            var len = UInt32(data.count).bigEndian
+            blob.append(Data(bytes: &len, count: 4))
+            blob.append(data)
+        }
+
+        appendSSHString(identity.keyType)
+
+        switch identity.keyType {
+        case let k where k.hasPrefix("ecdsa-sha2-"):
+            let curveName = String(k.dropFirst("ecdsa-sha2-".count))
+            appendSSHString(curveName)
+            appendSSHData(identity.publicKeyData)
+        case "ssh-rsa":
+            blob.append(identity.publicKeyData)
+        default:
+            appendSSHData(identity.publicKeyData)
+        }
 
         let base64 = blob.base64EncodedString()
         return "\(identity.keyType) \(base64) \(identity.label)"

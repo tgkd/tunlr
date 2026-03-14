@@ -75,7 +75,7 @@ struct ImportedKeyAuthenticator: SSHAuthenticatable {
         let attributes: [String: Any] = [
             kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
             kSecAttrKeyClass as String: kSecAttrKeyClassPrivate,
-            kSecAttrKeySizeInBits as String: components.n.count * 8,
+            kSecAttrKeySizeInBits as String: components.n.drop(while: { $0 == 0 }).count * 8,
         ]
         var error: Unmanaged<CFError>?
         guard let secKey = SecKeyCreateWithData(keyData as CFData, attributes as CFDictionary, &error) else {

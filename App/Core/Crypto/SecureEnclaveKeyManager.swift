@@ -17,12 +17,14 @@ actor SecureEnclaveKeyManager {
             throw SecureEnclaveError.secureEnclaveNotAvailable
         }
 
-        let accessControl = SecAccessControlCreateWithFlags(
+        guard let accessControl = SecAccessControlCreateWithFlags(
             nil,
             kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
             [.privateKeyUsage, .biometryCurrentSet],
             nil
-        )!
+        ) else {
+            throw SecureEnclaveError.secureEnclaveNotAvailable
+        }
 
         let privateKey = try SecureEnclave.P256.Signing.PrivateKey(
             accessControl: accessControl
