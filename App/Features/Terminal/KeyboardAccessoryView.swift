@@ -79,7 +79,7 @@ struct KeyMapping: Sendable {
 }
 
 @MainActor
-final class KeyboardAccessoryView: UIInputView, UIInputViewAudioFeedback {
+final class KeyboardAccessoryView: UIView, UIInputViewAudioFeedback {
     weak var terminalView: TerminalView?
 
     private(set) var isCtrlLocked: Bool = false {
@@ -96,16 +96,24 @@ final class KeyboardAccessoryView: UIInputView, UIInputViewAudioFeedback {
 
     var enableInputClicksWhenVisible: Bool { true }
 
+    private let contentHeight: CGFloat
+
     init(frame: CGRect, terminalView: TerminalView) {
         self.terminalView = terminalView
-        super.init(frame: frame, inputViewStyle: .keyboard)
-        allowsSelfSizing = true
+        self.contentHeight = frame.height
+        super.init(frame: frame)
+        autoresizingMask = .flexibleWidth
+        backgroundColor = .clear
         setupButtons()
     }
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) is not supported")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: contentHeight)
     }
 
     private func setupButtons() {
@@ -159,7 +167,8 @@ final class KeyboardAccessoryView: UIInputView, UIInputViewAudioFeedback {
     override func layoutSubviews() {
         super.layoutSubviews()
         let padding: CGFloat = 4
-        let buttonHeight = frame.height - 8
+        let buttonHeight = contentHeight - 8
+        guard buttonHeight > 0 else { return }
         let totalPadding = padding * CGFloat(buttons.count + 1)
         let buttonWidth = (frame.width - totalPadding) / CGFloat(buttons.count)
 
@@ -171,18 +180,19 @@ final class KeyboardAccessoryView: UIInputView, UIInputViewAudioFeedback {
     }
 
     private func makeButton(title: String, key: AccessoryKey, icon: String?, isDark: Bool) -> UIButton {
-        let button = HighlightButton(type: .roundedRect)
+        let button = HighlightButton(type: .system)
         button.tag = AccessoryKey.allCases.firstIndex(of: key)!
-        button.setTitle(title, for: .normal)
-        button.layer.cornerRadius = 5
+        button.layer.cornerRadius = 6
         button.layer.masksToBounds = true
         styleButton(button, isDark: isDark)
 
-        if let icon, let image = UIImage(
-            systemName: icon,
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 14)
-        ) {
-            button.setImage(image.withTintColor(buttonTextColor, renderingMode: .alwaysOriginal), for: .normal)
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
+        if let icon, let image = UIImage(systemName: icon, withConfiguration: symbolConfig) {
+            button.setImage(image, for: .normal)
+            button.tintColor = buttonTextColor
+        } else {
+            button.setTitle(title, for: .normal)
+            button.titleLabel?.font = .monospacedSystemFont(ofSize: 16, weight: .medium)
         }
 
         if key == .ctrl {
@@ -250,15 +260,15 @@ final class KeyboardAccessoryView: UIInputView, UIInputViewAudioFeedback {
         let isDarkMode = traitCollection.userInterfaceStyle == .dark
         if isDarkMode {
             button.backgroundColor = isDark
-                ? UIColor(white: 0.46, alpha: 1)
-                : UIColor(white: 0.59, alpha: 1)
+                ? UIColor(white: 0.3, alpha: 1)
+                : UIColor(white: 0.22, alpha: 1)
         } else {
             button.backgroundColor = isDark
-                ? UIColor(red: 0.71, green: 0.72, blue: 0.76, alpha: 1)
-                : .white
+                ? UIColor(white: 0.78, alpha: 1)
+                : UIColor(white: 0.92, alpha: 1)
         }
+        button.tintColor = buttonTextColor
         button.setTitleColor(buttonTextColor, for: .normal)
-        button.setTitleColor(buttonTextColor, for: .selected)
     }
 }
 

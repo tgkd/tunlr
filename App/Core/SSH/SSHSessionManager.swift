@@ -66,11 +66,11 @@ final class SSHSessionManager: ObservableObject, Sendable {
         await cleanupCurrentSession()
 
         let session = SSHSession(connectionHandler: connectionHandlerFactory())
-        activeSession = session
         activeProfile = profile
 
         do {
             try await session.connect(profile: profile)
+            activeSession = session
             state = .active(profileID: profile.id)
             startScenePhaseObservation()
         } catch {

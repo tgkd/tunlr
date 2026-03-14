@@ -8,7 +8,9 @@ struct TerminalScreen: View {
     @State private var terminalTitle: String = ""
     @State private var connectionState: ConnectionState = .disconnected
     @State private var showCommandPalette = false
+    @State private var showDisconnectAlert = false
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -19,39 +21,48 @@ struct TerminalScreen: View {
             .ignoresSafeArea(.container, edges: .bottom)
 
             if showCommandPalette {
+                Color.black.opacity(0.001)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            showCommandPalette = false
+                        }
+                    }
+
                 CommandPaletteView(
                     sshSession: sshSession,
-                    onDismiss: { showCommandPalette = false }
+                    onDismiss: {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            showCommandPalette = false
+                        }
+                    }
                 )
+                .padding(.top, 4)
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                HStack(spacing: 6) {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    showDisconnectAlert = true
+                } label: {
                     connectionIndicator
-                    Text(terminalTitle.isEmpty ? "\(profile.username)@\(profile.host)" : terminalTitle)
-                        .font(.subheadline.monospaced())
-                        .lineLimit(1)
+                        .frame(width: 32, height: 32)
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+            }
+            ToolbarItem(placement: .principal) {
+                Text(terminalTitle.isEmpty ? "\(profile.username)@\(profile.host)" : terminalTitle)
+                    .font(.subheadline.monospaced())
+                    .foregroundStyle(colorScheme == .dark ? .white : .primary)
+                    .lineLimit(1)
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            showCommandPalette.toggle()
-                        }
-                    } label: {
-                        Label("Command Palette", systemImage: "command")
-                    }
-                    Button(role: .destructive) {
-                        Task {
-                            await sshSession.disconnect()
-                            onDisconnect()
-                        }
-                    } label: {
-                        Label("Disconnect", systemImage: "xmark.circle")
+                Button {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        showCommandPalette.toggle()
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -59,8 +70,19 @@ struct TerminalScreen: View {
             }
         }
         .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(Color.black, for: .navigationBar)
-        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarBackground(colorScheme == .dark ? Color.black : Color(white: 0.97), for: .navigationBar)
+        .toolbarColorScheme(colorScheme, for: .navigationBar)
+        .alert("Disconnect", isPresented: $showDisconnectAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Disconnect", role: .destructive) {
+                Task {
+                    await sshSession.disconnect()
+                    onDisconnect()
+                }
+            }
+        } message: {
+            Text("Are you sure you want to disconnect from \(profile.host)?")
+        }
         .task {
             await observeConnectionState()
         }
@@ -71,14 +93,15 @@ struct TerminalScreen: View {
         switch connectionState {
         case .connected:
             Circle()
-                .fill(.green)
+                .fill(Color(red: 0.3, green: 0.85, blue: 0.4))
                 .frame(width: 8, height: 8)
         case .connecting, .reconnecting:
             ProgressView()
+                .tint(.white)
                 .scaleEffect(0.6)
         case .disconnected:
             Circle()
-                .fill(.red)
+                .fill(Color(red: 1.0, green: 0.3, blue: 0.3))
                 .frame(width: 8, height: 8)
         }
     }
@@ -98,75 +121,76 @@ struct CommandPaletteView: View {
     let sshSession: SSHSession
     let onDismiss: () -> Void
 
-    private let tmuxCommands: [(label: String, keys: String, bytes: [UInt8])] = [
-        ("New Window", "c", [0x02, 0x63]),
-        ("Next Window", "n", [0x02, 0x6E]),
-        ("Prev Window", "p", [0x02, 0x70]),
-        ("Split H", "\"", [0x02, 0x22]),
-        ("Split V", "%", [0x02, 0x25]),
-        ("Detach", "d", [0x02, 0x64]),
+    private let tmuxCommands: [(label: String, icon: String, keys: String, bytes: [UInt8])] = [
+        ("New Window", "plus.rectangle", "c", [0x02, 0x63]),
+        ("Next Window", "chevron.right", "n", [0x02, 0x6E]),
+        ("Prev Window", "chevron.left", "p", [0x02, 0x70]),
+        ("Split H", "rectangle.split.1x2", "\"", [0x02, 0x22]),
+        ("Split V", "rectangle.split.2x1", "%", [0x02, 0x25]),
+        ("Copy Mode", "doc.on.doc", "[", [0x02, 0x5B]),
+        ("Detach", "eject", "d", [0x02, 0x64]),
     ]
+
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Commands")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.white)
+                Text("tmux")
+                    .font(.footnote.bold().monospaced())
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Button {
                     onDismiss()
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
+                    Image(systemName: "xmark")
+                        .font(.caption.bold())
                         .foregroundStyle(.secondary)
+                        .frame(width: 24, height: 24)
+                        .background(Color(.systemGray4))
+                        .clipShape(Circle())
                 }
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            .padding(.bottom, 4)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(tmuxCommands, id: \.label) { cmd in
-                        Button {
-                            sendBytes(cmd.bytes)
-                        } label: {
-                            VStack(spacing: 2) {
-                                Text(cmd.label)
-                                    .font(.caption2.bold())
-                                Text("^b \(cmd.keys)")
-                                    .font(.caption2.monospaced())
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(Color(.systemGray5))
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                        }
-                        .buttonStyle(.plain)
-                    }
-
+            LazyVGrid(columns: [
+                GridItem(.flexible(), spacing: 8),
+                GridItem(.flexible(), spacing: 8),
+                GridItem(.flexible(), spacing: 8),
+                GridItem(.flexible(), spacing: 8),
+            ], spacing: 8) {
+                ForEach(tmuxCommands, id: \.label) { cmd in
                     Button {
-                        sendBytes([0x02, 0x5B])
+                        sendBytes(cmd.bytes)
                     } label: {
-                        VStack(spacing: 2) {
-                            Text("Copy Mode")
-                                .font(.caption2.bold())
-                            Text("^b [")
+                        VStack(spacing: 4) {
+                            Image(systemName: cmd.icon)
+                                .font(.system(size: 16))
+                            Text(cmd.label)
+                                .font(.caption2)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                            Text("^b \(cmd.keys)")
                                 .font(.caption2.monospaced())
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.tertiary)
                         }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
                         .background(Color(.systemGray5))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 8)
             }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 12)
         }
-        .background(.ultraThinMaterial)
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(.horizontal, 8)
+        .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
     }
 
     private func sendBytes(_ bytes: [UInt8]) {

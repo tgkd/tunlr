@@ -24,16 +24,22 @@ final class TerminalViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        terminalView = TerminalView(frame: view.bounds, font: nil)
-        terminalView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        terminalView.nativeBackgroundColor = .black
-        terminalView.nativeForegroundColor = UIColor(white: 0.9, alpha: 1.0)
+        terminalView = TerminalView(frame: .zero, font: nil)
+        terminalView.translatesAutoresizingMaskIntoConstraints = false
+        applyTerminalTheme()
         view.addSubview(terminalView)
-        view.backgroundColor = .black
+
+        let hPadding: CGFloat = 12
+        NSLayoutConstraint.activate([
+            terminalView.topAnchor.constraint(equalTo: view.topAnchor),
+            terminalView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: hPadding),
+            terminalView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -hPadding),
+            terminalView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
 
         let short = UIDevice.current.userInterfaceIdiom == .phone
         let accessory = KeyboardAccessoryView(
-            frame: CGRect(x: 0, y: 0, width: view.frame.width, height: short ? 36 : 48),
+            frame: CGRect(x: 0, y: 0, width: view.frame.width, height: short ? 44 : 48),
             terminalView: terminalView
         )
         keyboardAccessory = accessory
@@ -46,6 +52,26 @@ final class TerminalViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         notifyTerminalSize()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            applyTerminalTheme()
+        }
+    }
+
+    private func applyTerminalTheme() {
+        let isDark = traitCollection.userInterfaceStyle == .dark
+        if isDark {
+            terminalView.nativeBackgroundColor = .black
+            terminalView.nativeForegroundColor = UIColor(white: 0.9, alpha: 1.0)
+            view.backgroundColor = .black
+        } else {
+            terminalView.nativeBackgroundColor = UIColor(white: 0.97, alpha: 1.0)
+            terminalView.nativeForegroundColor = UIColor(white: 0.1, alpha: 1.0)
+            view.backgroundColor = UIColor(white: 0.97, alpha: 1.0)
+        }
     }
 
     func feedData(_ data: ArraySlice<UInt8>) {
