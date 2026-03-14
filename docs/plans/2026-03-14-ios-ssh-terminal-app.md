@@ -67,16 +67,16 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Core/Crypto/SecureEnclaveKeyManager.swift`
 - Create: `Tests/CryptoTests/SecureEnclaveKeyManagerTests.swift`
 
-- [ ] Implement `SecureEnclaveKeyManager` actor
-- [ ] `generateKey(label:) -> SSHIdentity` — creates SE P-256 key with `biometryCurrentSet` + `whenUnlockedThisDeviceOnly`
-- [ ] `loadKey(tag:) throws -> SecureEnclave.P256.Signing.PrivateKey` — reload from stored `dataRepresentation`
-- [ ] `deleteKey(tag:)` — remove from Keychain
-- [ ] `publicKeyOpenSSHFormat(key:) -> String` — encode P-256 pubkey as `ecdsa-sha2-nistp256` authorized_keys line
-- [ ] Store `dataRepresentation` blob in Keychain with biometric protection
-- [ ] Handle P1363 to DER signature conversion for SSH wire format (or verify Citadel handles this)
-- [ ] Write tests for key generation, load, delete cycle (note: SE tests require physical device)
-- [ ] Write tests for public key OpenSSH format output
-- [ ] Run project test suite — must pass before task 4
+- [x] Implement `SecureEnclaveKeyManager` actor
+- [x] `generateKey(label:) -> SSHIdentity` — creates SE P-256 key with `biometryCurrentSet` + `whenUnlockedThisDeviceOnly`
+- [x] `loadKey(tag:) throws -> SecureEnclave.P256.Signing.PrivateKey` — reload from stored `dataRepresentation`
+- [x] `deleteKey(tag:)` — remove from Keychain
+- [x] `publicKeyOpenSSHFormat(key:) -> String` — encode P-256 pubkey as `ecdsa-sha2-nistp256` authorized_keys line
+- [x] Store `dataRepresentation` blob in Keychain with biometric protection
+- [x] Handle P1363 to DER signature conversion for SSH wire format (or verify Citadel handles this)
+- [x] Write tests for key generation, load, delete cycle (note: SE tests require physical device)
+- [x] Write tests for public key OpenSSH format output
+- [x] Run project test suite — must pass before task 4
 
 ### Task 4: Keychain key manager and biometric policy
 

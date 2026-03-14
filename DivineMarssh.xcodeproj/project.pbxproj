@@ -18,7 +18,9 @@
 		91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3449C1609F5287002478D159 /* DivineMarsshApp.swift */; };
 		97CB67A9ADC96D8217BDBAB4 /* SSHConnectionProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */; };
 		A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C166692098888B8C32934E2 /* ContentView.swift */; };
+		C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */; };
 		C89E4165FA151140B6705CCB /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 4E31904FC034D29999A090B0 /* Citadel */; };
+		CC4FCE47DB7C71DBFA6F9370 /* SecureEnclaveKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */; };
 		FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -39,7 +41,9 @@
 		3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAuthMethod.swift; sourceTree = "<group>"; };
 		3E17AD78D5767695C19EABB7 /* DivineMarssh.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DivineMarssh.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52E3B0C56CC7188A2DF2FD81 /* SSHIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHIdentity.swift; sourceTree = "<group>"; };
+		57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveKeyManagerTests.swift; sourceTree = "<group>"; };
 		787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStoreTests.swift; sourceTree = "<group>"; };
+		9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveKeyManager.swift; sourceTree = "<group>"; };
 		A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHHostKey.swift; sourceTree = "<group>"; };
 		BF424B1FAA7BAEB86C24BAAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshTests.swift; sourceTree = "<group>"; };
@@ -128,9 +132,18 @@
 			isa = PBXGroup;
 			children = (
 				CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */,
+				ED0DB843D241EB938C8BA1AD /* CryptoTests */,
 				1D6C23B50F8E0A8F44BEE068 /* StorageTests */,
 			);
 			path = DivineMarsshTests;
+			sourceTree = "<group>";
+		};
+		B61B30D30FF578DC9B8EAEC2 /* Crypto */ = {
+			isa = PBXGroup;
+			children = (
+				9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */,
+			);
+			path = Crypto;
 			sourceTree = "<group>";
 		};
 		C9847DB39C6F648B620F2168 /* Features */ = {
@@ -143,6 +156,7 @@
 		D2C90341B05E88715F12E40A /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				B61B30D30FF578DC9B8EAEC2 /* Crypto */,
 				9036359C7D8115993CBDD718 /* Storage */,
 			);
 			path = Core;
@@ -159,6 +173,14 @@
 				4E5C09FABE325813352C2F38 /* UI */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		ED0DB843D241EB938C8BA1AD /* CryptoTests */ = {
+			isa = PBXGroup;
+			children = (
+				57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */,
+			);
+			path = CryptoTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -251,6 +273,7 @@
 				97CB67A9ADC96D8217BDBAB4 /* SSHConnectionProfile.swift in Sources */,
 				0DEBBFCAFF7A86632663F198 /* SSHHostKey.swift in Sources */,
 				199A969FC03066258287619B /* SSHIdentity.swift in Sources */,
+				CC4FCE47DB7C71DBFA6F9370 /* SecureEnclaveKeyManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,6 +284,7 @@
 				62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */,
 				FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */,
 				1653E14758A802E34B2D3453 /* ProfileStoreTests.swift in Sources */,
+				C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
