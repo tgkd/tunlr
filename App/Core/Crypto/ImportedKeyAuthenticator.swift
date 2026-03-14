@@ -65,9 +65,8 @@ struct ImportedKeyAuthenticator: SSHAuthenticatable {
         appendASN1Integer(components.d, to: &innerBytes)
         appendASN1Integer(components.p, to: &innerBytes)
         appendASN1Integer(components.q, to: &innerBytes)
-        // dp = d mod (p-1), dq = d mod (q-1) — not stored, compute placeholders
-        appendASN1Integer(Data([0x00]), to: &innerBytes) // dp placeholder
-        appendASN1Integer(Data([0x00]), to: &innerBytes) // dq placeholder
+        appendASN1Integer(components.dp, to: &innerBytes)
+        appendASN1Integer(components.dq, to: &innerBytes)
         appendASN1Integer(components.iqmp, to: &innerBytes)
         keyBytes.append(contentsOf: encodeASN1Length(innerBytes.count))
         keyBytes.append(contentsOf: innerBytes)

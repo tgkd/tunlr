@@ -20,5 +20,11 @@
 	<string>1</string>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>DivineMarssh uses Face ID to protect your SSH keys.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>DivineMarssh uses the camera to scan QR codes for host fingerprint verification.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>DivineMarssh needs local network access to connect to SSH servers on your network.</string>
 </dict>
 </plist>

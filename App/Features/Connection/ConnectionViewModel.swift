@@ -18,7 +18,7 @@ final class ConnectionViewModel: ObservableObject, Sendable {
     @Published var testConnectionResult: Result<Bool, Error>?
 
     private let profileStore: ProfileStore
-    private let keyManager: KeyManager
+    let keyManager: KeyManager
 
     init(profileStore: ProfileStore, keyManager: KeyManager) {
         self.profileStore = profileStore
@@ -92,9 +92,15 @@ final class ConnectionViewModel: ObservableObject, Sendable {
         testConnectionResult = nil
 
         let result: Result<Bool, Error> = await withCheckedContinuation { continuation in
+            guard let nwPort = NWEndpoint.Port(rawValue: port) else {
+                continuation.resume(returning: .failure(
+                    ConnectionViewModelError.invalidPort
+                ))
+                return
+            }
             let connection = NWConnection(
                 host: NWEndpoint.Host(host),
-                port: NWEndpoint.Port(rawValue: port)!,
+                port: nwPort,
                 using: .tcp
             )
 

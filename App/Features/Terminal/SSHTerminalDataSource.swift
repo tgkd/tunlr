@@ -30,6 +30,23 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     func attachTerminalView(_ terminalView: TerminalView) {
         self.terminalView = terminalView
         terminalView.terminalDelegate = self
+        beginShellOutputFeed()
+    }
+
+    private func beginShellOutputFeed() {
+        outputTask?.cancel()
+        outputTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let stream = try await self.sshSession.openShellChannel()
+                for await output in stream {
+                    guard !Task.isCancelled else { break }
+                    self.handleOutput(output)
+                }
+            } catch {
+                // Shell channel failed to open
+            }
+        }
     }
 
     func startOutputFeed(from stream: AsyncStream<ShellOutput>) {
@@ -60,8 +77,9 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
 
     nonisolated func scrolled(source: TerminalView, position: Double) {
         Task { @MainActor [weak self] in
-            self?.currentScrollPosition = position
-            self?.delegate?.dataSource(self!, didUpdateScrollPosition: position)
+            guard let self else { return }
+            self.currentScrollPosition = position
+            self.delegate?.dataSource(self, didUpdateScrollPosition: position)
         }
     }
 

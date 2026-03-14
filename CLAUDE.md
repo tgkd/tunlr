@@ -8,6 +8,10 @@ xcodebuild build -project DivineMarssh.xcodeproj -scheme DivineMarssh -destinati
 
 # Test
 xcodebuild test -project DivineMarssh.xcodeproj -scheme DivineMarssh -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+
+# Integration test SSH server (Docker)
+docker compose up -d    # start server on port 2222
+docker compose down     # stop server
 ```
 
 ## Key Patterns
@@ -19,3 +23,4 @@ xcodebuild test -project DivineMarssh.xcodeproj -scheme DivineMarssh -destinatio
 - Known hosts file excluded from iCloud backup
 - UI views use `@MainActor` isolation
 - Dependency injection via protocols for testability (SSHClientProtocol, ConnectionHandlerProtocol, etc.)
+- `project.yml` defines Xcode project structure (XcodeGen format); `.xcodeproj` can be regenerated from it

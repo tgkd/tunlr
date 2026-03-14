@@ -28,14 +28,15 @@ actor SecureEnclaveKeyManager {
             accessControl: accessControl
         )
 
-        let tag = UUID().uuidString
+        let id = UUID()
+        let tag = id.uuidString
         try storeKeyData(privateKey.dataRepresentation, tag: tag)
 
         let publicKey = privateKey.publicKey
         let publicKeyData = publicKey.x963Representation
 
         return SSHIdentity(
-            id: UUID(),
+            id: id,
             label: label,
             keyType: "ecdsa-sha2-nistp256",
             publicKeyData: publicKeyData,

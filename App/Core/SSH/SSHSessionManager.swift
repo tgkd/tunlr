@@ -71,7 +71,6 @@ final class SSHSessionManager: ObservableObject, Sendable {
         state = .active(profileID: profile.id)
 
         try await session.connect(profile: profile)
-        _ = try await session.openShellChannel()
 
         startScenePhaseObservation()
     }
@@ -158,7 +157,6 @@ final class SSHSessionManager: ObservableObject, Sendable {
             let session = SSHSession(connectionHandler: connectionHandlerFactory())
             activeSession = session
             try await session.connect(profile: profile)
-            _ = try await session.openShellChannel()
             state = .active(profileID: profileID)
         } catch {
             state = .idle

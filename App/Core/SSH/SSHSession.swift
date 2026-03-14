@@ -233,10 +233,6 @@ final class CitadelConnectionHandler: SSHConnectionHandling, @unchecked Sendable
             return try buildAuthMethod(username: profile.username, stored: stored)
         case .password:
             let password = await profileStore.password(for: profile.id) ?? ""
-            defer {
-                // Password string is short-lived; log nothing about it
-                _ = MemoryHygiene.sanitize(password, label: "PASSWORD")
-            }
             return .passwordBased(username: profile.username, password: password)
         }
     }

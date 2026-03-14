@@ -22,6 +22,116 @@ struct RSAKeyComponents: Codable, Sendable {
     let iqmp: Data
     let p: Data
     let q: Data
+    let dp: Data
+    let dq: Data
+
+    init(n: Data, e: Data, d: Data, iqmp: Data, p: Data, q: Data, dp: Data, dq: Data) {
+        self.n = n
+        self.e = e
+        self.d = d
+        self.iqmp = iqmp
+        self.p = p
+        self.q = q
+        self.dp = dp
+        self.dq = dq
+    }
+
+    init(n: Data, e: Data, d: Data, iqmp: Data, p: Data, q: Data) {
+        self.n = n
+        self.e = e
+        self.d = d
+        self.iqmp = iqmp
+        self.p = p
+        self.q = q
+        self.dp = Self.bigIntMod(d, Self.bigIntSubtractOne(p))
+        self.dq = Self.bigIntMod(d, Self.bigIntSubtractOne(q))
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        n = try container.decode(Data.self, forKey: .n)
+        e = try container.decode(Data.self, forKey: .e)
+        d = try container.decode(Data.self, forKey: .d)
+        iqmp = try container.decode(Data.self, forKey: .iqmp)
+        p = try container.decode(Data.self, forKey: .p)
+        q = try container.decode(Data.self, forKey: .q)
+        if let storedDp = try container.decodeIfPresent(Data.self, forKey: .dp),
+           let storedDq = try container.decodeIfPresent(Data.self, forKey: .dq) {
+            dp = storedDp
+            dq = storedDq
+        } else {
+            dp = Self.bigIntMod(d, Self.bigIntSubtractOne(p))
+            dq = Self.bigIntMod(d, Self.bigIntSubtractOne(q))
+        }
+    }
+
+    private static func bigIntSubtractOne(_ data: Data) -> Data {
+        var bytes = Array(data)
+        // Strip leading zeros for arithmetic
+        while bytes.count > 1 && bytes[0] == 0 { bytes.removeFirst() }
+        // Subtract 1 from big-endian integer
+        var borrow = true
+        for i in stride(from: bytes.count - 1, through: 0, by: -1) {
+            if borrow {
+                if bytes[i] > 0 {
+                    bytes[i] -= 1
+                    borrow = false
+                } else {
+                    bytes[i] = 0xFF
+                }
+            }
+        }
+        return Data(bytes)
+    }
+
+    private static func bigIntMod(_ dividend: Data, _ divisor: Data) -> Data {
+        let divisorBytes = Array(divisor.drop(while: { $0 == 0 }))
+        guard !divisorBytes.isEmpty else { return Data([0]) }
+
+        // Process one byte at a time: remainder = (remainder * 256 + byte) % divisor
+        // After each step, remainder < divisor, so next step's value < divisor * 256 + 255
+        // which means at most 255 subtractions per byte (bounded)
+        var remainder = [UInt8]()
+        for byte in dividend.drop(while: { $0 == 0 }) {
+            remainder.append(byte)
+            while remainder.count > 1 && remainder[0] == 0 { remainder.removeFirst() }
+            while compare(remainder, divisorBytes) >= 0 {
+                remainder = subtract(remainder, divisorBytes)
+                while remainder.count > 1 && remainder[0] == 0 { remainder.removeFirst() }
+            }
+        }
+        if remainder.isEmpty { remainder = [0] }
+        return Data(remainder)
+    }
+
+    private static func compare(_ a: [UInt8], _ b: [UInt8]) -> Int {
+        let a = Array(a.drop(while: { $0 == 0 }))
+        let b = Array(b.drop(while: { $0 == 0 }))
+        if a.count != b.count { return a.count < b.count ? -1 : 1 }
+        for i in 0..<a.count {
+            if a[i] != b[i] { return a[i] < b[i] ? -1 : 1 }
+        }
+        return 0
+    }
+
+    private static func subtract(_ a: [UInt8], _ b: [UInt8]) -> [UInt8] {
+        var result = a
+        var borrow: UInt16 = 0
+        let diff = a.count - b.count
+        for i in stride(from: a.count - 1, through: 0, by: -1) {
+            let bIdx = i - diff
+            let bVal: UInt16 = bIdx >= 0 ? UInt16(b[bIdx]) : 0
+            let sub = UInt16(result[i]) &- bVal &- borrow
+            if UInt16(result[i]) < bVal + borrow {
+                result[i] = UInt8((256 + UInt16(result[i]) - bVal - borrow) & 0xFF)
+                borrow = 1
+            } else {
+                result[i] = UInt8(sub & 0xFF)
+                borrow = 0
+            }
+        }
+        return result
+    }
 }
 
 actor KeychainKeyManager {
@@ -202,7 +312,7 @@ actor KeychainKeyManager {
         let components = RSAKeyComponents(
             n: Data(n), e: Data(e), d: Data(d),
             iqmp: Data(iqmp), p: Data(p), q: Data(q)
-        )
+        ) // dp and dq computed automatically
         let privateData = try JSONEncoder().encode(components)
 
         var pubBlob = [UInt8]()

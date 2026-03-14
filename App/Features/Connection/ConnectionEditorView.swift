@@ -223,7 +223,11 @@ struct ConnectionEditorView: View {
             return
         }
 
-        let authMethod = buildAuthMethod()
+        guard let authMethod = buildAuthMethod() else {
+            errorMessage = "Please select an SSH key."
+            showingError = true
+            return
+        }
 
         Task {
             do {
@@ -257,12 +261,14 @@ struct ConnectionEditorView: View {
         }
     }
 
-    private func buildAuthMethod() -> SSHAuthMethod {
+    private func buildAuthMethod() -> SSHAuthMethod? {
         switch authSelection {
         case .secureEnclaveKey:
-            return .secureEnclaveKey(keyTag: selectedKeyID?.uuidString ?? "")
+            guard let keyID = selectedKeyID else { return nil }
+            return .secureEnclaveKey(keyTag: keyID.uuidString)
         case .importedKey:
-            return .importedKey(keyID: selectedKeyID ?? UUID())
+            guard let keyID = selectedKeyID else { return nil }
+            return .importedKey(keyID: keyID)
         case .password:
             return .password
         }

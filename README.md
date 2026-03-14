@@ -28,7 +28,7 @@ All dependencies are managed via SPM:
 | Package | Purpose |
 |---------|---------|
 | [Citadel](https://github.com/orlandos-nl/Citadel) | High-level SSH client API |
-| [SwiftNIO SSH](https://github.com/apple/swift-nio-ssh) | SSH-2 protocol core |
+| [SwiftNIO SSH](https://github.com/Joannis/swift-nio-ssh) | SSH-2 protocol core (Citadel-compatible fork) |
 | [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm) | Terminal emulator |
 | [NIOTransportServices](https://github.com/apple/swift-nio-transport-services) | Network.framework integration |
 

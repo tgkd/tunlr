@@ -90,6 +90,11 @@ struct ConnectionListView: View {
                 )
             }
         }
+        .sheet(isPresented: $showingKeyManager) {
+            NavigationStack {
+                KeyManagerView(viewModel: KeyManagerViewModel(keyManager: viewModel.keyManager))
+            }
+        }
         .task {
             await viewModel.loadProfiles()
         }

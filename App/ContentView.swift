@@ -14,6 +14,8 @@ struct ContentView: View {
 
     @State private var selectedProfile: SSHConnectionProfile?
     @State private var showTerminal = false
+    @State private var connectionError: String?
+    @State private var showingConnectionError = false
 
     var body: some View {
         NavigationStack {
@@ -35,11 +37,23 @@ struct ContentView: View {
                 }
             }
         }
+        .alert("Connection Failed", isPresented: $showingConnectionError) {
+            Button("OK") {}
+        } message: {
+            Text(connectionError ?? "Unknown error")
+        }
         .onChange(of: showTerminal) { _, isShowing in
             if isShowing, let profile = selectedProfile {
                 Task {
-                    try? await sessionManager.startSession(for: profile)
-                    try? await viewModel.markConnected(id: profile.id)
+                    do {
+                        try await sessionManager.startSession(for: profile)
+                        try? await viewModel.markConnected(id: profile.id)
+                    } catch {
+                        showTerminal = false
+                        selectedProfile = nil
+                        connectionError = error.localizedDescription
+                        showingConnectionError = true
+                    }
                 }
             } else if !isShowing {
                 Task {

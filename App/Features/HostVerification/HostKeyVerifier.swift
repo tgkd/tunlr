@@ -40,7 +40,8 @@ actor HostKeyVerifier {
         let stored = await store.lookup(hostname: hostname, port: port, keyType: keyType)
 
         if let stored {
-            if stored.publicKeyData == publicKeyData {
+            if stored.publicKeyData == publicKeyData
+                || (stored.publicKeyData.isEmpty && stored.fingerprint == fingerprint) {
                 return
             } else {
                 throw HostKeyVerificationError.mismatch(
@@ -83,7 +84,8 @@ actor HostKeyVerifier {
         let stored = await store.lookup(hostname: hostname, port: port, keyType: keyType)
 
         if let stored {
-            if stored.publicKeyData == publicKeyData {
+            if stored.publicKeyData == publicKeyData
+                || (stored.publicKeyData.isEmpty && stored.fingerprint == fingerprint) {
                 return .trusted
             } else {
                 return .mismatch(
