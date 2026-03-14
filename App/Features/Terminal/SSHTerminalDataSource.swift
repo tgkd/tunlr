@@ -44,7 +44,8 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
                     self.handleOutput(output)
                 }
             } catch {
-                // Shell channel failed to open
+                let message = "\r\n\u{1B}[31mShell error: \(error.localizedDescription)\u{1B}[0m\r\n"
+                self.terminalView?.feed(text: message)
             }
         }
     }

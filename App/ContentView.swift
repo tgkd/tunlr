@@ -24,16 +24,35 @@ struct ContentView: View {
                 showTerminal = true
             }
             .navigationDestination(isPresented: $showTerminal) {
-                if let profile = selectedProfile, let session = sessionManager.activeSession {
-                    TerminalScreen(
-                        profile: profile,
-                        sshSession: session,
-                        onDisconnect: {
-                            showTerminal = false
-                            selectedProfile = nil
+                if let profile = selectedProfile {
+                    if let session = sessionManager.activeSession {
+                        TerminalScreen(
+                            profile: profile,
+                            sshSession: session,
+                            onDisconnect: {
+                                showTerminal = false
+                                selectedProfile = nil
+                            }
+                        )
+                        .navigationBarBackButtonHidden()
+                    } else {
+                        VStack(spacing: 12) {
+                            ProgressView()
+                            Text("Connecting to \(profile.host)...")
+                                .foregroundStyle(.secondary)
                         }
-                    )
-                    .navigationBarBackButtonHidden()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(.black)
+                        .navigationBarBackButtonHidden()
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button("Cancel") {
+                                    showTerminal = false
+                                    selectedProfile = nil
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
