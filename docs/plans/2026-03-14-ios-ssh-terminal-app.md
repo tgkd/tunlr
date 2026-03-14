@@ -158,16 +158,16 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Features/Terminal/TerminalViewRepresentable.swift`
 - Create: `Tests/TerminalTests/SSHTerminalDataSourceTests.swift`
 
-- [ ] Implement `TerminalViewController: UIViewController` hosting SwiftTerm `TerminalView`
-- [ ] Implement `SSHTerminalDataSource` conforming to `TerminalViewDelegate`
+- [x] Implement `TerminalViewController: UIViewController` hosting SwiftTerm `TerminalView`
+- [x] Implement `SSHTerminalDataSource` conforming to `TerminalViewDelegate`
   - `send(source:data:)` — write to SSH channel stdin
   - `scrolled(source:position:)` — update scroll indicator
   - `setTerminalTitle(source:name:)` — update navigation bar title
-- [ ] Feed SSH channel stdout to `terminal.feed(byteArray:)`
-- [ ] Implement `TerminalViewRepresentable: UIViewControllerRepresentable` with Coordinator
-- [ ] Terminal resize: calculate cols/rows from `cellDimension` in `viewDidLayoutSubviews`, debounce 100ms, update local size + remote SSH window
-- [ ] Write tests for data source delegate method routing
-- [ ] Run project test suite — must pass before task 9
+- [x] Feed SSH channel stdout to `terminal.feed(byteArray:)`
+- [x] Implement `TerminalViewRepresentable: UIViewControllerRepresentable` with Coordinator
+- [x] Terminal resize: calculate cols/rows from `cellDimension` in `viewDidLayoutSubviews`, debounce 100ms, update local size + remote SSH window
+- [x] Write tests for data source delegate method routing
+- [x] Run project test suite — must pass before task 9
 
 ### Task 9: Keyboard accessory toolbar
 
