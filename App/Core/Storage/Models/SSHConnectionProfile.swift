@@ -8,6 +8,7 @@ struct SSHConnectionProfile: Codable, Sendable, Identifiable, Equatable {
     var authMethod: SSHAuthMethod
     var lastConnected: Date?
     var autoReconnect: Bool
+    var keepaliveInterval: TimeInterval
 
     init(
         id: UUID = UUID(),
@@ -16,7 +17,8 @@ struct SSHConnectionProfile: Codable, Sendable, Identifiable, Equatable {
         username: String,
         authMethod: SSHAuthMethod,
         lastConnected: Date? = nil,
-        autoReconnect: Bool = false
+        autoReconnect: Bool = false,
+        keepaliveInterval: TimeInterval = 60
     ) {
         self.id = id
         self.host = host
@@ -25,5 +27,6 @@ struct SSHConnectionProfile: Codable, Sendable, Identifiable, Equatable {
         self.authMethod = authMethod
         self.lastConnected = lastConnected
         self.autoReconnect = autoReconnect
+        self.keepaliveInterval = keepaliveInterval
     }
 }

@@ -191,16 +191,16 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Features/Connection/ConnectionViewModel.swift`
 - Create: `Tests/ConnectionTests/ConnectionViewModelTests.swift`
 
-- [ ] Implement `ConnectionListView` — list of `SSHConnectionProfile` sorted by `lastConnected`
-- [ ] Swipe actions: connect, edit, delete
-- [ ] Toolbar: add connection, manage keys
-- [ ] Implement `ConnectionEditorView` — host, port, username, auth method picker
-- [ ] Auth method picker: SE key (generate/select), imported key, password
-- [ ] Test connection button (validates host reachability)
-- [ ] Advanced section: keepalive interval, auto-reconnect toggle
-- [ ] Implement `ConnectionViewModel` with business logic
-- [ ] Write tests for ConnectionViewModel (profile CRUD, validation)
-- [ ] Run project test suite — must pass before task 11
+- [x] Implement `ConnectionListView` — list of `SSHConnectionProfile` sorted by `lastConnected`
+- [x] Swipe actions: connect, edit, delete
+- [x] Toolbar: add connection, manage keys
+- [x] Implement `ConnectionEditorView` — host, port, username, auth method picker
+- [x] Auth method picker: SE key (generate/select), imported key, password
+- [x] Test connection button (validates host reachability)
+- [x] Advanced section: keepalive interval, auto-reconnect toggle
+- [x] Implement `ConnectionViewModel` with business logic
+- [x] Write tests for ConnectionViewModel (profile CRUD, validation)
+- [x] Run project test suite — must pass before task 11
 
 ### Task 11: Key manager and host verification views
 
