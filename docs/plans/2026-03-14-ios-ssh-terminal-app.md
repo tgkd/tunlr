@@ -103,13 +103,13 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Core/Crypto/ImportedKeyAuthenticator.swift`
 - Create: `Tests/CryptoTests/KeyManagerTests.swift`
 
-- [ ] Define protocol `SSHAuthenticatable` — `func authenticate(sessionHash: Data) async throws -> Data`
-- [ ] Implement `SEKeyAuthenticator` conforming to `SSHAuthenticatable`
-- [ ] Implement `ImportedKeyAuthenticator` conforming to `SSHAuthenticatable`
-- [ ] Implement `KeyManager` as unified facade over `SecureEnclaveKeyManager` and `KeychainKeyManager`
-- [ ] Write tests with mock authenticators verifying facade routing
-- [ ] Write tests for DER signature output structure
-- [ ] Run project test suite — must pass before task 6
+- [x] Define protocol `SSHAuthenticatable` — `func authenticate(sessionHash: Data) async throws -> Data`
+- [x] Implement `SEKeyAuthenticator` conforming to `SSHAuthenticatable`
+- [x] Implement `ImportedKeyAuthenticator` conforming to `SSHAuthenticatable`
+- [x] Implement `KeyManager` as unified facade over `SecureEnclaveKeyManager` and `KeychainKeyManager`
+- [x] Write tests with mock authenticators verifying facade routing
+- [x] Write tests for DER signature output structure
+- [x] Run project test suite — must pass before task 6
 
 ### Task 6: Known hosts store and TOFU verification
 

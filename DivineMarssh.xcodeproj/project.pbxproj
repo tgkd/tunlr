@@ -16,13 +16,18 @@
 		41FF003C2E5E39F9C8A6EC91 /* BiometricPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5045FB9640565348B5A8110 /* BiometricPolicy.swift */; };
 		52D4F28FFD4B56D92302CE01 /* SSHAuthMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */; };
 		62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */; };
+		762BB8779441EE0283CFD570 /* SEKeyAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BD15FB37ED81BF14121F53 /* SEKeyAuthenticator.swift */; };
+		8384A1830E10386A052CF5F7 /* ImportedKeyAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CB9F284DEC861AED210B86 /* ImportedKeyAuthenticator.swift */; };
+		874197CDF2AAD1EECD493E76 /* KeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13087CD2808B6103A1E50066 /* KeyManagerTests.swift */; };
 		91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3449C1609F5287002478D159 /* DivineMarsshApp.swift */; };
 		97CB67A9ADC96D8217BDBAB4 /* SSHConnectionProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */; };
 		A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C166692098888B8C32934E2 /* ContentView.swift */; };
+		ADAA7597609064FD766A7CB6 /* SSHAuthenticatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD25E5F829FB49210857487 /* SSHAuthenticatable.swift */; };
 		BB64BABE77A5C5B4BFC51B3A /* KeychainKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAA06BC02431C42E488BA7C /* KeychainKeyManager.swift */; };
 		C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */; };
 		C89E4165FA151140B6705CCB /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 4E31904FC034D29999A090B0 /* Citadel */; };
 		CC4FCE47DB7C71DBFA6F9370 /* SecureEnclaveKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */; };
+		CC9F75D8825F0FBCD66AA7A5 /* KeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CBEA2E281AD276CBBFD52B /* KeyManager.swift */; };
 		DD2F8E418AD9F2CBEFE6B6F4 /* KeychainKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31DA89DE913B3AB75B40B78 /* KeychainKeyManagerTests.swift */; };
 		FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		13087CD2808B6103A1E50066 /* KeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerTests.swift; sourceTree = "<group>"; };
 		1719AEB110996F6871F61FEF /* DivineMarsshTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DivineMarsshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C166692098888B8C32934E2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3449C1609F5287002478D159 /* DivineMarsshApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshApp.swift; sourceTree = "<group>"; };
@@ -45,7 +51,10 @@
 		3E17AD78D5767695C19EABB7 /* DivineMarssh.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DivineMarssh.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52E3B0C56CC7188A2DF2FD81 /* SSHIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHIdentity.swift; sourceTree = "<group>"; };
 		57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveKeyManagerTests.swift; sourceTree = "<group>"; };
+		65CB9F284DEC861AED210B86 /* ImportedKeyAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedKeyAuthenticator.swift; sourceTree = "<group>"; };
+		65CBEA2E281AD276CBBFD52B /* KeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManager.swift; sourceTree = "<group>"; };
 		787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStoreTests.swift; sourceTree = "<group>"; };
+		7BD25E5F829FB49210857487 /* SSHAuthenticatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAuthenticatable.swift; sourceTree = "<group>"; };
 		9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveKeyManager.swift; sourceTree = "<group>"; };
 		A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHHostKey.swift; sourceTree = "<group>"; };
 		BF424B1FAA7BAEB86C24BAAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -55,6 +64,7 @@
 		E31DA89DE913B3AB75B40B78 /* KeychainKeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainKeyManagerTests.swift; sourceTree = "<group>"; };
 		E5045FB9640565348B5A8110 /* BiometricPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricPolicy.swift; sourceTree = "<group>"; };
 		ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConnectionProfile.swift; sourceTree = "<group>"; };
+		F1BD15FB37ED81BF14121F53 /* SEKeyAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyAuthenticator.swift; sourceTree = "<group>"; };
 		F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -148,8 +158,12 @@
 			isa = PBXGroup;
 			children = (
 				E5045FB9640565348B5A8110 /* BiometricPolicy.swift */,
+				65CB9F284DEC861AED210B86 /* ImportedKeyAuthenticator.swift */,
 				CEAA06BC02431C42E488BA7C /* KeychainKeyManager.swift */,
+				65CBEA2E281AD276CBBFD52B /* KeyManager.swift */,
 				9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */,
+				F1BD15FB37ED81BF14121F53 /* SEKeyAuthenticator.swift */,
+				7BD25E5F829FB49210857487 /* SSHAuthenticatable.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -187,6 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				E31DA89DE913B3AB75B40B78 /* KeychainKeyManagerTests.swift */,
+				13087CD2808B6103A1E50066 /* KeyManagerTests.swift */,
 				57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */,
 			);
 			path = CryptoTests;
@@ -278,9 +293,13 @@
 				41FF003C2E5E39F9C8A6EC91 /* BiometricPolicy.swift in Sources */,
 				A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */,
 				91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */,
+				8384A1830E10386A052CF5F7 /* ImportedKeyAuthenticator.swift in Sources */,
+				CC9F75D8825F0FBCD66AA7A5 /* KeyManager.swift in Sources */,
 				BB64BABE77A5C5B4BFC51B3A /* KeychainKeyManager.swift in Sources */,
 				1BD36A6BACB475E9DFAE1D53 /* ProfileStore.swift in Sources */,
+				762BB8779441EE0283CFD570 /* SEKeyAuthenticator.swift in Sources */,
 				52D4F28FFD4B56D92302CE01 /* SSHAuthMethod.swift in Sources */,
+				ADAA7597609064FD766A7CB6 /* SSHAuthenticatable.swift in Sources */,
 				97CB67A9ADC96D8217BDBAB4 /* SSHConnectionProfile.swift in Sources */,
 				0DEBBFCAFF7A86632663F198 /* SSHHostKey.swift in Sources */,
 				199A969FC03066258287619B /* SSHIdentity.swift in Sources */,
@@ -293,6 +312,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */,
+				874197CDF2AAD1EECD493E76 /* KeyManagerTests.swift in Sources */,
 				DD2F8E418AD9F2CBEFE6B6F4 /* KeychainKeyManagerTests.swift in Sources */,
 				FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */,
 				1653E14758A802E34B2D3453 /* ProfileStoreTests.swift in Sources */,
