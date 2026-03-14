@@ -16,6 +16,7 @@
 		266962B636058A568FCB8F5C /* SSHTerminalDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7737EBBF766E68C2877198E /* SSHTerminalDataSourceTests.swift */; };
 		29DFEFD0CD9ED0BB2FF51FF8 /* NIOTransportServices in Frameworks */ = {isa = PBXBuildFile; productRef = 147FB2FE6B85F58CA50C609B /* NIOTransportServices */; };
 		2B4576C4667EBB7F97E71218 /* NIOSSH in Frameworks */ = {isa = PBXBuildFile; productRef = F20B148135D06BE4E3C65086 /* NIOSSH */; };
+		2F607C4D49E1E4D684C28BB4 /* KeyboardAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1215C5CC26170094FD12DEA7 /* KeyboardAccessoryView.swift */; };
 		34E7B1C40E86B71969904166 /* SSHSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E863A57C1218A460BFE57D5 /* SSHSessionTests.swift */; };
 		378B8034F0BE8E7462F61FE8 /* FingerprintFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E97E11FB9DDC7943F85E8 /* FingerprintFormatterTests.swift */; };
 		41FF003C2E5E39F9C8A6EC91 /* BiometricPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5045FB9640565348B5A8110 /* BiometricPolicy.swift */; };
@@ -39,6 +40,7 @@
 		C89E4165FA151140B6705CCB /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 4E31904FC034D29999A090B0 /* Citadel */; };
 		CC4FCE47DB7C71DBFA6F9370 /* SecureEnclaveKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */; };
 		CC9F75D8825F0FBCD66AA7A5 /* KeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CBEA2E281AD276CBBFD52B /* KeyManager.swift */; };
+		D14F4724981E1504598EFE21 /* KeyboardAccessoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819F9A8534F1E11676D0F2CE /* KeyboardAccessoryTests.swift */; };
 		DD2F8E418AD9F2CBEFE6B6F4 /* KeychainKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31DA89DE913B3AB75B40B78 /* KeychainKeyManagerTests.swift */; };
 		E44C6BB1D045F61D3E2262A0 /* TerminalViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22F0262FF6A695FB9E517FC /* TerminalViewRepresentable.swift */; };
 		E715A52FA98920593259C502 /* ConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B428FC24145CC0B43756EDB /* ConnectionState.swift */; };
@@ -57,6 +59,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1215C5CC26170094FD12DEA7 /* KeyboardAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAccessoryView.swift; sourceTree = "<group>"; };
 		13087CD2808B6103A1E50066 /* KeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerTests.swift; sourceTree = "<group>"; };
 		1719AEB110996F6871F61FEF /* DivineMarsshTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DivineMarsshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E863A57C1218A460BFE57D5 /* SSHSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHSessionTests.swift; sourceTree = "<group>"; };
@@ -73,6 +76,7 @@
 		787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStoreTests.swift; sourceTree = "<group>"; };
 		7BD25E5F829FB49210857487 /* SSHAuthenticatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAuthenticatable.swift; sourceTree = "<group>"; };
 		7F2691FB1C8F1EA60EEC2961 /* FingerprintFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintFormatter.swift; sourceTree = "<group>"; };
+		819F9A8534F1E11676D0F2CE /* KeyboardAccessoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAccessoryTests.swift; sourceTree = "<group>"; };
 		9B428FC24145CC0B43756EDB /* ConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionState.swift; sourceTree = "<group>"; };
 		9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveKeyManager.swift; sourceTree = "<group>"; };
 		A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHHostKey.swift; sourceTree = "<group>"; };
@@ -140,6 +144,7 @@
 		383F2DA3797E6CEE31124E79 /* Terminal */ = {
 			isa = PBXGroup;
 			children = (
+				1215C5CC26170094FD12DEA7 /* KeyboardAccessoryView.swift */,
 				F39D80F8D6D6A41615731388 /* SSHTerminalDataSource.swift */,
 				EAA6846E7FD0815AFB4AC585 /* TerminalViewController.swift */,
 				B22F0262FF6A695FB9E517FC /* TerminalViewRepresentable.swift */,
@@ -248,6 +253,7 @@
 		C68E27CBA2257B0DF8A228B2 /* TerminalTests */ = {
 			isa = PBXGroup;
 			children = (
+				819F9A8534F1E11676D0F2CE /* KeyboardAccessoryTests.swift */,
 				D7737EBBF766E68C2877198E /* SSHTerminalDataSourceTests.swift */,
 			);
 			path = TerminalTests;
@@ -390,6 +396,7 @@
 				EFA7A8C6FDF50B9AF179C8C7 /* HostKeyVerifier.swift in Sources */,
 				8384A1830E10386A052CF5F7 /* ImportedKeyAuthenticator.swift in Sources */,
 				CC9F75D8825F0FBCD66AA7A5 /* KeyManager.swift in Sources */,
+				2F607C4D49E1E4D684C28BB4 /* KeyboardAccessoryView.swift in Sources */,
 				BB64BABE77A5C5B4BFC51B3A /* KeychainKeyManager.swift in Sources */,
 				C7A5E85448F40F0E0375BBFE /* KnownHostsStore.swift in Sources */,
 				1BD36A6BACB475E9DFAE1D53 /* ProfileStore.swift in Sources */,
@@ -414,6 +421,7 @@
 				62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */,
 				378B8034F0BE8E7462F61FE8 /* FingerprintFormatterTests.swift in Sources */,
 				874197CDF2AAD1EECD493E76 /* KeyManagerTests.swift in Sources */,
+				D14F4724981E1504598EFE21 /* KeyboardAccessoryTests.swift in Sources */,
 				DD2F8E418AD9F2CBEFE6B6F4 /* KeychainKeyManagerTests.swift in Sources */,
 				079C3FF7D065B99C9A027C15 /* KnownHostsStoreTests.swift in Sources */,
 				FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */,

@@ -175,13 +175,13 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Features/Terminal/KeyboardAccessoryView.swift`
 - Create: `Tests/TerminalTests/KeyboardAccessoryTests.swift`
 
-- [ ] Implement custom `UIView` as `inputAccessoryView`
-- [ ] Keys: Esc, Tab, Ctrl (toggle lock mode), arrow keys, pipe, tilde, slash
-- [ ] Ctrl lock mode: visual indicator, next key press sends as Ctrl+key
-- [ ] Hardware keyboard mapping: Cmd to Meta, Option to Alt, Fn+arrows to Page Up/Down
-- [ ] Wire up to `TerminalViewController`
-- [ ] Write tests for key mapping logic and Ctrl lock toggle
-- [ ] Run project test suite — must pass before task 10
+- [x] Implement custom `UIView` as `inputAccessoryView`
+- [x] Keys: Esc, Tab, Ctrl (toggle lock mode), arrow keys, pipe, tilde, slash
+- [x] Ctrl lock mode: visual indicator, next key press sends as Ctrl+key
+- [x] Hardware keyboard mapping: Cmd to Meta, Option to Alt, Fn+arrows to Page Up/Down
+- [x] Wire up to `TerminalViewController`
+- [x] Write tests for key mapping logic and Ctrl lock toggle
+- [x] Run project test suite — must pass before task 10
 
 ### Task 10: Connection list and editor views
 

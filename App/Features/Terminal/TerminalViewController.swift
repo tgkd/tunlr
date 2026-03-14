@@ -19,6 +19,8 @@ final class TerminalViewController: UIViewController {
         fatalError("init(coder:) is not supported")
     }
 
+    private(set) var keyboardAccessory: KeyboardAccessoryView?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -28,6 +30,14 @@ final class TerminalViewController: UIViewController {
         terminalView.nativeForegroundColor = UIColor(white: 0.9, alpha: 1.0)
         view.addSubview(terminalView)
         view.backgroundColor = .black
+
+        let short = UIDevice.current.userInterfaceIdiom == .phone
+        let accessory = KeyboardAccessoryView(
+            frame: CGRect(x: 0, y: 0, width: view.frame.width, height: short ? 36 : 48),
+            terminalView: terminalView
+        )
+        keyboardAccessory = accessory
+        terminalView.inputAccessoryView = accessory
 
         dataSource.attachTerminalView(terminalView)
         dataSource.delegate = self
@@ -54,6 +64,21 @@ final class TerminalViewController: UIViewController {
     private func notifyTerminalSize() {
         guard let size = terminalSize() else { return }
         onSizeChange?(size.cols, size.rows)
+    }
+
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        for press in presses {
+            guard let key = press.key else { continue }
+            if let mapped = KeyMapping.hardwareKeyBytes(
+                keyCode: key.keyCode,
+                modifierFlags: key.modifierFlags,
+                characters: key.charactersIgnoringModifiers
+            ) {
+                terminalView?.send(mapped)
+                return
+            }
+        }
+        super.pressesBegan(presses, with: event)
     }
 }
 
