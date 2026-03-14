@@ -5,11 +5,24 @@ import Security
 actor SecureEnclaveKeyManager {
     private static let keychainServiceName = "com.divinemarssh.se-keys"
 
-    enum SecureEnclaveError: Error, Equatable {
+    enum SecureEnclaveError: Error, Equatable, LocalizedError {
         case secureEnclaveNotAvailable
         case keyNotFound
         case keychainError(OSStatus)
         case invalidKeyData
+
+        var errorDescription: String? {
+            switch self {
+            case .secureEnclaveNotAvailable:
+                return "Secure Enclave is not available on this device. Use a physical iPhone to generate hardware-backed keys."
+            case .keyNotFound:
+                return "Key not found in Secure Enclave."
+            case .keychainError(let status):
+                return "Keychain error (OSStatus \(status))."
+            case .invalidKeyData:
+                return "Invalid key data."
+            }
+        }
     }
 
     func generateKey(label: String) throws -> SSHIdentity {
@@ -26,9 +39,14 @@ actor SecureEnclaveKeyManager {
             throw SecureEnclaveError.secureEnclaveNotAvailable
         }
 
-        let privateKey = try SecureEnclave.P256.Signing.PrivateKey(
-            accessControl: accessControl
-        )
+        let privateKey: SecureEnclave.P256.Signing.PrivateKey
+        do {
+            privateKey = try SecureEnclave.P256.Signing.PrivateKey(
+                accessControl: accessControl
+            )
+        } catch {
+            throw SecureEnclaveError.secureEnclaveNotAvailable
+        }
 
         let id = UUID()
         let tag = id.uuidString
