@@ -1,0 +1,58 @@
+name: DivineMarssh
+options:
+  bundleIdPrefix: com.divinemarssh
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.3"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+
+packages:
+  Citadel:
+    url: https://github.com/orlandos-nl/Citadel
+    from: "0.9.0"
+  SwiftTerm:
+    url: https://github.com/migueldeicaza/SwiftTerm
+    from: "1.2.0"
+  swift-nio-transport-services:
+    url: https://github.com/apple/swift-nio-transport-services
+    from: "1.21.0"
+
+targets:
+  DivineMarssh:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    info:
+      path: App/Info.plist
+      properties:
+        UILaunchScreen: {}
+    settings:
+      base:
+        INFOPLIST_FILE: App/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.divinemarssh.app
+        GENERATE_INFOPLIST_FILE: true
+        INFOPLIST_KEY_NSFaceIDUsageDescription: "DivineMarssh uses Face ID to protect your SSH keys and authenticate securely."
+        INFOPLIST_KEY_NSLocalNetworkUsageDescription: "DivineMarssh needs local network access to connect to SSH servers on your network."
+    dependencies:
+      - package: Citadel
+      - package: SwiftTerm
+      - package: swift-nio-transport-services
+        product: NIOTransportServices
+
+  DivineMarsshTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/DivineMarsshTests
+    dependencies:
+      - target: DivineMarssh
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.divinemarssh.tests
+        GENERATE_INFOPLIST_FILE: true

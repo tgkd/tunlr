@@ -1,0 +1,505 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		145AADBA8576FC4C69BF1BC8 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 2405A6660E321E153729E2BD /* SwiftTerm */; };
+		29DFEFD0CD9ED0BB2FF51FF8 /* NIOTransportServices in Frameworks */ = {isa = PBXBuildFile; productRef = 147FB2FE6B85F58CA50C609B /* NIOTransportServices */; };
+		62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */; };
+		91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3449C1609F5287002478D159 /* DivineMarsshApp.swift */; };
+		A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C166692098888B8C32934E2 /* ContentView.swift */; };
+		C89E4165FA151140B6705CCB /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 4E31904FC034D29999A090B0 /* Citadel */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		11CD0822E904EAF8D2D894B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 44FB17290E6FBE720BC6B785 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 74D8105AA9F57520C462CB33;
+			remoteInfo = DivineMarssh;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1719AEB110996F6871F61FEF /* DivineMarsshTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DivineMarsshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C166692098888B8C32934E2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3449C1609F5287002478D159 /* DivineMarsshApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshApp.swift; sourceTree = "<group>"; };
+		3E17AD78D5767695C19EABB7 /* DivineMarssh.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DivineMarssh.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF424B1FAA7BAEB86C24BAAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E645254F3279D1AB1E72F3B5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C89E4165FA151140B6705CCB /* Citadel in Frameworks */,
+				145AADBA8576FC4C69BF1BC8 /* SwiftTerm in Frameworks */,
+				29DFEFD0CD9ED0BB2FF51FF8 /* NIOTransportServices in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0F0053E6A9792A9EEB035712 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3E17AD78D5767695C19EABB7 /* DivineMarssh.app */,
+				1719AEB110996F6871F61FEF /* DivineMarsshTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4E5C09FABE325813352C2F38 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		6F749051BCB631A79DF03EEB /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				A7AC1478077679D6EE8EFF58 /* DivineMarsshTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		9036359C7D8115993CBDD718 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		A57D1C9882F2CC206C9DFF62 = {
+			isa = PBXGroup;
+			children = (
+				E54B997BF8E7B824B58249E4 /* App */,
+				6F749051BCB631A79DF03EEB /* Tests */,
+				0F0053E6A9792A9EEB035712 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A7AC1478077679D6EE8EFF58 /* DivineMarsshTests */ = {
+			isa = PBXGroup;
+			children = (
+				CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */,
+			);
+			path = DivineMarsshTests;
+			sourceTree = "<group>";
+		};
+		C9847DB39C6F648B620F2168 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		D2C90341B05E88715F12E40A /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				9036359C7D8115993CBDD718 /* Storage */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		E54B997BF8E7B824B58249E4 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				2C166692098888B8C32934E2 /* ContentView.swift */,
+				3449C1609F5287002478D159 /* DivineMarsshApp.swift */,
+				BF424B1FAA7BAEB86C24BAAB /* Info.plist */,
+				D2C90341B05E88715F12E40A /* Core */,
+				C9847DB39C6F648B620F2168 /* Features */,
+				4E5C09FABE325813352C2F38 /* UI */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		244511EEA60918A4D1049C4A /* DivineMarsshTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DB286DD0EA49F23BE21095F /* Build configuration list for PBXNativeTarget "DivineMarsshTests" */;
+			buildPhases = (
+				81032829A16F42A254C2D578 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				80C11F4ACA04DF9BCED5F19D /* PBXTargetDependency */,
+			);
+			name = DivineMarsshTests;
+			packageProductDependencies = (
+			);
+			productName = DivineMarsshTests;
+			productReference = 1719AEB110996F6871F61FEF /* DivineMarsshTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		74D8105AA9F57520C462CB33 /* DivineMarssh */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6E592D866BE704000B56CCFB /* Build configuration list for PBXNativeTarget "DivineMarssh" */;
+			buildPhases = (
+				017DAB26B7090EE3C7D17A14 /* Sources */,
+				E645254F3279D1AB1E72F3B5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DivineMarssh;
+			packageProductDependencies = (
+				4E31904FC034D29999A090B0 /* Citadel */,
+				2405A6660E321E153729E2BD /* SwiftTerm */,
+				147FB2FE6B85F58CA50C609B /* NIOTransportServices */,
+			);
+			productName = DivineMarssh;
+			productReference = 3E17AD78D5767695C19EABB7 /* DivineMarssh.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		44FB17290E6FBE720BC6B785 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 1A6FF3215959D457359AFFE6 /* Build configuration list for PBXProject "DivineMarssh" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = A57D1C9882F2CC206C9DFF62;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				133525F71FE2A99E164C834F /* XCRemoteSwiftPackageReference "Citadel" */,
+				8254571F16D4110681EEA05A /* XCRemoteSwiftPackageReference "SwiftTerm" */,
+				65D4C24FB86B685B2DCDCC17 /* XCRemoteSwiftPackageReference "swift-nio-transport-services" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 0F0053E6A9792A9EEB035712 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				74D8105AA9F57520C462CB33 /* DivineMarssh */,
+				244511EEA60918A4D1049C4A /* DivineMarsshTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		017DAB26B7090EE3C7D17A14 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */,
+				91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81032829A16F42A254C2D578 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		80C11F4ACA04DF9BCED5F19D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 74D8105AA9F57520C462CB33 /* DivineMarssh */;
+			targetProxy = 11CD0822E904EAF8D2D894B1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1EDC5D42435EB43033E2423B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "DivineMarssh uses Face ID to protect your SSH keys and authenticate securely.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "DivineMarssh needs local network access to connect to SSH servers on your network.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.divinemarssh.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		2033326B32685AFD939A6AF8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		28E42EC1778B5A67F2457CA6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.divinemarssh.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DivineMarssh.app/DivineMarssh";
+			};
+			name = Debug;
+		};
+		36898FBDFA27F80AA7383513 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "DivineMarssh uses Face ID to protect your SSH keys and authenticate securely.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "DivineMarssh needs local network access to connect to SSH servers on your network.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.divinemarssh.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		750851B77FFCC25366CEDB4A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		BFBC848CB243C780DCAF43B5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.divinemarssh.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DivineMarssh.app/DivineMarssh";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1A6FF3215959D457359AFFE6 /* Build configuration list for PBXProject "DivineMarssh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				750851B77FFCC25366CEDB4A /* Debug */,
+				2033326B32685AFD939A6AF8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1DB286DD0EA49F23BE21095F /* Build configuration list for PBXNativeTarget "DivineMarsshTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				28E42EC1778B5A67F2457CA6 /* Debug */,
+				BFBC848CB243C780DCAF43B5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6E592D866BE704000B56CCFB /* Build configuration list for PBXNativeTarget "DivineMarssh" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				36898FBDFA27F80AA7383513 /* Debug */,
+				1EDC5D42435EB43033E2423B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		133525F71FE2A99E164C834F /* XCRemoteSwiftPackageReference "Citadel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orlandos-nl/Citadel";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
+			};
+		};
+		65D4C24FB86B685B2DCDCC17 /* XCRemoteSwiftPackageReference "swift-nio-transport-services" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-nio-transport-services";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.21.0;
+			};
+		};
+		8254571F16D4110681EEA05A /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		147FB2FE6B85F58CA50C609B /* NIOTransportServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65D4C24FB86B685B2DCDCC17 /* XCRemoteSwiftPackageReference "swift-nio-transport-services" */;
+			productName = NIOTransportServices;
+		};
+		2405A6660E321E153729E2BD /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8254571F16D4110681EEA05A /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
+		};
+		4E31904FC034D29999A090B0 /* Citadel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 133525F71FE2A99E164C834F /* XCRemoteSwiftPackageReference "Citadel" */;
+			productName = Citadel;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 44FB17290E6FBE720BC6B785 /* Project object */;
+}

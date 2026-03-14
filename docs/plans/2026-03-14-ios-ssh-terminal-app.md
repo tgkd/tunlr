@@ -32,12 +32,12 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Info.plist`
 - Create: folder structure under `App/` (Features/, Core/, UI/)
 
-- [ ] Create iOS App target with SwiftUI lifecycle, Swift 6 strict concurrency enabled
-- [ ] Add SPM dependencies: Citadel, SwiftTerm, NIOTransportServices
-- [ ] Configure Info.plist: `NSFaceIDUsageDescription`, `NSLocalNetworkUsageDescription`
-- [ ] Set up folder structure: `App/Features/{Connection,Terminal,KeyManager,HostVerification}/`, `App/Core/{SSH,Crypto,Storage}/`, `App/UI/Components/`
-- [ ] Verify project builds and launches on simulator with empty SwiftUI view
-- [ ] Write a basic build-verification test that asserts the app entry point exists
+- [x] Create iOS App target with SwiftUI lifecycle, Swift 6 strict concurrency enabled
+- [x] Add SPM dependencies: Citadel, SwiftTerm, NIOTransportServices
+- [x] Configure Info.plist: `NSFaceIDUsageDescription`, `NSLocalNetworkUsageDescription`
+- [x] Set up folder structure: `App/Features/{Connection,Terminal,KeyManager,HostVerification}/`, `App/Core/{SSH,Crypto,Storage}/`, `App/UI/Components/`
+- [x] Verify project builds and launches on simulator with empty SwiftUI view
+- [x] Write a basic build-verification test that asserts the app entry point exists
 
 ### Task 2: Base data models and profile store
 
