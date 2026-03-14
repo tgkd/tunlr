@@ -50,16 +50,16 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `Tests/StorageTests/ProfileStoreTests.swift`
 - Create: `Tests/StorageTests/ModelTests.swift`
 
-- [ ] Define `SSHConnectionProfile` — host, port, username, authMethod, lastConnected, autoReconnect
-- [ ] Define `SSHAuthMethod` enum — `.secureEnclaveKey(keyTag)`, `.importedKey(keyID)`, `.password`
-- [ ] Define `SSHHostKey` — hostname, port, keyType, publicKeyData, fingerprint, firstSeenDate
-- [ ] Define `SSHIdentity` — id, label, keyType, publicKeyData, createdAt, storageType
-- [ ] All models: `Codable`, `Sendable`, `Identifiable`
-- [ ] Implement `ProfileStore` actor — JSON file in `Library/Application Support/`
-- [ ] ProfileStore: CRUD operations, passwords stored in Keychain (not JSON), iCloud backup inclusion for profiles
-- [ ] Write tests for model encoding/decoding round-trips
-- [ ] Write tests for ProfileStore CRUD operations (create, read, update, delete)
-- [ ] Run project test suite — must pass before task 3
+- [x] Define `SSHConnectionProfile` — host, port, username, authMethod, lastConnected, autoReconnect
+- [x] Define `SSHAuthMethod` enum — `.secureEnclaveKey(keyTag)`, `.importedKey(keyID)`, `.password`
+- [x] Define `SSHHostKey` — hostname, port, keyType, publicKeyData, fingerprint, firstSeenDate
+- [x] Define `SSHIdentity` — id, label, keyType, publicKeyData, createdAt, storageType
+- [x] All models: `Codable`, `Sendable`, `Identifiable`
+- [x] Implement `ProfileStore` actor — JSON file in `Library/Application Support/`
+- [x] ProfileStore: CRUD operations, passwords stored in Keychain (not JSON), iCloud backup inclusion for profiles
+- [x] Write tests for model encoding/decoding round-trips
+- [x] Write tests for ProfileStore CRUD operations (create, read, update, delete)
+- [x] Run project test suite — must pass before task 3
 
 ### Task 3: Secure Enclave key manager
 

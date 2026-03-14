@@ -7,12 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0DEBBFCAFF7A86632663F198 /* SSHHostKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */; };
 		145AADBA8576FC4C69BF1BC8 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 2405A6660E321E153729E2BD /* SwiftTerm */; };
+		1653E14758A802E34B2D3453 /* ProfileStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */; };
+		199A969FC03066258287619B /* SSHIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E3B0C56CC7188A2DF2FD81 /* SSHIdentity.swift */; };
+		1BD36A6BACB475E9DFAE1D53 /* ProfileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */; };
 		29DFEFD0CD9ED0BB2FF51FF8 /* NIOTransportServices in Frameworks */ = {isa = PBXBuildFile; productRef = 147FB2FE6B85F58CA50C609B /* NIOTransportServices */; };
+		52D4F28FFD4B56D92302CE01 /* SSHAuthMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */; };
 		62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */; };
 		91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3449C1609F5287002478D159 /* DivineMarsshApp.swift */; };
+		97CB67A9ADC96D8217BDBAB4 /* SSHConnectionProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */; };
 		A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C166692098888B8C32934E2 /* ContentView.swift */; };
 		C89E4165FA151140B6705CCB /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 4E31904FC034D29999A090B0 /* Citadel */; };
+		FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,9 +36,16 @@
 		1719AEB110996F6871F61FEF /* DivineMarsshTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DivineMarsshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C166692098888B8C32934E2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3449C1609F5287002478D159 /* DivineMarsshApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshApp.swift; sourceTree = "<group>"; };
+		3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAuthMethod.swift; sourceTree = "<group>"; };
 		3E17AD78D5767695C19EABB7 /* DivineMarssh.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DivineMarssh.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		52E3B0C56CC7188A2DF2FD81 /* SSHIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHIdentity.swift; sourceTree = "<group>"; };
+		787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStoreTests.swift; sourceTree = "<group>"; };
+		A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHHostKey.swift; sourceTree = "<group>"; };
 		BF424B1FAA7BAEB86C24BAAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshTests.swift; sourceTree = "<group>"; };
+		D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
+		ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConnectionProfile.swift; sourceTree = "<group>"; };
+		F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +71,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1D6C23B50F8E0A8F44BEE068 /* StorageTests */ = {
+			isa = PBXGroup;
+			children = (
+				D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */,
+				787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */,
+			);
+			path = StorageTests;
+			sourceTree = "<group>";
+		};
 		4E5C09FABE325813352C2F38 /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -72,9 +95,22 @@
 			path = Tests;
 			sourceTree = "<group>";
 		};
+		7C4E4C9122683FC6AC7612AA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */,
+				ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */,
+				A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */,
+				52E3B0C56CC7188A2DF2FD81 /* SSHIdentity.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		9036359C7D8115993CBDD718 /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */,
+				7C4E4C9122683FC6AC7612AA /* Models */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -92,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */,
+				1D6C23B50F8E0A8F44BEE068 /* StorageTests */,
 			);
 			path = DivineMarsshTests;
 			sourceTree = "<group>";
@@ -209,6 +246,11 @@
 			files = (
 				A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */,
 				91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */,
+				1BD36A6BACB475E9DFAE1D53 /* ProfileStore.swift in Sources */,
+				52D4F28FFD4B56D92302CE01 /* SSHAuthMethod.swift in Sources */,
+				97CB67A9ADC96D8217BDBAB4 /* SSHConnectionProfile.swift in Sources */,
+				0DEBBFCAFF7A86632663F198 /* SSHHostKey.swift in Sources */,
+				199A969FC03066258287619B /* SSHIdentity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,6 +259,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */,
+				FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */,
+				1653E14758A802E34B2D3453 /* ProfileStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
