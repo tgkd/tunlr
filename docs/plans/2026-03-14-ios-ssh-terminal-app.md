@@ -138,17 +138,17 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Core/SSH/ConnectionState.swift`
 - Create: `Tests/SSHTests/SSHSessionTests.swift`
 
-- [ ] Define `ConnectionState` enum — `.disconnected`, `.connecting`, `.connected`, `.reconnecting`
-- [ ] Implement `SSHSession` actor wrapping Citadel `SSHClient`
-- [ ] `connect(profile:) async throws` — use `NIOTSEventLoopGroup`, configure TCP (`noDelay`, keepalive 60s, timeout 10s), pass `HostKeyVerifier` and `SSHAuthenticatable`
-- [ ] `disconnect() async`
-- [ ] `requestPTY(cols:rows:term:) async throws` — request `xterm-256color`
-- [ ] `openShellChannel() async throws` — async streams for stdin/stdout/stderr
-- [ ] `sendWindowChange(cols:rows:)` — send on terminal resize
-- [ ] Expose `connectionState` as async stream or published property
-- [ ] Write tests with mock SSH client verifying state transitions
-- [ ] Write tests for PTY request parameters
-- [ ] Run project test suite — must pass before task 8
+- [x] Define `ConnectionState` enum — `.disconnected`, `.connecting`, `.connected`, `.reconnecting`
+- [x] Implement `SSHSession` actor wrapping Citadel `SSHClient`
+- [x] `connect(profile:) async throws` — use `NIOTSEventLoopGroup`, configure TCP (`noDelay`, keepalive 60s, timeout 10s), pass `HostKeyVerifier` and `SSHAuthenticatable`
+- [x] `disconnect() async`
+- [x] `requestPTY(cols:rows:term:) async throws` — request `xterm-256color`
+- [x] `openShellChannel() async throws` — async streams for stdin/stdout/stderr
+- [x] `sendWindowChange(cols:rows:)` — send on terminal resize
+- [x] Expose `connectionState` as async stream or published property
+- [x] Write tests with mock SSH client verifying state transitions
+- [x] Write tests for PTY request parameters
+- [x] Run project test suite — must pass before task 8
 
 ### Task 8: SwiftTerm integration and SwiftUI bridge
 

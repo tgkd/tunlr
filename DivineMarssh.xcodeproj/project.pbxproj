@@ -14,11 +14,15 @@
 		199A969FC03066258287619B /* SSHIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E3B0C56CC7188A2DF2FD81 /* SSHIdentity.swift */; };
 		1BD36A6BACB475E9DFAE1D53 /* ProfileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */; };
 		29DFEFD0CD9ED0BB2FF51FF8 /* NIOTransportServices in Frameworks */ = {isa = PBXBuildFile; productRef = 147FB2FE6B85F58CA50C609B /* NIOTransportServices */; };
+		2B4576C4667EBB7F97E71218 /* NIOSSH in Frameworks */ = {isa = PBXBuildFile; productRef = F20B148135D06BE4E3C65086 /* NIOSSH */; };
+		34E7B1C40E86B71969904166 /* SSHSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E863A57C1218A460BFE57D5 /* SSHSessionTests.swift */; };
 		378B8034F0BE8E7462F61FE8 /* FingerprintFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43E97E11FB9DDC7943F85E8 /* FingerprintFormatterTests.swift */; };
 		41FF003C2E5E39F9C8A6EC91 /* BiometricPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5045FB9640565348B5A8110 /* BiometricPolicy.swift */; };
 		48638450079FE7B30D2533E1 /* FingerprintFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F2691FB1C8F1EA60EEC2961 /* FingerprintFormatter.swift */; };
 		52D4F28FFD4B56D92302CE01 /* SSHAuthMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */; };
 		62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */; };
+		6DD9D02790B5F682F1C8A3AD /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = 92EA5E8D61BCE96DD58C6501 /* NIOCore */; };
+		6E44F8FBA9BC1FECE6AAAEBB /* SSHSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0D88A32DF62ECFAF577D31 /* SSHSession.swift */; };
 		762BB8779441EE0283CFD570 /* SEKeyAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BD15FB37ED81BF14121F53 /* SEKeyAuthenticator.swift */; };
 		8384A1830E10386A052CF5F7 /* ImportedKeyAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CB9F284DEC861AED210B86 /* ImportedKeyAuthenticator.swift */; };
 		874197CDF2AAD1EECD493E76 /* KeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13087CD2808B6103A1E50066 /* KeyManagerTests.swift */; };
@@ -33,6 +37,7 @@
 		CC4FCE47DB7C71DBFA6F9370 /* SecureEnclaveKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */; };
 		CC9F75D8825F0FBCD66AA7A5 /* KeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CBEA2E281AD276CBBFD52B /* KeyManager.swift */; };
 		DD2F8E418AD9F2CBEFE6B6F4 /* KeychainKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31DA89DE913B3AB75B40B78 /* KeychainKeyManagerTests.swift */; };
+		E715A52FA98920593259C502 /* ConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B428FC24145CC0B43756EDB /* ConnectionState.swift */; };
 		EFA7A8C6FDF50B9AF179C8C7 /* HostKeyVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */; };
 		FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */; };
 /* End PBXBuildFile section */
@@ -50,18 +55,21 @@
 /* Begin PBXFileReference section */
 		13087CD2808B6103A1E50066 /* KeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerTests.swift; sourceTree = "<group>"; };
 		1719AEB110996F6871F61FEF /* DivineMarsshTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DivineMarsshTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E863A57C1218A460BFE57D5 /* SSHSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHSessionTests.swift; sourceTree = "<group>"; };
 		2C166692098888B8C32934E2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3449C1609F5287002478D159 /* DivineMarsshApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshApp.swift; sourceTree = "<group>"; };
 		3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAuthMethod.swift; sourceTree = "<group>"; };
 		3E17AD78D5767695C19EABB7 /* DivineMarssh.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DivineMarssh.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52E3B0C56CC7188A2DF2FD81 /* SSHIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHIdentity.swift; sourceTree = "<group>"; };
 		57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveKeyManagerTests.swift; sourceTree = "<group>"; };
+		5D0D88A32DF62ECFAF577D31 /* SSHSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHSession.swift; sourceTree = "<group>"; };
 		65CB9F284DEC861AED210B86 /* ImportedKeyAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedKeyAuthenticator.swift; sourceTree = "<group>"; };
 		65CBEA2E281AD276CBBFD52B /* KeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManager.swift; sourceTree = "<group>"; };
 		6F7DAA139F14FBFB4F194DCB /* KnownHostsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownHostsStoreTests.swift; sourceTree = "<group>"; };
 		787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStoreTests.swift; sourceTree = "<group>"; };
 		7BD25E5F829FB49210857487 /* SSHAuthenticatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAuthenticatable.swift; sourceTree = "<group>"; };
 		7F2691FB1C8F1EA60EEC2961 /* FingerprintFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintFormatter.swift; sourceTree = "<group>"; };
+		9B428FC24145CC0B43756EDB /* ConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionState.swift; sourceTree = "<group>"; };
 		9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveKeyManager.swift; sourceTree = "<group>"; };
 		A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHHostKey.swift; sourceTree = "<group>"; };
 		BF424B1FAA7BAEB86C24BAAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -86,6 +94,8 @@
 				C89E4165FA151140B6705CCB /* Citadel in Frameworks */,
 				145AADBA8576FC4C69BF1BC8 /* SwiftTerm in Frameworks */,
 				29DFEFD0CD9ED0BB2FF51FF8 /* NIOTransportServices in Frameworks */,
+				2B4576C4667EBB7F97E71218 /* NIOSSH in Frameworks */,
+				6DD9D02790B5F682F1C8A3AD /* NIOCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +127,15 @@
 				787368FF3973A26FC6AA69A3 /* ProfileStoreTests.swift */,
 			);
 			path = StorageTests;
+			sourceTree = "<group>";
+		};
+		39A255D7F7A7AD62D9E0C604 /* SSH */ = {
+			isa = PBXGroup;
+			children = (
+				9B428FC24145CC0B43756EDB /* ConnectionState.swift */,
+				5D0D88A32DF62ECFAF577D31 /* SSHSession.swift */,
+			);
+			path = SSH;
 			sourceTree = "<group>";
 		};
 		4C3D4986AEE6546275335F65 /* HostVerification */ = {
@@ -179,6 +198,7 @@
 				CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */,
 				ED0DB843D241EB938C8BA1AD /* CryptoTests */,
 				0E0C080AC3C1DAC301D394E7 /* HostVerificationTests */,
+				BC11E95CA91C91FA2EB3C0AA /* SSHTests */,
 				1D6C23B50F8E0A8F44BEE068 /* StorageTests */,
 			);
 			path = DivineMarsshTests;
@@ -198,6 +218,14 @@
 			path = Crypto;
 			sourceTree = "<group>";
 		};
+		BC11E95CA91C91FA2EB3C0AA /* SSHTests */ = {
+			isa = PBXGroup;
+			children = (
+				1E863A57C1218A460BFE57D5 /* SSHSessionTests.swift */,
+			);
+			path = SSHTests;
+			sourceTree = "<group>";
+		};
 		C9847DB39C6F648B620F2168 /* Features */ = {
 			isa = PBXGroup;
 			children = (
@@ -210,6 +238,7 @@
 			isa = PBXGroup;
 			children = (
 				B61B30D30FF578DC9B8EAEC2 /* Crypto */,
+				39A255D7F7A7AD62D9E0C604 /* SSH */,
 				9036359C7D8115993CBDD718 /* Storage */,
 			);
 			path = Core;
@@ -275,6 +304,8 @@
 				4E31904FC034D29999A090B0 /* Citadel */,
 				2405A6660E321E153729E2BD /* SwiftTerm */,
 				147FB2FE6B85F58CA50C609B /* NIOTransportServices */,
+				F20B148135D06BE4E3C65086 /* NIOSSH */,
+				92EA5E8D61BCE96DD58C6501 /* NIOCore */,
 			);
 			productName = DivineMarssh;
 			productReference = 3E17AD78D5767695C19EABB7 /* DivineMarssh.app */;
@@ -303,6 +334,8 @@
 			packageReferences = (
 				133525F71FE2A99E164C834F /* XCRemoteSwiftPackageReference "Citadel" */,
 				8254571F16D4110681EEA05A /* XCRemoteSwiftPackageReference "SwiftTerm" */,
+				9A0008B6E2F67C6B4DD19153 /* XCRemoteSwiftPackageReference "swift-nio" */,
+				88F528284E3C592B308D605F /* XCRemoteSwiftPackageReference "swift-nio-ssh" */,
 				65D4C24FB86B685B2DCDCC17 /* XCRemoteSwiftPackageReference "swift-nio-transport-services" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -322,6 +355,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				41FF003C2E5E39F9C8A6EC91 /* BiometricPolicy.swift in Sources */,
+				E715A52FA98920593259C502 /* ConnectionState.swift in Sources */,
 				A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */,
 				91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */,
 				48638450079FE7B30D2533E1 /* FingerprintFormatter.swift in Sources */,
@@ -337,6 +371,7 @@
 				97CB67A9ADC96D8217BDBAB4 /* SSHConnectionProfile.swift in Sources */,
 				0DEBBFCAFF7A86632663F198 /* SSHHostKey.swift in Sources */,
 				199A969FC03066258287619B /* SSHIdentity.swift in Sources */,
+				6E44F8FBA9BC1FECE6AAAEBB /* SSHSession.swift in Sources */,
 				CC4FCE47DB7C71DBFA6F9370 /* SecureEnclaveKeyManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -352,6 +387,7 @@
 				079C3FF7D065B99C9A027C15 /* KnownHostsStoreTests.swift in Sources */,
 				FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */,
 				1653E14758A802E34B2D3453 /* ProfileStoreTests.swift in Sources */,
+				34E7B1C40E86B71969904166 /* SSHSessionTests.swift in Sources */,
 				C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -617,6 +653,22 @@
 				minimumVersion = 1.2.0;
 			};
 		};
+		88F528284E3C592B308D605F /* XCRemoteSwiftPackageReference "swift-nio-ssh" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Joannis/swift-nio-ssh.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.4;
+			};
+		};
+		9A0008B6E2F67C6B4DD19153 /* XCRemoteSwiftPackageReference "swift-nio" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-nio.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.65.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -634,6 +686,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 133525F71FE2A99E164C834F /* XCRemoteSwiftPackageReference "Citadel" */;
 			productName = Citadel;
+		};
+		92EA5E8D61BCE96DD58C6501 /* NIOCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9A0008B6E2F67C6B4DD19153 /* XCRemoteSwiftPackageReference "swift-nio" */;
+			productName = NIOCore;
+		};
+		F20B148135D06BE4E3C65086 /* NIOSSH */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 88F528284E3C592B308D605F /* XCRemoteSwiftPackageReference "swift-nio-ssh" */;
+			productName = NIOSSH;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

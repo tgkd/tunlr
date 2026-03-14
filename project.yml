@@ -21,6 +21,12 @@ packages:
   swift-nio-transport-services:
     url: https://github.com/apple/swift-nio-transport-services
     from: "1.21.0"
+  swift-nio-ssh:
+    url: https://github.com/Joannis/swift-nio-ssh.git
+    from: "0.3.4"
+  swift-nio:
+    url: https://github.com/apple/swift-nio.git
+    from: "2.65.0"
 
 targets:
   DivineMarssh:
@@ -44,6 +50,10 @@ targets:
       - package: SwiftTerm
       - package: swift-nio-transport-services
         product: NIOTransportServices
+      - package: swift-nio-ssh
+        product: NIOSSH
+      - package: swift-nio
+        product: NIOCore
 
   DivineMarsshTests:
     type: bundle.unit-test
