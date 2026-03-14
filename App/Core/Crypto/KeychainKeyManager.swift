@@ -168,6 +168,7 @@ actor KeychainKeyManager {
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         self.metadataURL = dir.appendingPathComponent("imported-keys.json")
         self.identities = Self.loadMetadata(from: metadataURL)
+        Self.excludeFromBackup(url: metadataURL)
     }
 
     // MARK: - Public API
@@ -591,6 +592,14 @@ actor KeychainKeyManager {
     private func saveMetadata() throws {
         let data = try JSONEncoder().encode(identities)
         try data.write(to: metadataURL, options: .atomic)
+        Self.excludeFromBackup(url: metadataURL)
+    }
+
+    private static func excludeFromBackup(url: URL) {
+        var resourceURL = url
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try? resourceURL.setResourceValues(values)
     }
 }
 

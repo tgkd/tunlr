@@ -25,6 +25,7 @@ actor KeyManager {
         } else {
             self.seIdentities = []
         }
+        Self.excludeFromBackup(url: seMetadataURL)
     }
 
     func listAllKeys() async -> [SSHIdentity] {
@@ -68,6 +69,14 @@ actor KeyManager {
     private func saveSEMetadata() {
         if let data = try? JSONEncoder().encode(seIdentities) {
             try? data.write(to: seMetadataURL, options: .atomic)
+            Self.excludeFromBackup(url: seMetadataURL)
         }
+    }
+
+    private static func excludeFromBackup(url: URL) {
+        var resourceURL = url
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try? resourceURL.setResourceValues(values)
     }
 }

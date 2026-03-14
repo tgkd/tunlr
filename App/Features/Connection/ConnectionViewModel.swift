@@ -6,6 +6,10 @@ enum ConnectionViewModelError: Error, Equatable {
     case emptyHost
     case emptyUsername
     case invalidPort
+    case invalidHostFormat
+    case invalidUsernameFormat
+    case hostTooLong
+    case usernameTooLong
     case profileNotFound
     case hostUnreachable(String)
 }
@@ -160,6 +164,26 @@ final class ConnectionViewModel: ObservableObject, Sendable {
         }
         if port == 0 {
             throw ConnectionViewModelError.invalidPort
+        }
+        if trimmedHost.count > 253 {
+            throw ConnectionViewModelError.hostTooLong
+        }
+        if trimmedUsername.count > 128 {
+            throw ConnectionViewModelError.usernameTooLong
+        }
+        if trimmedHost.contains(where: { $0.asciiValue.map { $0 < 32 } ?? false }) {
+            throw ConnectionViewModelError.invalidHostFormat
+        }
+        let validHostPattern = #"^[a-zA-Z0-9.\-:\[\]]+$"#
+        if trimmedHost.range(of: validHostPattern, options: .regularExpression) == nil {
+            throw ConnectionViewModelError.invalidHostFormat
+        }
+        if trimmedUsername.contains(where: { $0.asciiValue.map { $0 < 32 } ?? false }) {
+            throw ConnectionViewModelError.invalidUsernameFormat
+        }
+        let validUsernamePattern = #"^[a-zA-Z0-9._\-@]+$"#
+        if trimmedUsername.range(of: validUsernamePattern, options: .regularExpression) == nil {
+            throw ConnectionViewModelError.invalidUsernameFormat
         }
     }
 }

@@ -63,7 +63,6 @@
 		D14F4724981E1504598EFE21 /* KeyboardAccessoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819F9A8534F1E11676D0F2CE /* KeyboardAccessoryTests.swift */; };
 		D2E23856384289A09491A18A /* ConnectionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A435866C8ECA26644D53B4 /* ConnectionListView.swift */; };
 		D4A476A41069FAA64DB729C1 /* AlgorithmPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E9F1FAF6880BFB5263AC9E /* AlgorithmPolicyTests.swift */; };
-		D4E5F6A7B8C9D0E1F2A3B4C5 /* tests-ssh-keys in Resources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* tests-ssh-keys */; };
 		D660C9FAA47A828AE4B1BDB7 /* SSHConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F57D93D45F2499CF1E02E79 /* SSHConnectionTests.swift */; };
 		DC5DC8A620D087485D216AD2 /* TerminalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0767CB4BDDF289700A12EE1C /* TerminalScreen.swift */; };
 		DCF884D3F0BB762E52B97C90 /* KeyManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC14D026864E2E70E3AD617A /* KeyManagerView.swift */; };
@@ -130,7 +129,6 @@
 		B22F0262FF6A695FB9E517FC /* TerminalViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalViewRepresentable.swift; sourceTree = "<group>"; };
 		B9FA6A4F8545F824FBC305CB /* HostKeyMismatchWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyMismatchWarning.swift; sourceTree = "<group>"; };
 		BF424B1FAA7BAEB86C24BAAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		C3D4E5F6A7B8C9D0E1F2A3B4 /* tests-ssh-keys */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "tests-ssh-keys"; sourceTree = SOURCE_ROOT; };
 		C43E97E11FB9DDC7943F85E8 /* FingerprintFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintFormatterTests.swift; sourceTree = "<group>"; };
 		C9A435866C8ECA26644D53B4 /* ConnectionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionListView.swift; sourceTree = "<group>"; };
 		CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshTests.swift; sourceTree = "<group>"; };
@@ -324,7 +322,6 @@
 			children = (
 				E54B997BF8E7B824B58249E4 /* App */,
 				6F749051BCB631A79DF03EEB /* Tests */,
-				C3D4E5F6A7B8C9D0E1F2A3B4 /* tests-ssh-keys */,
 				0F0053E6A9792A9EEB035712 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -531,7 +528,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D4E5F6A7B8C9D0E1F2A3B4C5 /* tests-ssh-keys in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -629,7 +625,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -732,7 +728,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;

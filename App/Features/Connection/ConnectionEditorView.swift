@@ -282,6 +282,14 @@ struct ConnectionEditorView: View {
             return "Username is required."
         case ConnectionViewModelError.invalidPort:
             return "Port must be between 1 and 65535."
+        case ConnectionViewModelError.invalidHostFormat:
+            return "Hostname contains invalid characters."
+        case ConnectionViewModelError.invalidUsernameFormat:
+            return "Username contains invalid characters."
+        case ConnectionViewModelError.hostTooLong:
+            return "Hostname is too long (max 253 characters)."
+        case ConnectionViewModelError.usernameTooLong:
+            return "Username is too long (max 128 characters)."
         default:
             return error.localizedDescription
         }

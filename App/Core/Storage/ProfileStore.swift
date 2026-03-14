@@ -4,15 +4,24 @@ import Security
 actor ProfileStore {
     private let fileURL: URL
     private var profiles: [SSHConnectionProfile] = []
+    private let biometricPolicy: BiometricPolicy
+    private let useBiometricProtection: Bool
 
     private static let keychainServiceName = "com.divinemarssh.passwords"
 
-    init(directory: URL? = nil) throws {
+    init(
+        directory: URL? = nil,
+        biometricPolicy: BiometricPolicy = BiometricPolicy(),
+        useBiometricProtection: Bool = true
+    ) throws {
+        self.biometricPolicy = biometricPolicy
+        self.useBiometricProtection = useBiometricProtection
         let dir = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             .appendingPathComponent("DivineMarssh", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         self.fileURL = dir.appendingPathComponent("profiles.json")
         self.profiles = Self.loadFromDisk(url: fileURL)
+        Self.excludeFromBackup(url: fileURL)
     }
 
     private static func loadFromDisk(url: URL) -> [SSHConnectionProfile] {
@@ -23,6 +32,14 @@ actor ProfileStore {
     private func saveToDisk() throws {
         let data = try JSONEncoder().encode(profiles)
         try data.write(to: fileURL, options: .atomic)
+        Self.excludeFromBackup(url: fileURL)
+    }
+
+    private static func excludeFromBackup(url: URL) {
+        var resourceURL = url
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try? resourceURL.setResourceValues(values)
     }
 
     // MARK: - CRUD
@@ -70,13 +87,26 @@ actor ProfileStore {
         let account = profileID.uuidString
         deletePassword(for: profileID)
 
-        let query: [String: Any] = [
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: Self.keychainServiceName,
             kSecAttrAccount as String: account,
             kSecValueData as String: Data(password.utf8),
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
         ]
+
+        if useBiometricProtection,
+           let accessControl = SecAccessControlCreateWithFlags(
+               nil,
+               kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+               .biometryCurrentSet,
+               nil
+           )
+        {
+            query[kSecAttrAccessControl as String] = accessControl
+        } else {
+            query[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        }
+
         let status = SecItemAdd(query as CFDictionary, nil)
         guard status == errSecSuccess else {
             throw ProfileStoreError.keychainError(status)
@@ -84,13 +114,17 @@ actor ProfileStore {
     }
 
     private func loadPassword(for profileID: UUID) -> String? {
-        let query: [String: Any] = [
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: Self.keychainServiceName,
             kSecAttrAccount as String: profileID.uuidString,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
         ]
+        if useBiometricProtection {
+            let context = biometricPolicy.createContext()
+            query[kSecUseAuthenticationContext as String] = context
+        }
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         guard status == errSecSuccess, let data = result as? Data else { return nil }

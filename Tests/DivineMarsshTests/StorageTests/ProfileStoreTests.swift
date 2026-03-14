@@ -19,7 +19,7 @@ final class ProfileStoreTests: XCTestCase {
     }
 
     private func makeStore() throws -> ProfileStore {
-        try ProfileStore(directory: tempDir)
+        try ProfileStore(directory: tempDir, useBiometricProtection: false)
     }
 
     private func makeProfile(
@@ -125,7 +125,7 @@ final class ProfileStoreTests: XCTestCase {
         let profile = makeProfile(host: "persistent.host")
         try await store1.addProfile(profile)
 
-        let store2 = try ProfileStore(directory: tempDir)
+        let store2 = try ProfileStore(directory: tempDir, useBiometricProtection: false)
         let all = await store2.allProfiles()
         XCTAssertEqual(all.count, 1)
         XCTAssertEqual(all.first?.host, "persistent.host")
@@ -174,6 +174,18 @@ final class ProfileStoreTests: XCTestCase {
 
         let retrieved = await store.password(for: profile.id)
         XCTAssertEqual(retrieved, "new")
+    }
+
+    // MARK: - Backup Exclusion
+
+    func testProfilesFileExcludedFromBackup() async throws {
+        let store = try makeStore()
+        let profile = makeProfile()
+        try await store.addProfile(profile)
+
+        let fileURL = tempDir.appendingPathComponent("profiles.json")
+        let resourceValues = try fileURL.resourceValues(forKeys: [.isExcludedFromBackupKey])
+        XCTAssertTrue(resourceValues.isExcludedFromBackup == true)
     }
 
     func testNoPasswordForNonPasswordAuth() async throws {

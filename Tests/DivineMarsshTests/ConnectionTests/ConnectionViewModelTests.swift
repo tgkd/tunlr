@@ -90,11 +90,69 @@ struct ConnectionViewModelValidationTests {
 
     @MainActor
     private func makeViewModel() throws -> ConnectionViewModel {
-        let store = try ProfileStore(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+        let store = try ProfileStore(directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString), useBiometricProtection: false)
         let seManager = SecureEnclaveKeyManager()
-        let kcManager = try KeychainKeyManager()
+        let kcManager = try KeychainKeyManager(useBiometricProtection: false)
         let keyManager = KeyManager(secureEnclaveManager: seManager, keychainManager: kcManager)
         return ConnectionViewModel(profileStore: store, keyManager: keyManager)
+    }
+
+    @Test @MainActor func hostTooLongThrows() throws {
+        let vm = try makeViewModel()
+        let longHost = String(repeating: "a", count: 254)
+        #expect(throws: ConnectionViewModelError.hostTooLong) {
+            try vm.validateFields(host: longHost, username: "root", port: 22)
+        }
+    }
+
+    @Test @MainActor func usernameTooLongThrows() throws {
+        let vm = try makeViewModel()
+        let longUser = String(repeating: "a", count: 129)
+        #expect(throws: ConnectionViewModelError.usernameTooLong) {
+            try vm.validateFields(host: "example.com", username: longUser, port: 22)
+        }
+    }
+
+    @Test @MainActor func controlCharsInHostThrows() throws {
+        let vm = try makeViewModel()
+        #expect(throws: ConnectionViewModelError.invalidHostFormat) {
+            try vm.validateFields(host: "host\u{0000}.com", username: "root", port: 22)
+        }
+    }
+
+    @Test @MainActor func controlCharsInUsernameThrows() throws {
+        let vm = try makeViewModel()
+        #expect(throws: ConnectionViewModelError.invalidUsernameFormat) {
+            try vm.validateFields(host: "example.com", username: "user\u{0007}", port: 22)
+        }
+    }
+
+    @Test @MainActor func ipv4HostIsValid() throws {
+        let vm = try makeViewModel()
+        #expect(throws: Never.self) {
+            try vm.validateFields(host: "192.168.1.1", username: "root", port: 22)
+        }
+    }
+
+    @Test @MainActor func ipv6HostIsValid() throws {
+        let vm = try makeViewModel()
+        #expect(throws: Never.self) {
+            try vm.validateFields(host: "[::1]", username: "root", port: 22)
+        }
+    }
+
+    @Test @MainActor func shellMetacharsInHostThrows() throws {
+        let vm = try makeViewModel()
+        #expect(throws: ConnectionViewModelError.invalidHostFormat) {
+            try vm.validateFields(host: "host;rm -rf /", username: "root", port: 22)
+        }
+    }
+
+    @Test @MainActor func shellMetacharsInUsernameThrows() throws {
+        let vm = try makeViewModel()
+        #expect(throws: ConnectionViewModelError.invalidUsernameFormat) {
+            try vm.validateFields(host: "example.com", username: "user$(whoami)", port: 22)
+        }
     }
 }
 
@@ -305,9 +363,9 @@ struct ConnectionViewModelCRUDTests {
     @MainActor
     private func makeViewModelWithStore() throws -> (ConnectionViewModel, ProfileStore) {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        let store = try ProfileStore(directory: dir)
+        let store = try ProfileStore(directory: dir, useBiometricProtection: false)
         let seManager = SecureEnclaveKeyManager()
-        let kcManager = try KeychainKeyManager()
+        let kcManager = try KeychainKeyManager(useBiometricProtection: false)
         let keyManager = KeyManager(secureEnclaveManager: seManager, keychainManager: kcManager)
         let vm = ConnectionViewModel(profileStore: store, keyManager: keyManager)
         return (vm, store)
