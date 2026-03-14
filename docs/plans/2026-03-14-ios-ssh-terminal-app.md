@@ -279,12 +279,12 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Features/HostVerification/FingerprintURIParser.swift`
 - Create: `Tests/HostVerificationTests/FingerprintURIParserTests.swift`
 
-- [ ] Define custom URI scheme: `ssh-trust://host:port?fp=SHA256:...&type=ssh-ed25519`
-- [ ] Implement `FingerprintURIParser` for the URI format
-- [ ] Implement `QRFingerprintScanner` — AVFoundation QR scanner view
-- [ ] Persist scanned fingerprint to `KnownHostsStore` (no network connection needed)
-- [ ] Write tests for URI parsing (valid and malformed inputs)
-- [ ] Run project test suite — must pass before task 16
+- [x] Define custom URI scheme: `ssh-trust://host:port?fp=SHA256:...&type=ssh-ed25519`
+- [x] Implement `FingerprintURIParser` for the URI format
+- [x] Implement `QRFingerprintScanner` — AVFoundation QR scanner view
+- [x] Persist scanned fingerprint to `KnownHostsStore` (no network connection needed)
+- [x] Write tests for URI parsing (valid and malformed inputs)
+- [x] Run project test suite — must pass before task 16
 
 ### Task 16: Integration tests and test server
 

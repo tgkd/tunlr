@@ -65,6 +65,9 @@
 		B1A2C3D4E5F60001293A4B02 /* MemoryHygiene.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60001293A4B03 /* MemoryHygiene.swift */; };
 		B1A2C3D4E5F60001293A4B04 /* AlgorithmPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60001293A4B05 /* AlgorithmPolicyTests.swift */; };
 		B1A2C3D4E5F60001293A4B06 /* MemoryHygieneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60001293A4B07 /* MemoryHygieneTests.swift */; };
+		C1D2E3F4A5B60718394A5B6C /* FingerprintURIParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60718394A5B6D /* FingerprintURIParser.swift */; };
+		C1D2E3F4A5B60718394A5B6E /* QRFingerprintScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60718394A5B6F /* QRFingerprintScanner.swift */; };
+		C1D2E3F4A5B60718394A5B70 /* FingerprintURIParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60718394A5B71 /* FingerprintURIParserTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,6 +137,9 @@
 		B1A2C3D4E5F60001293A4B03 /* MemoryHygiene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryHygiene.swift; sourceTree = "<group>"; };
 		B1A2C3D4E5F60001293A4B05 /* AlgorithmPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmPolicyTests.swift; sourceTree = "<group>"; };
 		B1A2C3D4E5F60001293A4B07 /* MemoryHygieneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryHygieneTests.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B60718394A5B6D /* FingerprintURIParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintURIParser.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B60718394A5B6F /* QRFingerprintScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRFingerprintScanner.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B60718394A5B71 /* FingerprintURIParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintURIParserTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +170,7 @@
 			isa = PBXGroup;
 			children = (
 				C43E97E11FB9DDC7943F85E8 /* FingerprintFormatterTests.swift */,
+				C1D2E3F4A5B60718394A5B71 /* FingerprintURIParserTests.swift */,
 				6F7DAA139F14FBFB4F194DCB /* KnownHostsStoreTests.swift */,
 			);
 			path = HostVerificationTests;
@@ -223,9 +230,11 @@
 			isa = PBXGroup;
 			children = (
 				7F2691FB1C8F1EA60EEC2961 /* FingerprintFormatter.swift */,
+				C1D2E3F4A5B60718394A5B6D /* FingerprintURIParser.swift */,
 				B9FA6A4F8545F824FBC305CB /* HostKeyMismatchWarning.swift */,
 				EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */,
 				E7140A8A516B797F7F054F66 /* HostVerificationSheet.swift */,
+				C1D2E3F4A5B60718394A5B6F /* QRFingerprintScanner.swift */,
 			);
 			path = HostVerification;
 			sourceTree = "<group>";
@@ -492,6 +501,7 @@
 				62DA3B8306E2D92DC46C2827 /* ConnectionViewModel.swift in Sources */,
 				A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */,
 				91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */,
+				C1D2E3F4A5B60718394A5B6C /* FingerprintURIParser.swift in Sources */,
 				48638450079FE7B30D2533E1 /* FingerprintFormatter.swift in Sources */,
 				54930B16B8EF78B8B57941FE /* HostKeyMismatchWarning.swift in Sources */,
 				EFA7A8C6FDF50B9AF179C8C7 /* HostKeyVerifier.swift in Sources */,
@@ -514,6 +524,7 @@
 				6E44F8FBA9BC1FECE6AAAEBB /* SSHSession.swift in Sources */,
 				B2F78DA4D46B2128C871379E /* SSHSessionManager.swift in Sources */,
 				4B9DEA460021D7BDD124B72C /* SSHTerminalDataSource.swift in Sources */,
+				C1D2E3F4A5B60718394A5B6E /* QRFingerprintScanner.swift in Sources */,
 				CC4FCE47DB7C71DBFA6F9370 /* SecureEnclaveKeyManager.swift in Sources */,
 				DC5DC8A620D087485D216AD2 /* TerminalScreen.swift in Sources */,
 				A8552C0C91F78A0EC351820B /* TerminalViewController.swift in Sources */,
@@ -530,6 +541,7 @@
 			files = (
 				9D9219D22F28756A10FFD088 /* ConnectionViewModelTests.swift in Sources */,
 				62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */,
+				C1D2E3F4A5B60718394A5B70 /* FingerprintURIParserTests.swift in Sources */,
 				378B8034F0BE8E7462F61FE8 /* FingerprintFormatterTests.swift in Sources */,
 				874197CDF2AAD1EECD493E76 /* KeyManagerTests.swift in Sources */,
 				68B6CE365228FB402E99CA9B /* KeyManagerViewModelTests.swift in Sources */,
