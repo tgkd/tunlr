@@ -228,15 +228,15 @@ Build a security-focused iOS SSH terminal app using Swift 6/SwiftUI targeting iO
 - Create: `App/Core/SSH/SSHSessionManager.swift`
 - Create: `Tests/SSHTests/SSHSessionManagerTests.swift`
 
-- [ ] Implement `TerminalScreen` — full-screen `TerminalViewRepresentable`
-- [ ] Navigation bar: hostname + connection state indicator
-- [ ] Pull-down gesture: reveal command palette (tmux shortcuts, copy mode toggle)
-- [ ] Long-press selection with system pasteboard copy/paste
-- [ ] Implement `SSHSessionManager` observing `UIApplication` scene phase
-- [ ] On background: `beginBackgroundTask`, send SSH disconnect, serialize terminal state (cursor, screen buffer, scrollback to `Library/Caches/`)
-- [ ] On foreground: check `NWPathMonitor`, auto-reconnect if profile has `autoReconnect = true`
-- [ ] Write tests for SSHSessionManager state transitions (background/foreground cycle)
-- [ ] Run project test suite — must pass before task 13
+- [x] Implement `TerminalScreen` — full-screen `TerminalViewRepresentable`
+- [x] Navigation bar: hostname + connection state indicator
+- [x] Pull-down gesture: reveal command palette (tmux shortcuts, copy mode toggle)
+- [x] Long-press selection with system pasteboard copy/paste
+- [x] Implement `SSHSessionManager` observing `UIApplication` scene phase
+- [x] On background: `beginBackgroundTask`, send SSH disconnect, serialize terminal state (cursor, screen buffer, scrollback to `Library/Caches/`)
+- [x] On foreground: check `NWPathMonitor`, auto-reconnect if profile has `autoReconnect = true`
+- [x] Write tests for SSHSessionManager state transitions (background/foreground cycle)
+- [x] Run project test suite — must pass before task 13
 
 ### Task 13: App state restoration and storage finalization
 

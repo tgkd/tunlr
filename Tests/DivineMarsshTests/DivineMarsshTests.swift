@@ -15,7 +15,13 @@ final class DivineMarsshTests: XCTestCase {
         let seManager = SecureEnclaveKeyManager()
         let kcManager = try KeychainKeyManager()
         let keyManager = KeyManager(secureEnclaveManager: seManager, keychainManager: kcManager)
-        let view = ContentView(profileStore: store, keyManager: keyManager)
+        let mockClient = MockSSHClient()
+        let handler = MockConnectionHandler(client: mockClient)
+        let sessionManager = SSHSessionManager(
+            connectionHandlerFactory: { handler },
+            profileStore: store
+        )
+        let view = ContentView(profileStore: store, keyManager: keyManager, sessionManager: sessionManager)
         XCTAssertNotNil(view.body)
     }
 }
