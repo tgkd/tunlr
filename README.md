@@ -1,6 +1,4 @@
-# DivineMarssh
-
-iOS SSH terminal client with Secure Enclave key support.
+# ssh
 
 ## Connect to your Mac from iPhone
 
