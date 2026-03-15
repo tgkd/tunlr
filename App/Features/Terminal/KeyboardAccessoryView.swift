@@ -69,6 +69,7 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     var enableInputClicksWhenVisible: Bool { true }
 
     private var buttonColor: UIColor = UIColor(white: 0.22, alpha: 1)
+    private var textColor: UIColor = .white
 
     init(frame: CGRect, terminalView: TerminalView) {
         self.terminalView = terminalView
@@ -110,7 +111,7 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
             let micConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
             micBtn.setImage(
                 UIImage(systemName: "mic.fill", withConfiguration: micConfig)?
-                    .withTintColor(.white, renderingMode: .alwaysOriginal),
+                    .withTintColor(textColor, renderingMode: .alwaysOriginal),
                 for: .normal
             )
             micButton = micBtn
@@ -122,7 +123,7 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         let config = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
         hideBtn.setImage(
             UIImage(systemName: "keyboard.chevron.compact.down", withConfiguration: config)?
-                .withTintColor(.white, renderingMode: .alwaysOriginal),
+                .withTintColor(textColor, renderingMode: .alwaysOriginal),
             for: .normal
         )
         buttons.append(hideBtn)
@@ -140,8 +141,8 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
             btn.setTitle(title, for: .normal)
             btn.titleLabel?.font = .monospacedSystemFont(ofSize: 14, weight: .medium)
         }
-        btn.setTitleColor(.white, for: .normal)
-        btn.tintColor = .white
+        btn.setTitleColor(textColor, for: .normal)
+        btn.tintColor = textColor
         btn.addTarget(self, action: action, for: .touchDown)
         return btn
     }
@@ -187,14 +188,15 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         terminalView?.resignFirstResponder()
     }
 
-    func updateColors(buttonBg: UIColor, textColor: UIColor) {
+    func updateColors(buttonBg: UIColor, textColor newTextColor: UIColor) {
         buttonColor = buttonBg
+        textColor = newTextColor
         for btn in buttons {
             btn.backgroundColor = buttonBg
-            btn.setTitleColor(textColor, for: .normal)
-            btn.tintColor = textColor
+            btn.setTitleColor(newTextColor, for: .normal)
+            btn.tintColor = newTextColor
             if let img = btn.image(for: .normal) {
-                btn.setImage(img.withTintColor(textColor, renderingMode: .alwaysOriginal), for: .normal)
+                btn.setImage(img.withTintColor(newTextColor, renderingMode: .alwaysOriginal), for: .normal)
             }
         }
         if controlModifier {

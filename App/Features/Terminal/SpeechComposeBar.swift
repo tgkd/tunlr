@@ -8,6 +8,15 @@ struct SpeechComposeBar: View {
     let onCancel: () -> Void
     let onStopRecording: () -> Void
 
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var isDark: Bool { colorScheme == .dark }
+    private var barBackground: Color { Color(white: isDark ? 0.15 : 0.9) }
+    private var textColor: Color { isDark ? .white : .black }
+    private var subtleTextColor: Color { isDark ? .white.opacity(0.7) : .black.opacity(0.5) }
+    private var dismissBg: Color { isDark ? .white.opacity(0.15) : .black.opacity(0.1) }
+    private var dismissFg: Color { isDark ? .white.opacity(0.6) : .black.opacity(0.5) }
+
     var body: some View {
         Group {
             switch state {
@@ -35,7 +44,7 @@ struct SpeechComposeBar: View {
 
             Text("Dictating...")
                 .font(.system(.subheadline, weight: .medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(textColor)
 
             Spacer()
 
@@ -55,7 +64,7 @@ struct SpeechComposeBar: View {
         .padding(.vertical, 10)
         .background(
             Capsule()
-                .fill(Color(white: 0.15))
+                .fill(barBackground)
         )
     }
 
@@ -63,11 +72,11 @@ struct SpeechComposeBar: View {
 
     private var transcribingBar: some View {
         HStack(spacing: 12) {
-            WaveformIcon()
+            WaveformIcon(color: textColor)
 
             Text("Transcribing...")
                 .font(.system(.subheadline, weight: .medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(textColor)
 
             Spacer()
 
@@ -77,7 +86,7 @@ struct SpeechComposeBar: View {
         .padding(.vertical, 12)
         .background(
             Capsule()
-                .fill(Color(white: 0.15))
+                .fill(barBackground)
         )
     }
 
@@ -87,11 +96,11 @@ struct SpeechComposeBar: View {
         HStack(spacing: 12) {
             ProgressView()
                 .controlSize(.small)
-                .tint(.white)
+                .tint(textColor)
 
             Text("Downloading model...")
                 .font(.system(.subheadline, weight: .medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(textColor)
 
             Spacer()
 
@@ -101,7 +110,7 @@ struct SpeechComposeBar: View {
         .padding(.vertical, 12)
         .background(
             Capsule()
-                .fill(Color(white: 0.15))
+                .fill(barBackground)
         )
     }
 
@@ -115,7 +124,7 @@ struct SpeechComposeBar: View {
 
             Text(message)
                 .font(.system(.subheadline, weight: .medium))
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(subtleTextColor)
                 .lineLimit(1)
 
             Spacer()
@@ -126,7 +135,7 @@ struct SpeechComposeBar: View {
         .padding(.vertical, 12)
         .background(
             Capsule()
-                .fill(Color(white: 0.15))
+                .fill(barBackground)
         )
     }
 
@@ -136,7 +145,7 @@ struct SpeechComposeBar: View {
         HStack(spacing: 8) {
             TextField("", text: $transcribedText, axis: .vertical)
                 .font(.system(.subheadline, design: .monospaced))
-                .foregroundStyle(.white)
+                .foregroundStyle(textColor)
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .lineLimit(1...4)
@@ -144,7 +153,7 @@ struct SpeechComposeBar: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 18)
-                        .stroke(.green, lineWidth: 1.5)
+                        .stroke(Color(.separator), lineWidth: 0.5)
                 )
 
             dismissButton
@@ -156,7 +165,7 @@ struct SpeechComposeBar: View {
                     .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(width: 36, height: 36)
-                    .background(.green, in: Circle())
+                    .background(Color(.systemGreen), in: Circle())
             }
         }
     }
@@ -169,9 +178,9 @@ struct SpeechComposeBar: View {
         } label: {
             Image(systemName: "xmark")
                 .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(dismissFg)
                 .frame(width: 28, height: 28)
-                .background(Color.white.opacity(0.15), in: Circle())
+                .background(dismissBg, in: Circle())
         }
     }
 }
@@ -203,13 +212,14 @@ private struct DictationDots: View {
 // MARK: - Waveform Icon
 
 private struct WaveformIcon: View {
+    let color: Color
     @State private var active = false
 
     var body: some View {
         HStack(spacing: 2) {
             ForEach(Array(zip([0,1,2,3], [0.6, 0.3, 0.5, 0.15] as [Double])), id: \.0) { index, delay in
                 RoundedRectangle(cornerRadius: 1)
-                    .fill(.white)
+                    .fill(color)
                     .frame(width: 3, height: active ? heights1[index] : heights2[index])
                     .animation(
                         .easeInOut(duration: 0.5)

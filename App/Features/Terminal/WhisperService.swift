@@ -1,6 +1,33 @@
 @preconcurrency import AVFoundation
 import WhisperKit
 
+enum WhisperModelSize: String, CaseIterable, Sendable {
+    case tiny = "openai_whisper-tiny"
+    case base = "openai_whisper-base"
+    case small = "openai_whisper-small"
+
+    var displayName: String {
+        switch self {
+        case .tiny: return "Tiny"
+        case .base: return "Base"
+        case .small: return "Small"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .tiny: return "Fastest, ~40 MB"
+        case .base: return "Balanced, ~75 MB"
+        case .small: return "Most accurate, ~250 MB"
+        }
+    }
+
+    static var stored: WhisperModelSize {
+        let raw = UserDefaults.standard.string(forKey: "whisperModelSize") ?? WhisperModelSize.tiny.rawValue
+        return WhisperModelSize(rawValue: raw) ?? .tiny
+    }
+}
+
 enum WhisperServiceState: Sendable, Equatable {
     case idle
     case downloading
@@ -22,17 +49,33 @@ actor WhisperService {
 
     private(set) var state: WhisperServiceState = .idle
 
-    private let modelVariant = "openai_whisper-tiny"
+    private var loadedModelSize: WhisperModelSize?
 
     var isModelReady: Bool { whisperKit != nil }
 
-    nonisolated func isModelCached() -> Bool {
+    nonisolated func isModelCached(for size: WhisperModelSize? = nil) -> Bool {
+        let modelSize = size ?? .stored
         let fm = FileManager.default
         guard let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first else { return false }
         let modelsDir = docs.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml")
         guard fm.fileExists(atPath: modelsDir.path()) else { return false }
         let contents = (try? fm.contentsOfDirectory(atPath: modelsDir.path())) ?? []
-        return !contents.isEmpty
+        return contents.contains { $0.contains(modelSize.rawValue.replacingOccurrences(of: "openai_whisper-", with: "")) }
+    }
+
+    nonisolated func deleteModel(for size: WhisperModelSize) -> Bool {
+        let fm = FileManager.default
+        guard let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first else { return false }
+        let modelsDir = docs.appendingPathComponent("huggingface/models/argmaxinc/whisperkit-coreml")
+        guard let contents = try? fm.contentsOfDirectory(atPath: modelsDir.path()) else { return false }
+        let keyword = size.rawValue.replacingOccurrences(of: "openai_whisper-", with: "")
+        var deleted = false
+        for item in contents where item.contains(keyword) {
+            let itemPath = modelsDir.appendingPathComponent(item)
+            try? fm.removeItem(at: itemPath)
+            deleted = true
+        }
+        return deleted
     }
 
     enum MicPermission: Sendable {
@@ -57,10 +100,15 @@ actor WhisperService {
     }
 
     func ensureModelReady() async throws {
-        guard whisperKit == nil else { return }
+        let desired = WhisperModelSize.stored
+        if whisperKit != nil, loadedModelSize == desired { return }
+
+        whisperKit = nil
+        loadedModelSize = nil
         state = .downloading
-        let kit = try await WhisperKit(model: modelVariant)
+        let kit = try await WhisperKit(model: desired.rawValue)
         whisperKit = kit
+        loadedModelSize = desired
         state = .idle
     }
 

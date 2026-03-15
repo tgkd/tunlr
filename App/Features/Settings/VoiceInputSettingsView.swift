@@ -2,12 +2,14 @@ import SwiftUI
 
 struct VoiceInputSettingsView: View {
     @AppStorage("voiceInputEnabled") private var voiceInputEnabled = false
-    @State private var modelStatus: ModelStatus = .unknown
+    @AppStorage("whisperModelSize") private var modelSizeRaw = WhisperModelSize.tiny.rawValue
+    @State private var cachedModels: Set<WhisperModelSize> = []
     @State private var isDownloading = false
     @State private var downloadError: String?
+    @State private var modelToDelete: WhisperModelSize?
 
-    private enum ModelStatus {
-        case unknown, notDownloaded, downloaded, downloading
+    private var selectedModel: WhisperModelSize {
+        WhisperModelSize(rawValue: modelSizeRaw) ?? .tiny
     }
 
     var body: some View {
@@ -20,81 +22,137 @@ struct VoiceInputSettingsView: View {
 
             if voiceInputEnabled {
                 Section {
-                    switch modelStatus {
-                    case .unknown:
+                    ForEach(WhisperModelSize.allCases, id: \.self) { size in
                         HStack {
-                            Text("Checking model...")
-                            Spacer()
-                            ProgressView()
-                                .controlSize(.small)
-                        }
-                    case .notDownloaded:
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Model not downloaded")
-                                .foregroundStyle(.secondary)
-                            Text("The speech recognition model (~40 MB) will be downloaded on first use, or you can download it now.")
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
+                            Button {
+                                modelSizeRaw = size.rawValue
+                            } label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(size.displayName)
+                                            .foregroundStyle(.primary)
+                                        Text(size.subtitle)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                }
+                            }
 
-                            if let error = downloadError {
-                                Text(error)
+                            if cachedModels.contains(size) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.green)
                                     .font(.caption)
-                                    .foregroundStyle(.red)
                             }
 
-                            Button("Download Now") {
-                                downloadModel()
+                            if size.rawValue == modelSizeRaw {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(.blue)
                             }
-                            .buttonStyle(.borderedProminent)
-                            .disabled(isDownloading)
                         }
-                        .padding(.vertical, 4)
-                    case .downloading:
-                        HStack {
-                            Text("Downloading model...")
-                            Spacer()
-                            ProgressView()
-                                .controlSize(.small)
-                        }
-                    case .downloaded:
-                        HStack {
-                            Text("Model ready")
-                            Spacer()
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
+                        .swipeActions(edge: .trailing) {
+                            if cachedModels.contains(size), size.rawValue != modelSizeRaw {
+                                Button(role: .destructive) {
+                                    modelToDelete = size
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                         }
                     }
                 } header: {
-                    Text("Whisper Model")
+                    Text("Model")
                 } footer: {
-                    Text("Speech is processed entirely on-device using WhisperKit. No audio data leaves your device.")
+                    Text("Larger models are more accurate for technical commands but slower to transcribe. Swipe to delete unused models.")
+                }
+
+                if !cachedModels.contains(selectedModel) {
+                    Section {
+                        if isDownloading {
+                            HStack {
+                                Text("Downloading \(selectedModel.displayName)...")
+                                Spacer()
+                                ProgressView()
+                                    .controlSize(.small)
+                            }
+                        } else {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("\(selectedModel.displayName) model not downloaded")
+                                    .foregroundStyle(.secondary)
+
+                                if let error = downloadError {
+                                    Text(error)
+                                        .font(.caption)
+                                        .foregroundStyle(.red)
+                                }
+
+                                Button("Download Now") {
+                                    downloadModel()
+                                }
+                                .buttonStyle(.borderedProminent)
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    } footer: {
+                        Text("The model will be downloaded automatically on first use if not pre-downloaded.")
+                    }
+                }
+
+                Section {
+                } footer: {
+                    Text("Speech is processed entirely on-device. No audio data leaves your device.")
                 }
             }
         }
         .navigationTitle("Voice Input")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await checkModelStatus()
+            refreshCachedModels()
+        }
+        .onChange(of: modelSizeRaw) { _, _ in
+            refreshCachedModels()
+        }
+        .alert("Delete Model", isPresented: Binding(
+            get: { modelToDelete != nil },
+            set: { if !$0 { modelToDelete = nil } }
+        )) {
+            Button("Cancel", role: .cancel) { modelToDelete = nil }
+            Button("Delete", role: .destructive) {
+                if let model = modelToDelete {
+                    let service = WhisperService()
+                    _ = service.deleteModel(for: model)
+                    refreshCachedModels()
+                }
+                modelToDelete = nil
+            }
+        } message: {
+            if let model = modelToDelete {
+                Text("Delete the \(model.displayName) model? It can be re-downloaded later.")
+            }
         }
     }
 
-    private func checkModelStatus() async {
+    private func refreshCachedModels() {
         let service = WhisperService()
-        modelStatus = service.isModelCached() ? .downloaded : .notDownloaded
+        var cached = Set<WhisperModelSize>()
+        for size in WhisperModelSize.allCases {
+            if service.isModelCached(for: size) {
+                cached.insert(size)
+            }
+        }
+        cachedModels = cached
     }
 
     private func downloadModel() {
         isDownloading = true
         downloadError = nil
-        modelStatus = .downloading
 
         Task {
             let service = WhisperService()
             do {
                 try await service.ensureModelReady()
-                modelStatus = .downloaded
+                refreshCachedModels()
             } catch {
-                modelStatus = .notDownloaded
                 downloadError = error.localizedDescription
             }
             isDownloading = false

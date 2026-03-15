@@ -128,6 +128,11 @@ struct TerminalScreen: View {
         .task {
             await observeConnectionState()
         }
+        .task {
+            if voiceInputEnabled {
+                try? await whisperService.ensureModelReady()
+            }
+        }
     }
 
     @ViewBuilder
