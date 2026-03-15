@@ -60,8 +60,10 @@ struct SpeechComposeBar: View {
                     .background(.red, in: Circle())
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
+        .padding(.leading, 16)
+        .padding(.trailing, 5)
+        .padding(.vertical, 5)
+        .frame(minHeight: 46)
         .background(
             Capsule()
                 .fill(barBackground)
@@ -82,8 +84,10 @@ struct SpeechComposeBar: View {
 
             dismissButton
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.leading, 16)
+        .padding(.trailing, 9)
+        .padding(.vertical, 5)
+        .frame(minHeight: 46)
         .background(
             Capsule()
                 .fill(barBackground)
@@ -106,8 +110,10 @@ struct SpeechComposeBar: View {
 
             dismissButton
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.leading, 16)
+        .padding(.trailing, 9)
+        .padding(.vertical, 5)
+        .frame(minHeight: 46)
         .background(
             Capsule()
                 .fill(barBackground)
@@ -131,8 +137,10 @@ struct SpeechComposeBar: View {
 
             dismissButton
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.leading, 16)
+        .padding(.trailing, 9)
+        .padding(.vertical, 5)
+        .frame(minHeight: 46)
         .background(
             Capsule()
                 .fill(barBackground)
@@ -142,7 +150,7 @@ struct SpeechComposeBar: View {
     // MARK: - Review
 
     private var reviewBar: some View {
-        HStack(spacing: 8) {
+        HStack(alignment: .bottom, spacing: 8) {
             TextField("", text: $transcribedText, axis: .vertical)
                 .font(.system(.subheadline, design: .monospaced))
                 .foregroundStyle(textColor)
@@ -153,7 +161,7 @@ struct SpeechComposeBar: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 18)
-                        .stroke(Color(.separator), lineWidth: 0.5)
+                        .stroke(isDark ? Color.white.opacity(0.2) : Color(.separator), lineWidth: 0.5)
                 )
 
             dismissButton
@@ -168,6 +176,13 @@ struct SpeechComposeBar: View {
                     .background(Color(.systemGreen), in: Circle())
             }
         }
+        .padding(.leading, 12)
+        .padding(.trailing, 5)
+        .padding(.vertical, 5)
+        .background(
+            RoundedRectangle(cornerRadius: 26)
+                .fill(barBackground)
+        )
     }
 
     // MARK: - Shared
