@@ -2,11 +2,12 @@ import SwiftUI
 
 struct ConnectionListView: View {
     @ObservedObject var viewModel: ConnectionViewModel
+    @ObservedObject var appearanceViewModel: AppearanceViewModel
     var onConnect: (SSHConnectionProfile) -> Void
 
     @State private var showingEditor = false
     @State private var editingProfile: SSHConnectionProfile?
-    @State private var showingKeyManager = false
+    @State private var showingSettings = false
 
     var body: some View {
         List {
@@ -62,9 +63,9 @@ struct ConnectionListView: View {
             }
             ToolbarItem(placement: .topBarLeading) {
                 Button {
-                    showingKeyManager = true
+                    showingSettings = true
                 } label: {
-                    Image(systemName: "key.fill")
+                    Image(systemName: "gearshape")
                 }
             }
         }
@@ -90,9 +91,12 @@ struct ConnectionListView: View {
                 )
             }
         }
-        .sheet(isPresented: $showingKeyManager) {
+        .sheet(isPresented: $showingSettings) {
             NavigationStack {
-                KeyManagerView(viewModel: KeyManagerViewModel(keyManager: viewModel.keyManager))
+                SettingsView(
+                    appearanceViewModel: appearanceViewModel,
+                    keyManagerViewModel: KeyManagerViewModel(keyManager: viewModel.keyManager)
+                )
             }
         }
         .task {
@@ -115,7 +119,7 @@ struct ConnectionRow: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
-                authBadge
+                authIcon
             }
             if let lastConnected = profile.lastConnected {
                 Text(lastConnected, style: .relative)
@@ -127,20 +131,20 @@ struct ConnectionRow: View {
     }
 
     @ViewBuilder
-    private var authBadge: some View {
+    private var authIcon: some View {
         switch profile.authMethod {
         case .secureEnclaveKey:
-            Label("SE", systemImage: "cpu")
-                .font(.caption2)
-                .foregroundStyle(.blue)
+            Image(systemName: "cpu")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         case .importedKey:
-            Label("Key", systemImage: "key")
-                .font(.caption2)
-                .foregroundStyle(.green)
+            Image(systemName: "key")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         case .password:
-            Label("Pass", systemImage: "lock")
-                .font(.caption2)
-                .foregroundStyle(.orange)
+            Image(systemName: "lock")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 }

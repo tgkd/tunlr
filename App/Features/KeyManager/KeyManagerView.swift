@@ -37,7 +37,6 @@ extension View {
 
 struct KeyManagerView: View {
     @ObservedObject var viewModel: KeyManagerViewModel
-    @Environment(\.dismiss) private var dismiss
 
     @State private var showingAddSheet = false
     @State private var selectedIdentity: SSHIdentity?
@@ -78,9 +77,6 @@ struct KeyManagerView: View {
                 } label: {
                     Image(systemName: "plus")
                 }
-            }
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Done") { dismiss() }
             }
         }
         .sheet(isPresented: $showingAddSheet) {

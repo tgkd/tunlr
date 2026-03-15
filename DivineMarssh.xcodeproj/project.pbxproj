@@ -48,6 +48,16 @@
 		9D9219D22F28756A10FFD088 /* ConnectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038173904DC82D5CECC4D2FD /* ConnectionViewModelTests.swift */; };
 		A22CF52E68FCF48E80569066 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C166692098888B8C32934E2 /* ContentView.swift */; };
 		A8552C0C91F78A0EC351820B /* TerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA6846E7FD0815AFB4AC585 /* TerminalViewController.swift */; };
+		AA0001010000000100000001 /* TerminalAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002010000000100000001 /* TerminalAppearance.swift */; };
+		AA0001020000000200000002 /* TerminalTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002020000000200000002 /* TerminalTheme.swift */; };
+		AA0001030000000300000003 /* AppearanceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002030000000300000003 /* AppearanceStore.swift */; };
+		AA0001040000000400000004 /* AppearanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002040000000400000004 /* AppearanceViewModel.swift */; };
+		AA0001050000000500000005 /* VisualSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002050000000500000005 /* VisualSettingsView.swift */; };
+		AA0001060000000600000006 /* FiraCode-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0002060000000600000006 /* FiraCode-Regular.ttf */; };
+		AA0001070000000700000007 /* JetBrainsMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0002070000000700000007 /* JetBrainsMono-Regular.ttf */; };
+		AA0001080000000800000008 /* SourceCodePro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0002080000000800000008 /* SourceCodePro-Regular.ttf */; };
+		AA0001090000000900000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002090000000900000009 /* SettingsView.swift */; };
+		AA00010A0000000A0000000A /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00020A0000000A0000000A /* AboutView.swift */; };
 		ADAA7597609064FD766A7CB6 /* SSHAuthenticatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD25E5F829FB49210857487 /* SSHAuthenticatable.swift */; };
 		B0A4BB719C90594C0DAD5279 /* HostKeyVerificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F430BA2F6D0BB7F56D40DBBF /* HostKeyVerificationTests.swift */; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* RealSSHConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* RealSSHConnectionTests.swift */; };
@@ -126,6 +136,16 @@
 		9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveKeyManager.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* RealSSHConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealSSHConnectionTests.swift; sourceTree = "<group>"; };
 		A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHHostKey.swift; sourceTree = "<group>"; };
+		AA0002010000000100000001 /* TerminalAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalAppearance.swift; sourceTree = "<group>"; };
+		AA0002020000000200000002 /* TerminalTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalTheme.swift; sourceTree = "<group>"; };
+		AA0002030000000300000003 /* AppearanceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceStore.swift; sourceTree = "<group>"; };
+		AA0002040000000400000004 /* AppearanceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceViewModel.swift; sourceTree = "<group>"; };
+		AA0002050000000500000005 /* VisualSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualSettingsView.swift; sourceTree = "<group>"; };
+		AA0002060000000600000006 /* FiraCode-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FiraCode-Regular.ttf"; sourceTree = "<group>"; };
+		AA0002070000000700000007 /* JetBrainsMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "JetBrainsMono-Regular.ttf"; sourceTree = "<group>"; };
+		AA0002080000000800000008 /* SourceCodePro-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SourceCodePro-Regular.ttf"; sourceTree = "<group>"; };
+		AA0002090000000900000009 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AA00020A0000000A0000000A /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		B22F0262FF6A695FB9E517FC /* TerminalViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalViewRepresentable.swift; sourceTree = "<group>"; };
 		B9FA6A4F8545F824FBC305CB /* HostKeyMismatchWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyMismatchWarning.swift; sourceTree = "<group>"; };
 		BF424B1FAA7BAEB86C24BAAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -282,6 +302,8 @@
 				ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */,
 				A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */,
 				52E3B0C56CC7188A2DF2FD81 /* SSHIdentity.swift */,
+				AA0002010000000100000001 /* TerminalAppearance.swift */,
+				AA0002020000000200000002 /* TerminalTheme.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -289,6 +311,7 @@
 		9036359C7D8115993CBDD718 /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				AA0002030000000300000003 /* AppearanceStore.swift */,
 				F7C052B361AFB7594E6E138D /* KnownHostsStore.swift */,
 				F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */,
 				30FDEEBF0100D866023CFB16 /* TerminalStateCache.swift */,
@@ -344,6 +367,35 @@
 			path = DivineMarsshTests;
 			sourceTree = "<group>";
 		};
+		AA0003010000000100000001 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				AA00020A0000000A0000000A /* AboutView.swift */,
+				AA0002040000000400000004 /* AppearanceViewModel.swift */,
+				AA0002090000000900000009 /* SettingsView.swift */,
+				AA0002050000000500000005 /* VisualSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		AA0003020000000200000002 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AA0003030000000300000003 /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		AA0003030000000300000003 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				AA0002060000000600000006 /* FiraCode-Regular.ttf */,
+				AA0002070000000700000007 /* JetBrainsMono-Regular.ttf */,
+				AA0002080000000800000008 /* SourceCodePro-Regular.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		B61B30D30FF578DC9B8EAEC2 /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
@@ -394,6 +446,7 @@
 				A4B7EE23027DBF271195BFD9 /* Connection */,
 				4C3D4986AEE6546275335F65 /* HostVerification */,
 				A35C3422D1B60B14644F59E2 /* KeyManager */,
+				AA0003010000000100000001 /* Settings */,
 				383F2DA3797E6CEE31124E79 /* Terminal */,
 			);
 			path = Features;
@@ -418,6 +471,7 @@
 				BF424B1FAA7BAEB86C24BAAB /* Info.plist */,
 				D2C90341B05E88715F12E40A /* Core */,
 				C9847DB39C6F648B620F2168 /* Features */,
+				AA0003020000000200000002 /* Resources */,
 				4E5C09FABE325813352C2F38 /* UI */,
 			);
 			path = App;
@@ -521,6 +575,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3155AD8C2AAC4844AEB6317A /* Assets.xcassets in Resources */,
+				AA0001060000000600000006 /* FiraCode-Regular.ttf in Resources */,
+				AA0001070000000700000007 /* JetBrainsMono-Regular.ttf in Resources */,
+				AA0001080000000800000008 /* SourceCodePro-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -576,6 +633,13 @@
 				F3830A3D5A1A57773DC0585B /* TerminalStateCache.swift in Sources */,
 				A8552C0C91F78A0EC351820B /* TerminalViewController.swift in Sources */,
 				E44C6BB1D045F61D3E2262A0 /* TerminalViewRepresentable.swift in Sources */,
+				AA0001010000000100000001 /* TerminalAppearance.swift in Sources */,
+				AA0001020000000200000002 /* TerminalTheme.swift in Sources */,
+				AA0001030000000300000003 /* AppearanceStore.swift in Sources */,
+				AA0001040000000400000004 /* AppearanceViewModel.swift in Sources */,
+				AA0001050000000500000005 /* VisualSettingsView.swift in Sources */,
+				AA0001090000000900000009 /* SettingsView.swift in Sources */,
+				AA00010A0000000A0000000A /* AboutView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -625,7 +689,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -728,7 +792,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;

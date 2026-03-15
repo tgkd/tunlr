@@ -10,7 +10,7 @@ services:
       - PGID=1000
       - TZ=UTC
       - SUDO_ACCESS=false
-      - PASSWORD_ACCESS=true
+      - PASSWORD_ACCESS=false
       - USER_PASSWORD=testpassword
       - USER_NAME=testuser
       - PUBLIC_KEY_DIR=/config/.ssh

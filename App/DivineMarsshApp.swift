@@ -5,6 +5,7 @@ struct DivineMarsshApp: App {
     private let profileStore: ProfileStore
     private let keyManager: KeyManager
     @StateObject private var sessionManager: SSHSessionManager
+    @StateObject private var appearanceViewModel: AppearanceViewModel
 
     init() {
         let store = try! ProfileStore()
@@ -33,6 +34,9 @@ struct DivineMarsshApp: App {
             profileStore: store,
             terminalStateCache: terminalStateCache
         ))
+
+        let appearanceStore = try! AppearanceStore()
+        _appearanceViewModel = StateObject(wrappedValue: AppearanceViewModel(store: appearanceStore))
     }
 
     var body: some Scene {
@@ -40,10 +44,12 @@ struct DivineMarsshApp: App {
             ContentView(
                 profileStore: profileStore,
                 keyManager: keyManager,
-                sessionManager: sessionManager
+                sessionManager: sessionManager,
+                appearanceViewModel: appearanceViewModel
             )
             .task {
                 await sessionManager.checkForRestoredSession()
+                await appearanceViewModel.load()
             }
         }
     }

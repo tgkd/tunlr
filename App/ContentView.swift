@@ -3,13 +3,15 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var viewModel: ConnectionViewModel
     @ObservedObject var sessionManager: SSHSessionManager
+    @ObservedObject var appearanceViewModel: AppearanceViewModel
 
-    init(profileStore: ProfileStore, keyManager: KeyManager, sessionManager: SSHSessionManager) {
+    init(profileStore: ProfileStore, keyManager: KeyManager, sessionManager: SSHSessionManager, appearanceViewModel: AppearanceViewModel) {
         _viewModel = StateObject(wrappedValue: ConnectionViewModel(
             profileStore: profileStore,
             keyManager: keyManager
         ))
         self.sessionManager = sessionManager
+        self.appearanceViewModel = appearanceViewModel
     }
 
     @State private var selectedProfile: SSHConnectionProfile?
@@ -19,7 +21,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            ConnectionListView(viewModel: viewModel) { profile in
+            ConnectionListView(viewModel: viewModel, appearanceViewModel: appearanceViewModel) { profile in
                 selectedProfile = profile
                 showTerminal = true
             }
@@ -29,6 +31,7 @@ struct ContentView: View {
                         TerminalScreen(
                             profile: profile,
                             sshSession: session,
+                            appearanceViewModel: appearanceViewModel,
                             onDisconnect: {
                                 showTerminal = false
                                 selectedProfile = nil

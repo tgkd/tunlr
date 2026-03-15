@@ -3,6 +3,7 @@ import SwiftUI
 struct TerminalViewRepresentable: UIViewControllerRepresentable {
     let sshSession: SSHSession
     @Binding var terminalTitle: String
+    @ObservedObject var appearanceViewModel: AppearanceViewModel
     var onTerminalReady: ((TerminalViewController) -> Void)?
 
     func makeUIViewController(context: Context) -> TerminalViewController {
@@ -15,7 +16,9 @@ struct TerminalViewRepresentable: UIViewControllerRepresentable {
         return viewController
     }
 
-    func updateUIViewController(_ uiViewController: TerminalViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: TerminalViewController, context: Context) {
+        uiViewController.applyAppearance(appearanceViewModel.appearance)
+    }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)

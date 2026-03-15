@@ -38,6 +38,10 @@ targets:
       path: App/Info.plist
       properties:
         UILaunchScreen: {}
+        UIAppFonts:
+          - FiraCode-Regular.ttf
+          - JetBrainsMono-Regular.ttf
+          - SourceCodePro-Regular.ttf
     settings:
       base:
         INFOPLIST_FILE: App/Info.plist

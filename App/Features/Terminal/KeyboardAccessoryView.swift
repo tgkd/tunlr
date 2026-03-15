@@ -252,13 +252,24 @@ final class KeyboardAccessoryView: UIView, UIInputViewAudioFeedback {
         repeatTask = nil
     }
 
+    private var themeDark: Bool = true
+
+    func updateTheme(isDark: Bool, backgroundColor: UIColor) {
+        themeDark = isDark
+        self.backgroundColor = .clear
+        for (index, button) in buttons.enumerated() {
+            guard let btn = button as? UIButton else { continue }
+            let isLeftSection = index < 3
+            styleButton(btn, isDark: isLeftSection)
+        }
+    }
+
     private var buttonTextColor: UIColor {
-        traitCollection.userInterfaceStyle == .dark ? .white : .black
+        themeDark ? .white : .black
     }
 
     private func styleButton(_ button: UIButton, isDark: Bool) {
-        let isDarkMode = traitCollection.userInterfaceStyle == .dark
-        if isDarkMode {
+        if themeDark {
             button.backgroundColor = isDark
                 ? UIColor(white: 0.3, alpha: 1)
                 : UIColor(white: 0.22, alpha: 1)

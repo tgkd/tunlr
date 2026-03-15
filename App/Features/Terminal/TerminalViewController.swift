@@ -9,6 +9,8 @@ final class TerminalViewController: UIViewController {
     var onTitleChange: ((String) -> Void)?
     var onSizeChange: ((Int, Int) -> Void)?
 
+    private var currentAppearance: TerminalAppearance?
+
     init(dataSource: SSHTerminalDataSource) {
         self.dataSource = dataSource
         super.init(nibName: nil, bundle: nil)
@@ -26,7 +28,6 @@ final class TerminalViewController: UIViewController {
 
         terminalView = TerminalView(frame: .zero, font: nil)
         terminalView.translatesAutoresizingMaskIntoConstraints = false
-        applyTerminalTheme()
         view.addSubview(terminalView)
 
         let hPadding: CGFloat = 12
@@ -54,24 +55,22 @@ final class TerminalViewController: UIViewController {
         notifyTerminalSize()
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            applyTerminalTheme()
-        }
-    }
+    func applyAppearance(_ appearance: TerminalAppearance) {
+        guard appearance != currentAppearance else { return }
+        currentAppearance = appearance
 
-    private func applyTerminalTheme() {
-        let isDark = traitCollection.userInterfaceStyle == .dark
-        if isDark {
-            terminalView.nativeBackgroundColor = .black
-            terminalView.nativeForegroundColor = UIColor(white: 0.9, alpha: 1.0)
-            view.backgroundColor = .black
-        } else {
-            terminalView.nativeBackgroundColor = UIColor(white: 0.97, alpha: 1.0)
-            terminalView.nativeForegroundColor = UIColor(white: 0.1, alpha: 1.0)
-            view.backgroundColor = UIColor(white: 0.97, alpha: 1.0)
-        }
+        let font = appearance.fontName.uiFont(size: appearance.fontSize)
+        terminalView.font = font
+
+        let theme = TerminalThemeCatalog.theme(for: appearance.themeName)
+        terminalView.nativeBackgroundColor = theme.backgroundColor.uiColor
+        terminalView.nativeForegroundColor = theme.foregroundColor.uiColor
+        view.backgroundColor = theme.backgroundColor.uiColor
+
+        let ansiColors = theme.ansiColors.map { $0.swiftTermColor }
+        terminalView.installColors(ansiColors)
+
+        keyboardAccessory?.updateTheme(isDark: theme.isDark, backgroundColor: theme.backgroundColor.uiColor)
     }
 
     func feedData(_ data: ArraySlice<UInt8>) {

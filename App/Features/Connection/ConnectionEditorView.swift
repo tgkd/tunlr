@@ -18,6 +18,7 @@ struct ConnectionEditorView: View {
 
     @State private var errorMessage: String?
     @State private var showingError: Bool = false
+    @State private var showingAddKey: Bool = false
 
     enum AuthSelection: String, CaseIterable {
         case secureEnclaveKey = "Secure Enclave Key"
@@ -48,6 +49,17 @@ struct ConnectionEditorView: View {
             Button("OK") {}
         } message: {
             Text(errorMessage ?? "Unknown error")
+        }
+        .sheet(isPresented: $showingAddKey) {
+            NavigationStack {
+                AddKeyView(
+                    viewModel: KeyManagerViewModel(keyManager: viewModel.keyManager),
+                    onDone: {
+                        showingAddKey = false
+                        Task { await viewModel.loadKeys() }
+                    }
+                )
+            }
         }
         .task {
             await viewModel.loadKeys()
@@ -147,15 +159,24 @@ struct ConnectionEditorView: View {
         let seKeys = viewModel.availableKeys.filter { $0.storageType == .secureEnclave }
         return Group {
             if seKeys.isEmpty {
-                Text("No Secure Enclave keys available")
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
+                Button {
+                    showingAddKey = true
+                } label: {
+                    Label("Create Secure Enclave Key", systemImage: "plus.circle")
+                        .font(.subheadline)
+                }
             } else {
                 Picker("Key", selection: $selectedKeyID) {
                     Text("Select a key").tag(nil as UUID?)
                     ForEach(seKeys) { key in
                         Text(key.label).tag(key.id as UUID?)
                     }
+                }
+                Button {
+                    showingAddKey = true
+                } label: {
+                    Label("Create New Key", systemImage: "plus.circle")
+                        .font(.subheadline)
                 }
             }
         }
@@ -165,9 +186,12 @@ struct ConnectionEditorView: View {
         let importedKeys = viewModel.availableKeys.filter { $0.storageType == .keychain }
         return Group {
             if importedKeys.isEmpty {
-                Text("No imported keys available")
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
+                Button {
+                    showingAddKey = true
+                } label: {
+                    Label("Import Key", systemImage: "plus.circle")
+                        .font(.subheadline)
+                }
             } else {
                 Picker("Key", selection: $selectedKeyID) {
                     Text("Select a key").tag(nil as UUID?)
@@ -180,6 +204,12 @@ struct ConnectionEditorView: View {
                         }
                         .tag(key.id as UUID?)
                     }
+                }
+                Button {
+                    showingAddKey = true
+                } label: {
+                    Label("Import New Key", systemImage: "plus.circle")
+                        .font(.subheadline)
                 }
             }
         }

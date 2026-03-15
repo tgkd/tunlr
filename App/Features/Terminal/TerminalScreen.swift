@@ -3,6 +3,7 @@ import SwiftUI
 struct TerminalScreen: View {
     let profile: SSHConnectionProfile
     let sshSession: SSHSession
+    @ObservedObject var appearanceViewModel: AppearanceViewModel
     let onDisconnect: () -> Void
 
     @State private var terminalTitle: String = ""
@@ -10,13 +11,20 @@ struct TerminalScreen: View {
     @State private var showCommandPalette = false
     @State private var showDisconnectAlert = false
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
+
+    private var themeBackgroundColor: Color {
+        appearanceViewModel.currentTheme.backgroundColor.swiftUIColor
+    }
 
     var body: some View {
         ZStack(alignment: .top) {
+            themeBackgroundColor
+                .ignoresSafeArea()
+
             TerminalViewRepresentable(
                 sshSession: sshSession,
-                terminalTitle: $terminalTitle
+                terminalTitle: $terminalTitle,
+                appearanceViewModel: appearanceViewModel
             )
             .ignoresSafeArea(.container, edges: .bottom)
 
@@ -56,7 +64,7 @@ struct TerminalScreen: View {
             ToolbarItem(placement: .principal) {
                 Text(terminalTitle.isEmpty ? "\(profile.username)@\(profile.host)" : terminalTitle)
                     .font(.subheadline.monospaced())
-                    .foregroundStyle(colorScheme == .dark ? .white : .primary)
+                    .foregroundStyle(appearanceViewModel.currentTheme.isDark ? .white : .primary)
                     .lineLimit(1)
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -70,8 +78,9 @@ struct TerminalScreen: View {
             }
         }
         .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(colorScheme == .dark ? Color.black : Color(white: 0.97), for: .navigationBar)
-        .toolbarColorScheme(colorScheme, for: .navigationBar)
+        .toolbarBackground(appearanceViewModel.currentTheme.backgroundColor.swiftUIColor, for: .navigationBar)
+        .toolbarColorScheme(appearanceViewModel.currentTheme.isDark ? .dark : .light, for: .navigationBar)
+        .preferredColorScheme(appearanceViewModel.currentTheme.isDark ? .dark : .light)
         .alert("Disconnect", isPresented: $showDisconnectAlert) {
             Button("Cancel", role: .cancel) {}
             Button("Disconnect", role: .destructive) {
