@@ -20,6 +20,12 @@ struct SettingsView: View {
             }
 
             NavigationLink {
+                KeyboardSettingsView(viewModel: appearanceViewModel)
+            } label: {
+                Label("Keyboard", systemImage: "keyboard")
+            }
+
+            NavigationLink {
                 VoiceInputSettingsView()
             } label: {
                 Label("Voice Input", systemImage: "mic")

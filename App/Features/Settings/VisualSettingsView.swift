@@ -6,6 +6,8 @@ struct VisualSettingsView: View {
     var body: some View {
         Form {
             fontSection
+            cursorSection
+            scrollbackSection
             themeSection
         }
         .navigationTitle("Appearance")
@@ -34,6 +36,34 @@ struct VisualSettingsView: View {
                 .font(Font(viewModel.appearance.fontName.uiFont(size: viewModel.appearance.fontSize)))
                 .foregroundStyle(.primary)
                 .padding(.vertical, 4)
+        }
+    }
+
+    // MARK: - Cursor
+
+    @ViewBuilder
+    private var cursorSection: some View {
+        Section("Cursor") {
+            Picker("Style", selection: binding(\.cursorStyle)) {
+                ForEach(TerminalCursorStyle.allCases, id: \.self) { style in
+                    Text(style.displayName).tag(style)
+                }
+            }
+            Toggle("Blink", isOn: binding(\.cursorBlink))
+        }
+    }
+
+    // MARK: - Scrollback
+
+    @ViewBuilder
+    private var scrollbackSection: some View {
+        Section("Scrollback") {
+            Picker("Buffer Size", selection: binding(\.scrollbackSize)) {
+                ForEach(ScrollbackSize.allCases, id: \.self) { size in
+                    Text(size.displayName).tag(size)
+                }
+            }
+            .pickerStyle(.segmented)
         }
     }
 

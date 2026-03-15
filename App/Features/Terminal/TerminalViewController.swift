@@ -77,10 +77,24 @@ final class TerminalViewController: UIViewController {
         let ansiColors = theme.ansiColors.map { $0.swiftTermColor }
         terminalView.installColors(ansiColors)
 
+        let swiftTermCursorStyle: SwiftTerm.CursorStyle = {
+            switch (appearance.cursorStyle, appearance.cursorBlink) {
+            case (.block, true): return .blinkBlock
+            case (.block, false): return .steadyBlock
+            case (.underline, true): return .blinkUnderline
+            case (.underline, false): return .steadyUnderline
+            case (.bar, true): return .blinkBar
+            case (.bar, false): return .steadyBar
+            }
+        }()
+        terminalView.getTerminal().setCursorStyle(swiftTermCursorStyle)
+        terminalView.getTerminal().changeHistorySize(appearance.scrollbackSize.rawValue)
+
         if let accessory = terminalView.inputAccessoryView as? SimpleTerminalAccessory {
             let btnBg = theme.isDark ? UIColor(white: 0.22, alpha: 1) : UIColor(white: 0.88, alpha: 1)
             let txtColor: UIColor = theme.isDark ? .white : .black
             accessory.updateColors(buttonBg: btnBg, textColor: txtColor)
+            accessory.panels = Self.buildPanels(from: appearance)
         }
     }
 
@@ -125,6 +139,26 @@ final class TerminalViewController: UIViewController {
             }
         }
         super.pressesBegan(presses, with: event)
+    }
+
+    static func buildPanels(from appearance: TerminalAppearance) -> [ToolbarPanel] {
+        var panels: [ToolbarPanel] = []
+
+        let customItems = appearance.toolbarButtons.map { ToolbarPanel.ToolbarItem.toolbarButton($0) }
+        panels.append(ToolbarPanel(id: "custom", title: "Keys", icon: "keyboard", items: customItems))
+
+        if !appearance.favoriteShortcuts.isEmpty {
+            let favItems = appearance.favoriteShortcuts.map { ToolbarPanel.ToolbarItem.shortcut($0) }
+            panels.append(ToolbarPanel(id: "favorites", title: "Favs", icon: "star", items: favItems))
+        }
+
+        for packID in appearance.enabledShortcutPacks where packID != .favorites {
+            let shortcuts = appearance.shortcuts(for: packID)
+            let items = shortcuts.map { ToolbarPanel.ToolbarItem.shortcut($0) }
+            panels.append(ToolbarPanel(id: packID.rawValue, title: packID.displayName, icon: packID.icon, items: items))
+        }
+
+        return panels
     }
 }
 

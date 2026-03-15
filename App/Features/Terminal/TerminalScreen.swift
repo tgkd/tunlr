@@ -9,7 +9,6 @@ struct TerminalScreen: View {
 
     @State private var terminalTitle: String = ""
     @State private var connectionState: ConnectionState = .disconnected
-    @State private var showCommandPalette = false
     @State private var showDisconnectAlert = false
     @AppStorage("voiceInputEnabled") private var voiceInputEnabled = false
     @State private var whisperService = WhisperService()
@@ -64,11 +63,6 @@ struct TerminalScreen: View {
                 keyboardHeight = newHeight
             }
         }
-        .sheet(isPresented: $showCommandPalette) {
-            HotkeysSheetView(sshSession: sshSession)
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
-        }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -86,13 +80,6 @@ struct TerminalScreen: View {
                     .font(.subheadline.monospaced())
                     .foregroundStyle(appearanceViewModel.currentTheme.isDark ? .white : .primary)
                     .lineLimit(1)
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showCommandPalette = true
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                }
             }
         }
         .toolbarBackground(.visible, for: .navigationBar)
@@ -234,60 +221,3 @@ struct TerminalScreen: View {
     }
 }
 
-struct HotkeysSheetView: View {
-    let sshSession: SSHSession
-    @Environment(\.dismiss) private var dismiss
-
-    private let hotkeys: [(label: String, shortcut: String, icon: String, bytes: [UInt8])] = [
-        ("Interrupt", "Ctrl+C", "xmark.octagon", [0x03]),
-        ("Suspend", "Ctrl+Z", "pause", [0x1A]),
-        ("End of Input", "Ctrl+D", "eject", [0x04]),
-        ("Clear Screen", "Ctrl+L", "sparkles.rectangle.stack", [0x0C]),
-        ("Line Start", "Ctrl+A", "arrow.left.to.line", [0x01]),
-        ("Line End", "Ctrl+E", "arrow.right.to.line", [0x05]),
-        ("Delete Word", "Ctrl+W", "delete.backward", [0x17]),
-        ("Kill Line", "Ctrl+U", "strikethrough", [0x15]),
-        ("Kill to End", "Ctrl+K", "text.line.last.and.arrowtriangle.forward", [0x0B]),
-        ("Search History", "Ctrl+R", "clock.arrow.circlepath", [0x12]),
-        ("Cancel Search", "Ctrl+G", "bell", [0x07]),
-        ("Swap Chars", "Ctrl+T", "arrow.left.arrow.right", [0x14]),
-    ]
-
-    var body: some View {
-        NavigationView {
-            List {
-                ForEach(hotkeys, id: \.shortcut) { hotkey in
-                    Button {
-                        sendBytes(hotkey.bytes)
-                        dismiss()
-                    } label: {
-                        HStack(spacing: 12) {
-                            Image(systemName: hotkey.icon)
-                                .frame(width: 24)
-                                .foregroundStyle(.secondary)
-                            Text(hotkey.label)
-                            Spacer()
-                            Text(hotkey.shortcut)
-                                .font(.footnote.monospaced())
-                                .foregroundStyle(.tertiary)
-                        }
-                    }
-                    .foregroundStyle(.primary)
-                }
-            }
-            .navigationTitle("Hotkeys")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                }
-            }
-        }
-    }
-
-    private func sendBytes(_ bytes: [UInt8]) {
-        Task {
-            try? await sshSession.write(Data(bytes))
-        }
-    }
-}

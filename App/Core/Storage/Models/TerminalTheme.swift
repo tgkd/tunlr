@@ -49,8 +49,8 @@ enum TerminalThemeCatalog {
         case .nord: return nord
         case .monokai: return monokai
         case .oneDark: return oneDark
-        case .githubDark: return githubDark
-        case .gruvboxDark: return gruvboxDark
+        case .githubLight: return githubLight
+        case .gruvboxLight: return gruvboxLight
         }
     }
 
@@ -249,57 +249,57 @@ enum TerminalThemeCatalog {
         isDark: true
     )
 
-    private static let githubDark = TerminalTheme(
-        name: .githubDark,
-        displayName: "GitHub Dark",
-        backgroundColor: ColorValue(red: 13, green: 17, blue: 23),
-        foregroundColor: ColorValue(red: 230, green: 237, blue: 243),
-        cursorColor: ColorValue(red: 230, green: 237, blue: 243),
+    private static let githubLight = TerminalTheme(
+        name: .githubLight,
+        displayName: "GitHub Light",
+        backgroundColor: ColorValue(red: 255, green: 255, blue: 255),
+        foregroundColor: ColorValue(red: 36, green: 41, blue: 46),
+        cursorColor: ColorValue(red: 4, green: 66, blue: 137),
         ansiColors: [
-            ColorValue(red: 72, green: 81, blue: 94),
-            ColorValue(red: 255, green: 123, blue: 114),
-            ColorValue(red: 63, green: 185, blue: 80),
-            ColorValue(red: 210, green: 153, blue: 34),
-            ColorValue(red: 88, green: 166, blue: 255),
-            ColorValue(red: 188, green: 140, blue: 255),
-            ColorValue(red: 57, green: 216, blue: 207),
-            ColorValue(red: 230, green: 237, blue: 243),
-            ColorValue(red: 110, green: 118, blue: 129),
-            ColorValue(red: 255, green: 123, blue: 114),
-            ColorValue(red: 63, green: 185, blue: 80),
-            ColorValue(red: 210, green: 153, blue: 34),
-            ColorValue(red: 88, green: 166, blue: 255),
-            ColorValue(red: 188, green: 140, blue: 255),
-            ColorValue(red: 57, green: 216, blue: 207),
-            ColorValue(red: 255, green: 255, blue: 255),
+            ColorValue(red: 36, green: 41, blue: 46),       // black
+            ColorValue(red: 215, green: 58, blue: 73),      // red
+            ColorValue(red: 40, green: 167, blue: 69),      // green
+            ColorValue(red: 219, green: 171, blue: 9),      // yellow
+            ColorValue(red: 3, green: 102, blue: 214),      // blue
+            ColorValue(red: 90, green: 50, blue: 163),      // magenta
+            ColorValue(red: 5, green: 152, blue: 188),      // cyan
+            ColorValue(red: 106, green: 115, blue: 125),    // white
+            ColorValue(red: 149, green: 157, blue: 165),    // bright black
+            ColorValue(red: 203, green: 36, blue: 49),      // bright red
+            ColorValue(red: 34, green: 134, blue: 58),      // bright green
+            ColorValue(red: 176, green: 136, blue: 0),      // bright yellow
+            ColorValue(red: 0, green: 92, blue: 197),       // bright blue
+            ColorValue(red: 90, green: 50, blue: 163),      // bright magenta
+            ColorValue(red: 49, green: 146, blue: 170),     // bright cyan
+            ColorValue(red: 209, green: 213, blue: 218),    // bright white
         ],
-        isDark: true
+        isDark: false
     )
 
-    private static let gruvboxDark = TerminalTheme(
-        name: .gruvboxDark,
-        displayName: "Gruvbox Dark",
-        backgroundColor: ColorValue(red: 40, green: 40, blue: 40),
-        foregroundColor: ColorValue(red: 235, green: 219, blue: 178),
-        cursorColor: ColorValue(red: 235, green: 219, blue: 178),
+    private static let gruvboxLight = TerminalTheme(
+        name: .gruvboxLight,
+        displayName: "Gruvbox Light",
+        backgroundColor: ColorValue(red: 251, green: 241, blue: 199),
+        foregroundColor: ColorValue(red: 60, green: 56, blue: 54),
+        cursorColor: ColorValue(red: 60, green: 56, blue: 54),
         ansiColors: [
-            ColorValue(red: 40, green: 40, blue: 40),
-            ColorValue(red: 204, green: 36, blue: 29),
-            ColorValue(red: 152, green: 151, blue: 26),
-            ColorValue(red: 215, green: 153, blue: 33),
-            ColorValue(red: 69, green: 133, blue: 136),
-            ColorValue(red: 177, green: 98, blue: 134),
-            ColorValue(red: 104, green: 157, blue: 106),
-            ColorValue(red: 168, green: 153, blue: 132),
-            ColorValue(red: 146, green: 131, blue: 116),
-            ColorValue(red: 251, green: 73, blue: 52),
-            ColorValue(red: 184, green: 187, blue: 38),
-            ColorValue(red: 250, green: 189, blue: 47),
-            ColorValue(red: 131, green: 165, blue: 152),
-            ColorValue(red: 211, green: 134, blue: 155),
-            ColorValue(red: 142, green: 192, blue: 124),
-            ColorValue(red: 235, green: 219, blue: 178),
+            ColorValue(red: 251, green: 241, blue: 199),    // black
+            ColorValue(red: 204, green: 36, blue: 29),      // red
+            ColorValue(red: 152, green: 151, blue: 26),     // green
+            ColorValue(red: 215, green: 153, blue: 33),     // yellow
+            ColorValue(red: 69, green: 133, blue: 136),     // blue
+            ColorValue(red: 177, green: 98, blue: 134),     // magenta
+            ColorValue(red: 104, green: 157, blue: 106),    // cyan
+            ColorValue(red: 124, green: 111, blue: 100),    // white
+            ColorValue(red: 146, green: 131, blue: 116),    // bright black
+            ColorValue(red: 157, green: 0, blue: 6),        // bright red
+            ColorValue(red: 121, green: 116, blue: 14),     // bright green
+            ColorValue(red: 181, green: 118, blue: 20),     // bright yellow
+            ColorValue(red: 7, green: 102, blue: 120),      // bright blue
+            ColorValue(red: 143, green: 63, blue: 113),     // bright magenta
+            ColorValue(red: 66, green: 123, blue: 88),      // bright cyan
+            ColorValue(red: 60, green: 56, blue: 54),       // bright white
         ],
-        isDark: true
+        isDark: false
     )
 }

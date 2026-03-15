@@ -4,24 +4,15 @@ import SwiftTerm
 struct KeyMapping: Sendable {
     static func applyCtrl(to character: UInt8) -> UInt8 {
         switch character {
-        case 0x61...0x7a: // a-z
-            return character - 0x60
-        case 0x41...0x5a: // A-Z
-            return character - 0x40
-        case 0x40: // @
-            return 0x00
-        case 0x5b: // [
-            return 0x1b
-        case 0x5c: // backslash
-            return 0x1c
-        case 0x5d: // ]
-            return 0x1d
-        case 0x5e: // ^
-            return 0x1e
-        case 0x5f: // _
-            return 0x1f
-        default:
-            return character
+        case 0x61...0x7a: return character - 0x60
+        case 0x41...0x5a: return character - 0x40
+        case 0x40: return 0x00
+        case 0x5b: return 0x1b
+        case 0x5c: return 0x1c
+        case 0x5d: return 0x1d
+        case 0x5e: return 0x1e
+        case 0x5f: return 0x1f
+        default: return character
         }
     }
 
@@ -37,20 +28,68 @@ struct KeyMapping: Sendable {
     }
 }
 
+// MARK: - Panel Model
+
+struct ToolbarPanel: Sendable {
+    let id: String
+    let title: String
+    let icon: String
+    let items: [ToolbarItem]
+
+    enum ToolbarItem: Sendable {
+        case toolbarButton(ToolbarButtonKind)
+        case shortcut(Shortcut)
+
+        var label: String {
+            switch self {
+            case .toolbarButton(let kind): return kind.displayTitle
+            case .shortcut(let s): return s.shortcutDisplay.isEmpty ? s.label : s.shortcutDisplay
+            }
+        }
+
+        var bytes: [UInt8]? {
+            switch self {
+            case .toolbarButton(let kind): return kind.bytes
+            case .shortcut(let s): return s.bytes
+            }
+        }
+
+        var isModifier: Bool {
+            switch self {
+            case .toolbarButton(let kind): return kind.isModifier
+            case .shortcut: return false
+            }
+        }
+    }
+}
+
+// MARK: - Accessory View
+
 @MainActor
 final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     weak var terminalView: TerminalView?
     var onMicrophoneTapped: (() -> Void)?
+
     var showMicButton: Bool = false {
         didSet {
             guard oldValue != showMicButton else { return }
-            rebuildButtons()
+            rebuildFixedTrailing()
+            layoutSubviews()
         }
     }
 
+    var panels: [ToolbarPanel] = [] {
+        didSet { rebuildAll() }
+    }
+
+    private var selectedPanelIndex: Int = 0
+    private var panelPickerButton = UIButton(type: .system)
+    private var scrollView = UIScrollView()
+    private var actionButtons: [UIButton] = []
+    private var actionItems: [UIButton: ToolbarPanel.ToolbarItem] = [:]
     private var ctrlButton: UIButton?
     private var micButton: UIButton?
-    private var buttons: [UIButton] = []
+    private var trailingButtons: [UIButton] = []
 
     var controlModifier: Bool = false {
         didSet {
@@ -70,12 +109,13 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
 
     private var buttonColor: UIColor = UIColor(white: 0.22, alpha: 1)
     private var textColor: UIColor = .white
+    private let pad: CGFloat = 4
 
     init(frame: CGRect, terminalView: TerminalView) {
         self.terminalView = terminalView
         super.init(frame: frame, inputViewStyle: .keyboard)
         allowsSelfSizing = true
-        setupButtons()
+        setupSubviews()
     }
 
     @available(*, unavailable)
@@ -83,53 +123,115 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         fatalError("init(coder:) is not supported")
     }
 
-    private func setupButtons() {
-        rebuildButtons()
+    private func setupSubviews() {
+        panelPickerButton.layer.masksToBounds = true
+        panelPickerButton.backgroundColor = .systemBlue
+        panelPickerButton.tintColor = .white
+        panelPickerButton.showsMenuAsPrimaryAction = true
+        addSubview(panelPickerButton)
+
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.alwaysBounceHorizontal = true
+        addSubview(scrollView)
+
+        rebuildFixedTrailing()
     }
 
-    private func rebuildButtons() {
-        for btn in buttons { btn.removeFromSuperview() }
-        buttons.removeAll()
-        ctrlButton = nil
+    private func rebuildFixedTrailing() {
+        for btn in trailingButtons { btn.removeFromSuperview() }
+        trailingButtons.removeAll()
         micButton = nil
-
-        let keys: [(String, Selector)] = [
-            ("Esc", #selector(escTapped)),
-            ("Ctrl", #selector(ctrlTapped)),
-            ("Tab", #selector(tabTapped)),
-        ]
-
-        for (title, action) in keys {
-            let btn = makeButton(title: title, action: action)
-            if title == "Ctrl" { ctrlButton = btn }
-            buttons.append(btn)
-            addSubview(btn)
-        }
 
         if showMicButton {
             let micBtn = makeButton(title: nil, action: #selector(micTapped))
-            let micConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+            let cfg = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
             micBtn.setImage(
-                UIImage(systemName: "mic.fill", withConfiguration: micConfig)?
+                UIImage(systemName: "mic.fill", withConfiguration: cfg)?
                     .withTintColor(textColor, renderingMode: .alwaysOriginal),
                 for: .normal
             )
             micButton = micBtn
-            buttons.append(micBtn)
+            trailingButtons.append(micBtn)
             addSubview(micBtn)
         }
 
         let hideBtn = makeButton(title: nil, action: #selector(hideKeyboard))
-        let config = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        let cfg = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
         hideBtn.setImage(
-            UIImage(systemName: "keyboard.chevron.compact.down", withConfiguration: config)?
+            UIImage(systemName: "keyboard.chevron.compact.down", withConfiguration: cfg)?
                 .withTintColor(textColor, renderingMode: .alwaysOriginal),
             for: .normal
         )
-        buttons.append(hideBtn)
+        trailingButtons.append(hideBtn)
         addSubview(hideBtn)
+    }
+
+    private func rebuildAll() {
+        if selectedPanelIndex >= panels.count {
+            selectedPanelIndex = 0
+        }
+        updatePanelPickerMenu()
+        rebuildActionButtons()
+    }
+
+    private func updatePanelPickerMenu() {
+        guard !panels.isEmpty else {
+            panelPickerButton.setTitle("--", for: .normal)
+            panelPickerButton.menu = nil
+            return
+        }
+
+        let current = panels[selectedPanelIndex]
+        let iconCfg = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        panelPickerButton.setImage(
+            UIImage(systemName: current.icon, withConfiguration: iconCfg)?
+                .withTintColor(.white, renderingMode: .alwaysOriginal),
+            for: .normal
+        )
+        panelPickerButton.setTitle(nil, for: .normal)
+
+        let actions = panels.enumerated().map { idx, panel in
+            UIAction(
+                title: panel.title,
+                image: UIImage(systemName: panel.icon),
+                state: idx == selectedPanelIndex ? .on : .off
+            ) { [weak self] _ in
+                self?.selectPanel(idx)
+            }
+        }
+        panelPickerButton.menu = UIMenu(children: actions)
+    }
+
+    private func selectPanel(_ index: Int) {
+        guard index < panels.count, index != selectedPanelIndex else { return }
+        selectedPanelIndex = index
+        updatePanelPickerMenu()
+        rebuildActionButtons()
+    }
+
+    private func rebuildActionButtons() {
+        for btn in actionButtons { btn.removeFromSuperview() }
+        actionButtons.removeAll()
+        actionItems.removeAll()
+        ctrlButton = nil
+
+        guard !panels.isEmpty else {
+            setNeedsLayout()
+            return
+        }
+
+        let items = panels[selectedPanelIndex].items
+        for item in items {
+            let btn = makeButton(title: item.label, action: #selector(actionButtonTapped(_:)))
+            actionItems[btn] = item
+            if case .toolbarButton(.ctrl) = item { ctrlButton = btn }
+            actionButtons.append(btn)
+            scrollView.addSubview(btn)
+        }
 
         setNeedsLayout()
+        scrollView.contentOffset = .zero
     }
 
     private func makeButton(title: String?, action: Selector) -> UIButton {
@@ -139,7 +241,8 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         btn.backgroundColor = buttonColor
         if let title {
             btn.setTitle(title, for: .normal)
-            btn.titleLabel?.font = .monospacedSystemFont(ofSize: 14, weight: .medium)
+            btn.titleLabel?.font = .monospacedSystemFont(ofSize: 13, weight: .medium)
+            btn.titleLabel?.lineBreakMode = .byClipping
         }
         btn.setTitleColor(textColor, for: .normal)
         btn.tintColor = textColor
@@ -149,33 +252,55 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        let pad: CGFloat = 4
         let h = frame.height - 8
-        guard h > 0, !buttons.isEmpty else { return }
+        guard h > 0 else { return }
 
-        let totalPad = pad * CGFloat(buttons.count + 1)
-        let w = (frame.width - totalPad) / CGFloat(buttons.count)
+        let btnMinW: CGFloat = 44
+        let trailingW: CGFloat = CGFloat(trailingButtons.count) * (btnMinW + pad)
 
-        var x = pad
-        for btn in buttons {
-            btn.frame = CGRect(x: x, y: 4, width: w, height: h)
-            x += w + pad
+        // Panel picker (circle)
+        let pickerSize: CGFloat = min(h, 36)
+        let pickerY = 4 + (h - pickerSize) / 2
+        panelPickerButton.frame = CGRect(x: pad, y: pickerY, width: pickerSize, height: pickerSize)
+        panelPickerButton.layer.cornerRadius = pickerSize / 2
+        let pickerW = pickerSize
+        panelPickerButton.isHidden = panels.count <= 1
+
+        let scrollLeading = panels.count <= 1 ? pad : pad + pickerW + pad
+        let scrollTrailing = frame.width - trailingW
+        scrollView.frame = CGRect(x: scrollLeading, y: 0, width: scrollTrailing - scrollLeading, height: frame.height)
+
+        // Action buttons inside scroll view — sized to fit content
+        let buttonCount = actionButtons.count
+        if buttonCount > 0 {
+            let btnPadH: CGFloat = 12
+            var x: CGFloat = 0
+            for btn in actionButtons {
+                let fitW = max(btn.intrinsicContentSize.width + btnPadH, btnMinW)
+                btn.frame = CGRect(x: x, y: 4, width: fitW, height: h)
+                x += fitW + pad
+            }
+            scrollView.contentSize = CGSize(width: x - pad, height: frame.height)
+        } else {
+            scrollView.contentSize = .zero
+        }
+
+        // Trailing fixed buttons
+        var tx = frame.width - trailingW + pad
+        for btn in trailingButtons {
+            btn.frame = CGRect(x: tx, y: 4, width: btnMinW, height: h)
+            tx += btnMinW + pad
         }
     }
 
-    @objc private func escTapped() {
+    @objc private func actionButtonTapped(_ sender: UIButton) {
         UIDevice.current.playInputClick()
-        terminalView?.send([0x1b])
-    }
-
-    @objc private func ctrlTapped() {
-        UIDevice.current.playInputClick()
-        controlModifier.toggle()
-    }
-
-    @objc private func tabTapped() {
-        UIDevice.current.playInputClick()
-        terminalView?.send([0x09])
+        guard let item = actionItems[sender] else { return }
+        if item.isModifier {
+            controlModifier.toggle()
+        } else if let bytes = item.bytes {
+            terminalView?.send(bytes)
+        }
     }
 
     @objc private func micTapped() {
@@ -191,7 +316,15 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     func updateColors(buttonBg: UIColor, textColor newTextColor: UIColor) {
         buttonColor = buttonBg
         textColor = newTextColor
-        for btn in buttons {
+
+        panelPickerButton.backgroundColor = .systemBlue
+        panelPickerButton.tintColor = .white
+        if let img = panelPickerButton.image(for: .normal) {
+            panelPickerButton.setImage(img.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
+        }
+
+        let allBtns = actionButtons + trailingButtons
+        for btn in allBtns {
             btn.backgroundColor = buttonBg
             btn.setTitleColor(newTextColor, for: .normal)
             btn.tintColor = newTextColor

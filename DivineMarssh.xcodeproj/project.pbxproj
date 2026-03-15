@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC0001010000001200000012 /* ToolbarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002010000001200000012 /* ToolbarButton.swift */; };
+		CC0001020000001300000013 /* ShortcutPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002020000001300000013 /* ShortcutPack.swift */; };
+		CC0001030000001400000014 /* ShortcutPackCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002030000001400000014 /* ShortcutPackCatalog.swift */; };
+		CC0001040000001500000015 /* ToolbarSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002040000001500000015 /* ToolbarSettingsView.swift */; };
 		079C3FF7D065B99C9A027C15 /* KnownHostsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F7DAA139F14FBFB4F194DCB /* KnownHostsStoreTests.swift */; };
 		0DEBBFCAFF7A86632663F198 /* SSHHostKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */; };
 		13A0FA1E609D39A27B4A9D1E /* MemoryHygieneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C3BB66AB8B1FB2E1B3DC76 /* MemoryHygieneTests.swift */; };
@@ -101,6 +105,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CC0002010000001200000012 /* ToolbarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButton.swift; sourceTree = "<group>"; };
+		CC0002020000001300000013 /* ShortcutPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPack.swift; sourceTree = "<group>"; };
+		CC0002030000001400000014 /* ShortcutPackCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPackCatalog.swift; sourceTree = "<group>"; };
+		CC0002040000001500000015 /* ToolbarSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarSettingsView.swift; sourceTree = "<group>"; };
 		038173904DC82D5CECC4D2FD /* ConnectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionViewModelTests.swift; sourceTree = "<group>"; };
 		0767CB4BDDF289700A12EE1C /* TerminalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalScreen.swift; sourceTree = "<group>"; };
 		1215C5CC26170094FD12DEA7 /* KeyboardAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAccessoryView.swift; sourceTree = "<group>"; };
@@ -308,12 +316,15 @@
 		7C4E4C9122683FC6AC7612AA /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				CC0002020000001300000013 /* ShortcutPack.swift */,
+				CC0002030000001400000014 /* ShortcutPackCatalog.swift */,
 				3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */,
 				ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */,
 				A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */,
 				52E3B0C56CC7188A2DF2FD81 /* SSHIdentity.swift */,
 				AA0002010000000100000001 /* TerminalAppearance.swift */,
 				AA0002020000000200000002 /* TerminalTheme.swift */,
+				CC0002010000001200000012 /* ToolbarButton.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -383,6 +394,7 @@
 				AA00020A0000000A0000000A /* AboutView.swift */,
 				AA0002040000000400000004 /* AppearanceViewModel.swift */,
 				AA0002090000000900000009 /* SettingsView.swift */,
+				CC0002040000001500000015 /* ToolbarSettingsView.swift */,
 				AA0002050000000500000005 /* VisualSettingsView.swift */,
 				BB0002110000001100000011 /* VoiceInputSettingsView.swift */,
 			);
@@ -652,6 +664,10 @@
 				AA0001040000000400000004 /* AppearanceViewModel.swift in Sources */,
 				AA0001050000000500000005 /* VisualSettingsView.swift in Sources */,
 				AA0001090000000900000009 /* SettingsView.swift in Sources */,
+				CC0001020000001300000013 /* ShortcutPack.swift in Sources */,
+				CC0001030000001400000014 /* ShortcutPackCatalog.swift in Sources */,
+				CC0001010000001200000012 /* ToolbarButton.swift in Sources */,
+				CC0001040000001500000015 /* ToolbarSettingsView.swift in Sources */,
 				BB00010D0000000D0000000D /* WhisperService.swift in Sources */,
 				BB00010E0000000E0000000E /* SpeechComposeBar.swift in Sources */,
 				BB0001110000001100000011 /* VoiceInputSettingsView.swift in Sources */,
@@ -705,7 +721,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -808,7 +824,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
