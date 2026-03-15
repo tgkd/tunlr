@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CC0001010000001200000012 /* ToolbarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002010000001200000012 /* ToolbarButton.swift */; };
-		CC0001020000001300000013 /* ShortcutPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002020000001300000013 /* ShortcutPack.swift */; };
-		CC0001030000001400000014 /* ShortcutPackCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002030000001400000014 /* ShortcutPackCatalog.swift */; };
-		CC0001040000001500000015 /* ToolbarSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002040000001500000015 /* ToolbarSettingsView.swift */; };
 		079C3FF7D065B99C9A027C15 /* KnownHostsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F7DAA139F14FBFB4F194DCB /* KnownHostsStoreTests.swift */; };
 		0DEBBFCAFF7A86632663F198 /* SSHHostKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = A486A3DE3C89A8C14E43EEEF /* SSHHostKey.swift */; };
 		13A0FA1E609D39A27B4A9D1E /* MemoryHygieneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C3BB66AB8B1FB2E1B3DC76 /* MemoryHygieneTests.swift */; };
@@ -75,6 +71,10 @@
 		C7A5E85448F40F0E0375BBFE /* KnownHostsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C052B361AFB7594E6E138D /* KnownHostsStore.swift */; };
 		C84CCEF2AF6526D10E0A3CE8 /* FingerprintURIParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4765ACF8EE3591F7B6CB52D /* FingerprintURIParser.swift */; };
 		C89E4165FA151140B6705CCB /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 4E31904FC034D29999A090B0 /* Citadel */; };
+		CC0001010000001200000012 /* ToolbarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002010000001200000012 /* ToolbarButton.swift */; };
+		CC0001020000001300000013 /* ShortcutPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002020000001300000013 /* ShortcutPack.swift */; };
+		CC0001030000001400000014 /* ShortcutPackCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002030000001400000014 /* ShortcutPackCatalog.swift */; };
+		CC0001040000001500000015 /* ToolbarSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002040000001500000015 /* ToolbarSettingsView.swift */; };
 		CC4FCE47DB7C71DBFA6F9370 /* SecureEnclaveKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD3461DF50A4E18871F345C /* SecureEnclaveKeyManager.swift */; };
 		CC9F75D8825F0FBCD66AA7A5 /* KeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CBEA2E281AD276CBBFD52B /* KeyManager.swift */; };
 		CEC85CEEF1042D46E21E8BCA /* SSHSessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73AFBB77C48A1B7263A73446 /* SSHSessionManagerTests.swift */; };
@@ -105,10 +105,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		CC0002010000001200000012 /* ToolbarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButton.swift; sourceTree = "<group>"; };
-		CC0002020000001300000013 /* ShortcutPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPack.swift; sourceTree = "<group>"; };
-		CC0002030000001400000014 /* ShortcutPackCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPackCatalog.swift; sourceTree = "<group>"; };
-		CC0002040000001500000015 /* ToolbarSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarSettingsView.swift; sourceTree = "<group>"; };
 		038173904DC82D5CECC4D2FD /* ConnectionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionViewModelTests.swift; sourceTree = "<group>"; };
 		0767CB4BDDF289700A12EE1C /* TerminalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalScreen.swift; sourceTree = "<group>"; };
 		1215C5CC26170094FD12DEA7 /* KeyboardAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAccessoryView.swift; sourceTree = "<group>"; };
@@ -167,6 +163,10 @@
 		C43E97E11FB9DDC7943F85E8 /* FingerprintFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintFormatterTests.swift; sourceTree = "<group>"; };
 		C9A435866C8ECA26644D53B4 /* ConnectionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionListView.swift; sourceTree = "<group>"; };
 		CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DivineMarsshTests.swift; sourceTree = "<group>"; };
+		CC0002010000001200000012 /* ToolbarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButton.swift; sourceTree = "<group>"; };
+		CC0002020000001300000013 /* ShortcutPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPack.swift; sourceTree = "<group>"; };
+		CC0002030000001400000014 /* ShortcutPackCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPackCatalog.swift; sourceTree = "<group>"; };
+		CC0002040000001500000015 /* ToolbarSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarSettingsView.swift; sourceTree = "<group>"; };
 		CC14D026864E2E70E3AD617A /* KeyManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerView.swift; sourceTree = "<group>"; };
 		CEAA06BC02431C42E488BA7C /* KeychainKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainKeyManager.swift; sourceTree = "<group>"; };
 		D4765ACF8EE3591F7B6CB52D /* FingerprintURIParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintURIParser.swift; sourceTree = "<group>"; };
@@ -721,7 +721,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -824,7 +824,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;

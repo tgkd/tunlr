@@ -41,7 +41,7 @@ final class TerminalViewController: UIViewController {
             terminalView.topAnchor.constraint(equalTo: view.topAnchor),
             terminalView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: hPadding),
             terminalView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -hPadding),
-            terminalView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            view.keyboardLayoutGuide.topAnchor.constraint(equalTo: terminalView.bottomAnchor),
         ])
 
         let accessory = SimpleTerminalAccessory(
