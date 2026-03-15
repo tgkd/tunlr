@@ -27,6 +27,9 @@ packages:
   swift-nio:
     url: https://github.com/apple/swift-nio.git
     from: "2.65.0"
+  WhisperKit:
+    url: https://github.com/argmaxinc/WhisperKit.git
+    from: "0.16.0"
 
 targets:
   DivineMarssh:
@@ -58,6 +61,7 @@ targets:
         product: NIOSSH
       - package: swift-nio
         product: NIOCore
+      - package: WhisperKit
 
   DivineMarsshTests:
     type: bundle.unit-test

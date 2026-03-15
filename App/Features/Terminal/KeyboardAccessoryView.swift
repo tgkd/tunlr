@@ -40,8 +40,16 @@ struct KeyMapping: Sendable {
 @MainActor
 final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     weak var terminalView: TerminalView?
+    var onMicrophoneTapped: (() -> Void)?
+    var showMicButton: Bool = false {
+        didSet {
+            guard oldValue != showMicButton else { return }
+            rebuildButtons()
+        }
+    }
 
     private var ctrlButton: UIButton?
+    private var micButton: UIButton?
     private var buttons: [UIButton] = []
 
     var controlModifier: Bool = false {
@@ -49,6 +57,12 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
             ctrlButton?.isSelected = controlModifier
             ctrlButton?.backgroundColor = controlModifier ? UIView().tintColor : buttonColor
             terminalView?.controlModifier = controlModifier
+        }
+    }
+
+    var isMicActive: Bool = false {
+        didSet {
+            micButton?.backgroundColor = isMicActive ? .systemRed : buttonColor
         }
     }
 
@@ -69,6 +83,15 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     }
 
     private func setupButtons() {
+        rebuildButtons()
+    }
+
+    private func rebuildButtons() {
+        for btn in buttons { btn.removeFromSuperview() }
+        buttons.removeAll()
+        ctrlButton = nil
+        micButton = nil
+
         let keys: [(String, Selector)] = [
             ("Esc", #selector(escTapped)),
             ("Ctrl", #selector(ctrlTapped)),
@@ -82,6 +105,19 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
             addSubview(btn)
         }
 
+        if showMicButton {
+            let micBtn = makeButton(title: nil, action: #selector(micTapped))
+            let micConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+            micBtn.setImage(
+                UIImage(systemName: "mic.fill", withConfiguration: micConfig)?
+                    .withTintColor(.white, renderingMode: .alwaysOriginal),
+                for: .normal
+            )
+            micButton = micBtn
+            buttons.append(micBtn)
+            addSubview(micBtn)
+        }
+
         let hideBtn = makeButton(title: nil, action: #selector(hideKeyboard))
         let config = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
         hideBtn.setImage(
@@ -91,6 +127,8 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         )
         buttons.append(hideBtn)
         addSubview(hideBtn)
+
+        setNeedsLayout()
     }
 
     private func makeButton(title: String?, action: Selector) -> UIButton {
@@ -139,6 +177,11 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         terminalView?.send([0x09])
     }
 
+    @objc private func micTapped() {
+        UIDevice.current.playInputClick()
+        onMicrophoneTapped?()
+    }
+
     @objc private func hideKeyboard() {
         UIDevice.current.playInputClick()
         terminalView?.resignFirstResponder()
@@ -156,6 +199,9 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         }
         if controlModifier {
             ctrlButton?.backgroundColor = UIView().tintColor
+        }
+        if isMicActive {
+            micButton?.backgroundColor = .systemRed
         }
     }
 }

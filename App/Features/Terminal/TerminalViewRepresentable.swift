@@ -4,7 +4,9 @@ struct TerminalViewRepresentable: UIViewControllerRepresentable {
     let sshSession: SSHSession
     @Binding var terminalTitle: String
     @ObservedObject var appearanceViewModel: AppearanceViewModel
+    var voiceInputEnabled: Bool = false
     var onTerminalReady: ((TerminalViewController) -> Void)?
+    var onMicrophoneTapped: (() -> Void)?
 
     func makeUIViewController(context: Context) -> TerminalViewController {
         let dataSource = SSHTerminalDataSource(sshSession: sshSession)
@@ -12,12 +14,15 @@ struct TerminalViewRepresentable: UIViewControllerRepresentable {
         viewController.onTitleChange = { title in
             terminalTitle = title
         }
+        viewController.onMicrophoneTapped = onMicrophoneTapped
+        viewController.voiceInputEnabled = voiceInputEnabled
         context.coordinator.viewController = viewController
         return viewController
     }
 
     func updateUIViewController(_ uiViewController: TerminalViewController, context: Context) {
         uiViewController.applyAppearance(appearanceViewModel.appearance)
+        uiViewController.voiceInputEnabled = voiceInputEnabled
     }
 
     func makeCoordinator() -> Coordinator {

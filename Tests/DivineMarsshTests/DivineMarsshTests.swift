@@ -21,7 +21,9 @@ final class DivineMarsshTests: XCTestCase {
             connectionHandlerFactory: { handler },
             profileStore: store
         )
-        let view = ContentView(profileStore: store, keyManager: keyManager, sessionManager: sessionManager)
+        let appearanceStore = try AppearanceStore(directory: dir)
+        let appearanceVM = AppearanceViewModel(store: appearanceStore)
+        let view = ContentView(profileStore: store, keyManager: keyManager, sessionManager: sessionManager, appearanceViewModel: appearanceVM)
         XCTAssertNotNil(view.body)
     }
 }

@@ -19,6 +19,12 @@ struct SettingsView: View {
                 Label("Appearance", systemImage: "paintbrush")
             }
 
+            NavigationLink {
+                VoiceInputSettingsView()
+            } label: {
+                Label("Voice Input", systemImage: "mic")
+            }
+
             Section {
                 NavigationLink {
                     AboutView()

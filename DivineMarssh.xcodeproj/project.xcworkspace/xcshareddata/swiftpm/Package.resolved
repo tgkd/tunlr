@@ -1,5 +1,5 @@
 {
-  "originHash" : "8ee1a8eb9b9f793d1d4e7c1f193c56841e0ae750da19dd5723f73a8ad36a1930",
+  "originHash" : "daa59c03dadd47ad16d9cacfc97fbf0871db8fd2f5dc9c66d54f0f352efb50a4",
   "pins" : [
     {
       "identity" : "bigint",
@@ -65,6 +65,15 @@
       }
     },
     {
+      "identity" : "swift-jinja",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/huggingface/swift-jinja.git",
+      "state" : {
+        "revision" : "f731f03bf746481d4fda07f817c3774390c4d5b9",
+        "version" : "2.3.2"
+      }
+    },
+    {
       "identity" : "swift-log",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
@@ -110,12 +119,39 @@
       }
     },
     {
+      "identity" : "swift-transformers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/huggingface/swift-transformers.git",
+      "state" : {
+        "revision" : "150169bfba0889c229a2ce7494cf8949f18e6906",
+        "version" : "1.1.9"
+      }
+    },
+    {
       "identity" : "swiftterm",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/migueldeicaza/SwiftTerm",
       "state" : {
         "revision" : "b1262db5b6bea699a8260a8c66999436c508ca56",
         "version" : "1.11.2"
+      }
+    },
+    {
+      "identity" : "whisperkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/argmaxinc/WhisperKit.git",
+      "state" : {
+        "revision" : "26577ce3017aae8c9edfd9a0dd17851bd248c731",
+        "version" : "0.17.0"
+      }
+    },
+    {
+      "identity" : "yyjson",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ibireme/yyjson.git",
+      "state" : {
+        "revision" : "8b4a38dc994a110abaec8a400615567bd996105f",
+        "version" : "0.12.0"
       }
     }
   ],

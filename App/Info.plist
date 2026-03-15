@@ -14,6 +14,8 @@
 	<dict/>
 	<key>NSCameraUsageDescription</key>
 	<string>DivineMarssh may use the camera to scan QR codes for importing SSH keys.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>tunlr needs microphone access for voice input of terminal commands.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

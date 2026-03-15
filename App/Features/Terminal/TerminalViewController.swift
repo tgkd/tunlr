@@ -8,6 +8,14 @@ final class TerminalViewController: UIViewController {
 
     var onTitleChange: ((String) -> Void)?
     var onSizeChange: ((Int, Int) -> Void)?
+    var onMicrophoneTapped: (() -> Void)?
+    var voiceInputEnabled: Bool = false {
+        didSet {
+            if let accessory = terminalView?.inputAccessoryView as? SimpleTerminalAccessory {
+                accessory.showMicButton = voiceInputEnabled
+            }
+        }
+    }
 
     private var currentAppearance: TerminalAppearance?
 
@@ -40,6 +48,9 @@ final class TerminalViewController: UIViewController {
             frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 44),
             terminalView: terminalView
         )
+        accessory.onMicrophoneTapped = { [weak self] in
+            self?.onMicrophoneTapped?()
+        }
         terminalView.inputAccessoryView = accessory
 
         dataSource.attachTerminalView(terminalView)
@@ -89,6 +100,16 @@ final class TerminalViewController: UIViewController {
     private func notifyTerminalSize() {
         guard let size = terminalSize() else { return }
         onSizeChange?(size.cols, size.rows)
+    }
+
+    func sendText(_ text: String) {
+        terminalView?.send(Array(text.utf8))
+    }
+
+    func setMicActive(_ active: Bool) {
+        if let accessory = terminalView?.inputAccessoryView as? SimpleTerminalAccessory {
+            accessory.isMicActive = active
+        }
     }
 
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {

@@ -62,6 +62,10 @@
 		B0A4BB719C90594C0DAD5279 /* HostKeyVerificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F430BA2F6D0BB7F56D40DBBF /* HostKeyVerificationTests.swift */; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* RealSSHConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* RealSSHConnectionTests.swift */; };
 		B2F78DA4D46B2128C871379E /* SSHSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9286C2B03FA0F033E38A698 /* SSHSessionManager.swift */; };
+		BB00010D0000000D0000000D /* WhisperService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00020D0000000D0000000D /* WhisperService.swift */; };
+		BB00010E0000000E0000000E /* SpeechComposeBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00020E0000000E0000000E /* SpeechComposeBar.swift */; };
+		BB00010F0000000F0000000F /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = BB0002100000001000000010 /* WhisperKit */; };
+		BB0001110000001100000011 /* VoiceInputSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB0002110000001100000011 /* VoiceInputSettingsView.swift */; };
 		BB64BABE77A5C5B4BFC51B3A /* KeychainKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEAA06BC02431C42E488BA7C /* KeychainKeyManager.swift */; };
 		C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */; };
 		C7A5E85448F40F0E0375BBFE /* KnownHostsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C052B361AFB7594E6E138D /* KnownHostsStore.swift */; };
@@ -148,6 +152,9 @@
 		AA00020A0000000A0000000A /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		B22F0262FF6A695FB9E517FC /* TerminalViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalViewRepresentable.swift; sourceTree = "<group>"; };
 		B9FA6A4F8545F824FBC305CB /* HostKeyMismatchWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyMismatchWarning.swift; sourceTree = "<group>"; };
+		BB00020D0000000D0000000D /* WhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperService.swift; sourceTree = "<group>"; };
+		BB00020E0000000E0000000E /* SpeechComposeBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechComposeBar.swift; sourceTree = "<group>"; };
+		BB0002110000001100000011 /* VoiceInputSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputSettingsView.swift; sourceTree = "<group>"; };
 		BF424B1FAA7BAEB86C24BAAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C43E97E11FB9DDC7943F85E8 /* FingerprintFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintFormatterTests.swift; sourceTree = "<group>"; };
 		C9A435866C8ECA26644D53B4 /* ConnectionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionListView.swift; sourceTree = "<group>"; };
@@ -184,6 +191,7 @@
 				29DFEFD0CD9ED0BB2FF51FF8 /* NIOTransportServices in Frameworks */,
 				2B4576C4667EBB7F97E71218 /* NIOSSH in Frameworks */,
 				6DD9D02790B5F682F1C8A3AD /* NIOCore in Frameworks */,
+				BB00010F0000000F0000000F /* WhisperKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,10 +256,12 @@
 			isa = PBXGroup;
 			children = (
 				1215C5CC26170094FD12DEA7 /* KeyboardAccessoryView.swift */,
+				BB00020E0000000E0000000E /* SpeechComposeBar.swift */,
 				F39D80F8D6D6A41615731388 /* SSHTerminalDataSource.swift */,
 				0767CB4BDDF289700A12EE1C /* TerminalScreen.swift */,
 				EAA6846E7FD0815AFB4AC585 /* TerminalViewController.swift */,
 				B22F0262FF6A695FB9E517FC /* TerminalViewRepresentable.swift */,
+				BB00020D0000000D0000000D /* WhisperService.swift */,
 			);
 			path = Terminal;
 			sourceTree = "<group>";
@@ -374,6 +384,7 @@
 				AA0002040000000400000004 /* AppearanceViewModel.swift */,
 				AA0002090000000900000009 /* SettingsView.swift */,
 				AA0002050000000500000005 /* VisualSettingsView.swift */,
+				BB0002110000001100000011 /* VoiceInputSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -528,6 +539,7 @@
 				147FB2FE6B85F58CA50C609B /* NIOTransportServices */,
 				F20B148135D06BE4E3C65086 /* NIOSSH */,
 				92EA5E8D61BCE96DD58C6501 /* NIOCore */,
+				BB0002100000001000000010 /* WhisperKit */,
 			);
 			productName = DivineMarssh;
 			productReference = 3E17AD78D5767695C19EABB7 /* DivineMarssh.app */;
@@ -557,6 +569,7 @@
 				9A0008B6E2F67C6B4DD19153 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				88F528284E3C592B308D605F /* XCRemoteSwiftPackageReference "swift-nio-ssh" */,
 				65D4C24FB86B685B2DCDCC17 /* XCRemoteSwiftPackageReference "swift-nio-transport-services" */,
+				BB0003100000001000000010 /* XCRemoteSwiftPackageReference "WhisperKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0F0053E6A9792A9EEB035712 /* Products */;
@@ -639,6 +652,9 @@
 				AA0001040000000400000004 /* AppearanceViewModel.swift in Sources */,
 				AA0001050000000500000005 /* VisualSettingsView.swift in Sources */,
 				AA0001090000000900000009 /* SettingsView.swift in Sources */,
+				BB00010D0000000D0000000D /* WhisperService.swift in Sources */,
+				BB00010E0000000E0000000E /* SpeechComposeBar.swift in Sources */,
+				BB0001110000001100000011 /* VoiceInputSettingsView.swift in Sources */,
 				AA00010A0000000A0000000A /* AboutView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -689,7 +705,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -792,7 +808,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -970,6 +986,14 @@
 				minimumVersion = 2.65.0;
 			};
 		};
+		BB0003100000001000000010 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.16.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -992,6 +1016,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9A0008B6E2F67C6B4DD19153 /* XCRemoteSwiftPackageReference "swift-nio" */;
 			productName = NIOCore;
+		};
+		BB0002100000001000000010 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB0003100000001000000010 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
 		};
 		F20B148135D06BE4E3C65086 /* NIOSSH */ = {
 			isa = XCSwiftPackageProductDependency;
