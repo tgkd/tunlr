@@ -1,45 +1,7 @@
 import UIKit
 import SwiftTerm
 
-enum AccessoryKey: String, CaseIterable, Sendable {
-    case esc
-    case tab
-    case ctrl
-    case arrowUp
-    case arrowDown
-    case arrowLeft
-    case arrowRight
-    case pipe
-    case tilde
-    case slash
-}
-
 struct KeyMapping: Sendable {
-    static func bytes(for key: AccessoryKey) -> [UInt8]? {
-        switch key {
-        case .esc:
-            return [0x1b]
-        case .tab:
-            return [0x09]
-        case .ctrl:
-            return nil
-        case .arrowUp:
-            return EscapeSequences.moveUpNormal
-        case .arrowDown:
-            return EscapeSequences.moveDownNormal
-        case .arrowLeft:
-            return EscapeSequences.moveLeftNormal
-        case .arrowRight:
-            return EscapeSequences.moveRightNormal
-        case .pipe:
-            return Array("|".utf8)
-        case .tilde:
-            return Array("~".utf8)
-        case .slash:
-            return Array("/".utf8)
-        }
-    }
-
     static func applyCtrl(to character: UInt8) -> UInt8 {
         switch character {
         case 0x61...0x7a: // a-z
@@ -68,42 +30,36 @@ struct KeyMapping: Sendable {
         modifierFlags: UIKeyModifierFlags,
         characters: String?
     ) -> [UInt8]? {
-        // Cmd as Meta: prefix with ESC
         if modifierFlags.contains(.command), let chars = characters, !chars.isEmpty {
             return [0x1b] + Array(chars.utf8)
         }
-        // Fn+arrows -> Page Up/Down (handled natively by iOS, but we add explicit support)
-        // Note: Fn+Up/Down naturally sends PageUp/PageDown on iOS hardware keyboards
         return nil
     }
 }
 
 @MainActor
-final class KeyboardAccessoryView: UIView, UIInputViewAudioFeedback {
+final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     weak var terminalView: TerminalView?
 
-    private(set) var isCtrlLocked: Bool = false {
+    private var ctrlButton: UIButton?
+    private var buttons: [UIButton] = []
+
+    var controlModifier: Bool = false {
         didSet {
-            ctrlButton?.isSelected = isCtrlLocked
-            terminalView?.controlModifier = isCtrlLocked
+            ctrlButton?.isSelected = controlModifier
+            ctrlButton?.backgroundColor = controlModifier ? UIView().tintColor : buttonColor
+            terminalView?.controlModifier = controlModifier
         }
     }
 
-    private var ctrlButton: UIButton?
-    private var buttons: [UIView] = []
-    private var repeatTimer: Timer?
-    private var repeatTask: Task<Void, Never>?
-
     var enableInputClicksWhenVisible: Bool { true }
 
-    private let contentHeight: CGFloat
+    private var buttonColor: UIColor = UIColor(white: 0.22, alpha: 1)
 
     init(frame: CGRect, terminalView: TerminalView) {
         self.terminalView = terminalView
-        self.contentHeight = frame.height
-        super.init(frame: frame)
-        autoresizingMask = .flexibleWidth
-        backgroundColor = .clear
+        super.init(frame: frame, inputViewStyle: .keyboard)
+        allowsSelfSizing = true
         setupButtons()
     }
 
@@ -112,181 +68,94 @@ final class KeyboardAccessoryView: UIView, UIInputViewAudioFeedback {
         fatalError("init(coder:) is not supported")
     }
 
-    override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: contentHeight)
+    private func setupButtons() {
+        let keys: [(String, Selector)] = [
+            ("Esc", #selector(escTapped)),
+            ("Ctrl", #selector(ctrlTapped)),
+            ("Tab", #selector(tabTapped)),
+        ]
+
+        for (title, action) in keys {
+            let btn = makeButton(title: title, action: action)
+            if title == "Ctrl" { ctrlButton = btn }
+            buttons.append(btn)
+            addSubview(btn)
+        }
+
+        let hideBtn = makeButton(title: nil, action: #selector(hideKeyboard))
+        let config = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        hideBtn.setImage(
+            UIImage(systemName: "keyboard.chevron.compact.down", withConfiguration: config)?
+                .withTintColor(.white, renderingMode: .alwaysOriginal),
+            for: .normal
+        )
+        buttons.append(hideBtn)
+        addSubview(hideBtn)
     }
 
-    private func setupButtons() {
-        for button in buttons {
-            button.removeFromSuperview()
+    private func makeButton(title: String?, action: Selector) -> UIButton {
+        let btn = UIButton(type: .system)
+        btn.layer.cornerRadius = 5
+        btn.layer.masksToBounds = true
+        btn.backgroundColor = buttonColor
+        if let title {
+            btn.setTitle(title, for: .normal)
+            btn.titleLabel?.font = .monospacedSystemFont(ofSize: 14, weight: .medium)
         }
-        buttons.removeAll()
-
-        let leftKeys: [(String, AccessoryKey, String?)] = [
-            ("esc", .esc, "escape"),
-            ("ctrl", .ctrl, "control"),
-            ("tab", .tab, "arrow.right.to.line.compact"),
-        ]
-
-        let middleKeys: [(String, AccessoryKey, String?)] = [
-            ("~", .tilde, nil),
-            ("|", .pipe, nil),
-            ("/", .slash, nil),
-        ]
-
-        let arrowKeys: [(String, AccessoryKey, String?)] = [
-            ("", .arrowLeft, "arrow.left"),
-            ("", .arrowDown, "arrow.down"),
-            ("", .arrowUp, "arrow.up"),
-            ("", .arrowRight, "arrow.right"),
-        ]
-
-        for (title, key, icon) in leftKeys {
-            let button = makeButton(title: title, key: key, icon: icon, isDark: true)
-            if key == .ctrl {
-                ctrlButton = button
-            }
-            buttons.append(button)
-        }
-
-        for (title, key, icon) in middleKeys {
-            let button = makeButton(title: title, key: key, icon: icon, isDark: false)
-            buttons.append(button)
-        }
-
-        for (title, key, icon) in arrowKeys {
-            let button = makeAutoRepeatButton(title: title, key: key, icon: icon)
-            buttons.append(button)
-        }
-
-        for button in buttons {
-            addSubview(button)
-        }
+        btn.setTitleColor(.white, for: .normal)
+        btn.tintColor = .white
+        btn.addTarget(self, action: action, for: .touchDown)
+        return btn
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        let padding: CGFloat = 4
-        let buttonHeight = contentHeight - 8
-        guard buttonHeight > 0 else { return }
-        let totalPadding = padding * CGFloat(buttons.count + 1)
-        let buttonWidth = (frame.width - totalPadding) / CGFloat(buttons.count)
+        let pad: CGFloat = 4
+        let h = frame.height - 8
+        guard h > 0, !buttons.isEmpty else { return }
 
-        var x: CGFloat = padding
-        for button in buttons {
-            button.frame = CGRect(x: x, y: 4, width: buttonWidth, height: buttonHeight)
-            x += buttonWidth + padding
+        let totalPad = pad * CGFloat(buttons.count + 1)
+        let w = (frame.width - totalPad) / CGFloat(buttons.count)
+
+        var x = pad
+        for btn in buttons {
+            btn.frame = CGRect(x: x, y: 4, width: w, height: h)
+            x += w + pad
         }
     }
 
-    private func makeButton(title: String, key: AccessoryKey, icon: String?, isDark: Bool) -> UIButton {
-        let button = HighlightButton(type: .system)
-        button.tag = AccessoryKey.allCases.firstIndex(of: key)!
-        button.layer.cornerRadius = 6
-        button.layer.masksToBounds = true
-        styleButton(button, isDark: isDark)
-
-        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
-        if let icon, let image = UIImage(systemName: icon, withConfiguration: symbolConfig) {
-            button.setImage(image, for: .normal)
-            button.tintColor = buttonTextColor
-        } else {
-            button.setTitle(title, for: .normal)
-            button.titleLabel?.font = .monospacedSystemFont(ofSize: 16, weight: .medium)
-        }
-
-        if key == .ctrl {
-            button.addTarget(self, action: #selector(ctrlTapped), for: .touchUpInside)
-        } else {
-            button.addTarget(self, action: #selector(keyTapped(_:)), for: .touchDown)
-        }
-
-        return button
-    }
-
-    private func makeAutoRepeatButton(title: String, key: AccessoryKey, icon: String?) -> UIButton {
-        let button = makeButton(title: title, key: key, icon: icon, isDark: false)
-        button.removeTarget(self, action: #selector(keyTapped(_:)), for: .touchDown)
-        button.addTarget(self, action: #selector(arrowDown(_:)), for: .touchDown)
-        button.addTarget(self, action: #selector(cancelRepeat), for: .touchUpInside)
-        button.addTarget(self, action: #selector(cancelRepeat), for: .touchUpOutside)
-        button.addTarget(self, action: #selector(cancelRepeat), for: .touchCancel)
-        return button
-    }
-
-    @objc private func keyTapped(_ sender: UIButton) {
-        let key = AccessoryKey.allCases[sender.tag]
+    @objc private func escTapped() {
         UIDevice.current.playInputClick()
-        if let data = KeyMapping.bytes(for: key) {
-            terminalView?.send(data)
-        }
+        terminalView?.send([0x1b])
     }
 
     @objc private func ctrlTapped() {
         UIDevice.current.playInputClick()
-        isCtrlLocked.toggle()
+        controlModifier.toggle()
     }
 
-    @objc private func arrowDown(_ sender: UIButton) {
-        let key = AccessoryKey.allCases[sender.tag]
-        guard let data = KeyMapping.bytes(for: key) else { return }
+    @objc private func tabTapped() {
         UIDevice.current.playInputClick()
-        terminalView?.send(data)
+        terminalView?.send([0x09])
+    }
 
-        let tv = terminalView
-        repeatTask = Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            guard !Task.isCancelled else { return }
-            self?.repeatTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-                MainActor.assumeIsolated {
-                    tv?.send(data)
-                }
+    @objc private func hideKeyboard() {
+        UIDevice.current.playInputClick()
+        terminalView?.resignFirstResponder()
+    }
+
+    func updateColors(buttonBg: UIColor, textColor: UIColor) {
+        buttonColor = buttonBg
+        for btn in buttons {
+            btn.backgroundColor = buttonBg
+            btn.setTitleColor(textColor, for: .normal)
+            btn.tintColor = textColor
+            if let img = btn.image(for: .normal) {
+                btn.setImage(img.withTintColor(textColor, renderingMode: .alwaysOriginal), for: .normal)
             }
         }
-    }
-
-    @objc private func cancelRepeat() {
-        repeatTimer?.invalidate()
-        repeatTimer = nil
-        repeatTask?.cancel()
-        repeatTask = nil
-    }
-
-    private var themeDark: Bool = true
-
-    func updateTheme(isDark: Bool, backgroundColor: UIColor) {
-        themeDark = isDark
-        self.backgroundColor = .clear
-        for (index, button) in buttons.enumerated() {
-            guard let btn = button as? UIButton else { continue }
-            let isLeftSection = index < 3
-            styleButton(btn, isDark: isLeftSection)
-        }
-    }
-
-    private var buttonTextColor: UIColor {
-        themeDark ? .white : .black
-    }
-
-    private func styleButton(_ button: UIButton, isDark: Bool) {
-        if themeDark {
-            button.backgroundColor = isDark
-                ? UIColor(white: 0.3, alpha: 1)
-                : UIColor(white: 0.22, alpha: 1)
-        } else {
-            button.backgroundColor = isDark
-                ? UIColor(white: 0.78, alpha: 1)
-                : UIColor(white: 0.92, alpha: 1)
-        }
-        button.tintColor = buttonTextColor
-        button.setTitleColor(buttonTextColor, for: .normal)
-    }
-}
-
-private final class HighlightButton: UIButton {
-    override var isSelected: Bool {
-        didSet {
-            backgroundColor = isSelected ? tintColor : backgroundColor
+        if controlModifier {
+            ctrlButton?.backgroundColor = UIView().tintColor
         }
     }
 }

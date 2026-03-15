@@ -21,8 +21,6 @@ final class TerminalViewController: UIViewController {
         fatalError("init(coder:) is not supported")
     }
 
-    private(set) var keyboardAccessory: KeyboardAccessoryView?
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -38,12 +36,10 @@ final class TerminalViewController: UIViewController {
             terminalView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
-        let short = UIDevice.current.userInterfaceIdiom == .phone
-        let accessory = KeyboardAccessoryView(
-            frame: CGRect(x: 0, y: 0, width: view.frame.width, height: short ? 44 : 48),
+        let accessory = SimpleTerminalAccessory(
+            frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 44),
             terminalView: terminalView
         )
-        keyboardAccessory = accessory
         terminalView.inputAccessoryView = accessory
 
         dataSource.attachTerminalView(terminalView)
@@ -70,7 +66,11 @@ final class TerminalViewController: UIViewController {
         let ansiColors = theme.ansiColors.map { $0.swiftTermColor }
         terminalView.installColors(ansiColors)
 
-        keyboardAccessory?.updateTheme(isDark: theme.isDark, backgroundColor: theme.backgroundColor.uiColor)
+        if let accessory = terminalView.inputAccessoryView as? SimpleTerminalAccessory {
+            let btnBg = theme.isDark ? UIColor(white: 0.22, alpha: 1) : UIColor(white: 0.88, alpha: 1)
+            let txtColor: UIColor = theme.isDark ? .white : .black
+            accessory.updateColors(buttonBg: btnBg, textColor: txtColor)
+        }
     }
 
     func feedData(_ data: ArraySlice<UInt8>) {

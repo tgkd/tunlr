@@ -60,7 +60,10 @@ struct ContentView: View {
             }
         }
         .alert("Connection Failed", isPresented: $showingConnectionError) {
-            Button("OK") {}
+            Button("OK") {
+                showTerminal = false
+                selectedProfile = nil
+            }
         } message: {
             Text(connectionError ?? "Unknown error")
         }
@@ -71,8 +74,6 @@ struct ContentView: View {
                         try await sessionManager.startSession(for: profile)
                         try? await viewModel.markConnected(id: profile.id)
                     } catch {
-                        showTerminal = false
-                        selectedProfile = nil
                         connectionError = error.localizedDescription
                         showingConnectionError = true
                     }

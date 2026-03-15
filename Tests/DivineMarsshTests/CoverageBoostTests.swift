@@ -566,33 +566,6 @@ struct PTYConfigurationAdditionalTests {
     }
 }
 
-// MARK: - AccessoryKey Tests
-
-@Suite("AccessoryKey Enum")
-struct AccessoryKeyTests {
-    @Test func allCasesCount() {
-        #expect(AccessoryKey.allCases.count == 10)
-    }
-
-    @Test func rawValues() {
-        #expect(AccessoryKey.esc.rawValue == "esc")
-        #expect(AccessoryKey.tab.rawValue == "tab")
-        #expect(AccessoryKey.ctrl.rawValue == "ctrl")
-        #expect(AccessoryKey.arrowUp.rawValue == "arrowUp")
-        #expect(AccessoryKey.arrowDown.rawValue == "arrowDown")
-        #expect(AccessoryKey.arrowLeft.rawValue == "arrowLeft")
-        #expect(AccessoryKey.arrowRight.rawValue == "arrowRight")
-        #expect(AccessoryKey.pipe.rawValue == "pipe")
-        #expect(AccessoryKey.tilde.rawValue == "tilde")
-        #expect(AccessoryKey.slash.rawValue == "slash")
-    }
-
-    @Test func initFromRawValue() {
-        #expect(AccessoryKey(rawValue: "esc") == .esc)
-        #expect(AccessoryKey(rawValue: "invalid") == nil)
-    }
-}
-
 // MARK: - SSHAuthMethod Tests
 
 @Suite("SSHAuthMethod Additional")

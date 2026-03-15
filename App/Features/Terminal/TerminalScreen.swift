@@ -27,27 +27,11 @@ struct TerminalScreen: View {
                 appearanceViewModel: appearanceViewModel
             )
             .ignoresSafeArea(.container, edges: .bottom)
-
-            if showCommandPalette {
-                Color.black.opacity(0.001)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            showCommandPalette = false
-                        }
-                    }
-
-                CommandPaletteView(
-                    sshSession: sshSession,
-                    onDismiss: {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            showCommandPalette = false
-                        }
-                    }
-                )
-                .padding(.top, 4)
-                .transition(.move(edge: .top).combined(with: .opacity))
-            }
+        }
+        .sheet(isPresented: $showCommandPalette) {
+            HotkeysSheetView(sshSession: sshSession)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -69,9 +53,7 @@ struct TerminalScreen: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        showCommandPalette.toggle()
-                    }
+                    showCommandPalette = true
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
@@ -126,80 +108,55 @@ struct TerminalScreen: View {
     }
 }
 
-struct CommandPaletteView: View {
+struct HotkeysSheetView: View {
     let sshSession: SSHSession
-    let onDismiss: () -> Void
+    @Environment(\.dismiss) private var dismiss
 
-    private let tmuxCommands: [(label: String, icon: String, keys: String, bytes: [UInt8])] = [
-        ("New Window", "plus.rectangle", "c", [0x02, 0x63]),
-        ("Next Window", "chevron.right", "n", [0x02, 0x6E]),
-        ("Prev Window", "chevron.left", "p", [0x02, 0x70]),
-        ("Split H", "rectangle.split.1x2", "\"", [0x02, 0x22]),
-        ("Split V", "rectangle.split.2x1", "%", [0x02, 0x25]),
-        ("Copy Mode", "doc.on.doc", "[", [0x02, 0x5B]),
-        ("Detach", "eject", "d", [0x02, 0x64]),
+    private let hotkeys: [(label: String, shortcut: String, icon: String, bytes: [UInt8])] = [
+        ("Interrupt", "Ctrl+C", "xmark.octagon", [0x03]),
+        ("Suspend", "Ctrl+Z", "pause", [0x1A]),
+        ("End of Input", "Ctrl+D", "eject", [0x04]),
+        ("Clear Screen", "Ctrl+L", "sparkles.rectangle.stack", [0x0C]),
+        ("Line Start", "Ctrl+A", "arrow.left.to.line", [0x01]),
+        ("Line End", "Ctrl+E", "arrow.right.to.line", [0x05]),
+        ("Delete Word", "Ctrl+W", "delete.backward", [0x17]),
+        ("Kill Line", "Ctrl+U", "strikethrough", [0x15]),
+        ("Kill to End", "Ctrl+K", "text.line.last.and.arrowtriangle.forward", [0x0B]),
+        ("Search History", "Ctrl+R", "clock.arrow.circlepath", [0x12]),
+        ("Cancel Search", "Ctrl+G", "bell", [0x07]),
+        ("Swap Chars", "Ctrl+T", "arrow.left.arrow.right", [0x14]),
     ]
 
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Text("tmux")
-                    .font(.footnote.bold().monospaced())
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Button {
-                    onDismiss()
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.caption.bold())
-                        .foregroundStyle(.secondary)
-                        .frame(width: 24, height: 24)
-                        .background(Color(.systemGray4))
-                        .clipShape(Circle())
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 12)
-            .padding(.bottom, 4)
-
-            LazyVGrid(columns: [
-                GridItem(.flexible(), spacing: 8),
-                GridItem(.flexible(), spacing: 8),
-                GridItem(.flexible(), spacing: 8),
-                GridItem(.flexible(), spacing: 8),
-            ], spacing: 8) {
-                ForEach(tmuxCommands, id: \.label) { cmd in
+        NavigationView {
+            List {
+                ForEach(hotkeys, id: \.shortcut) { hotkey in
                     Button {
-                        sendBytes(cmd.bytes)
+                        sendBytes(hotkey.bytes)
+                        dismiss()
                     } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: cmd.icon)
-                                .font(.system(size: 16))
-                            Text(cmd.label)
-                                .font(.caption2)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
-                            Text("^b \(cmd.keys)")
-                                .font(.caption2.monospaced())
+                        HStack(spacing: 12) {
+                            Image(systemName: hotkey.icon)
+                                .frame(width: 24)
+                                .foregroundStyle(.secondary)
+                            Text(hotkey.label)
+                            Spacer()
+                            Text(hotkey.shortcut)
+                                .font(.footnote.monospaced())
                                 .foregroundStyle(.tertiary)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(Color(.systemGray5))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-                    .buttonStyle(.plain)
+                    .foregroundStyle(.primary)
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 12)
+            .navigationTitle("Hotkeys")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
         }
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .padding(.horizontal, 8)
-        .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
     }
 
     private func sendBytes(_ bytes: [UInt8]) {
