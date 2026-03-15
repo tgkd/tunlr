@@ -39,23 +39,32 @@ struct VisualSettingsView: View {
 
     // MARK: - Theme
 
-    @ViewBuilder
     private var themeSection: some View {
         Section("Theme") {
-            LazyVGrid(columns: [
-                GridItem(.flexible(), spacing: 12),
-                GridItem(.flexible(), spacing: 12),
-                GridItem(.flexible(), spacing: 12),
-            ], spacing: 12) {
-                ForEach(TerminalThemeCatalog.allThemes, id: \.name) { theme in
-                    ThemeSwatchView(
-                        theme: theme,
-                        isSelected: viewModel.appearance.themeName == theme.name
-                    )
-                    .onTapGesture {
-                        var updated = viewModel.appearance
-                        updated.themeName = theme.name
-                        Task { await viewModel.update(updated) }
+            let themes = TerminalThemeCatalog.allThemes
+            let rows = stride(from: 0, to: themes.count, by: 3).map {
+                Array(themes[$0..<min($0 + 3, themes.count)])
+            }
+            VStack(spacing: 12) {
+                ForEach(rows, id: \.first!.name) { row in
+                    HStack(spacing: 12) {
+                        ForEach(row, id: \.name) { theme in
+                            ThemeSwatchView(
+                                theme: theme,
+                                isSelected: viewModel.appearance.themeName == theme.name
+                            )
+                            .frame(maxWidth: .infinity)
+                            .onTapGesture {
+                                var updated = viewModel.appearance
+                                updated.themeName = theme.name
+                                Task { await viewModel.update(updated) }
+                            }
+                        }
+                        if row.count < 3 {
+                            ForEach(0..<(3 - row.count), id: \.self) { _ in
+                                Color.clear.frame(maxWidth: .infinity)
+                            }
+                        }
                     }
                 }
             }
