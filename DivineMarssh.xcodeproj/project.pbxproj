@@ -58,6 +58,10 @@
 		AA0001080000000800000008 /* SourceCodePro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0002080000000800000008 /* SourceCodePro-Regular.ttf */; };
 		AA0001090000000900000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002090000000900000009 /* SettingsView.swift */; };
 		AA00010A0000000A0000000A /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00020A0000000A0000000A /* AboutView.swift */; };
+		DD0002010000001600000016 /* TerminalEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001010000001600000016 /* TerminalEvent.swift */; };
+		DD0002020000001700000017 /* TerminalEventReactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001020000001700000017 /* TerminalEventReactor.swift */; };
+		DD0002030000001800000018 /* EventNotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001030000001800000018 /* EventNotificationSettings.swift */; };
+		DD0002040000001900000019 /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001040000001900000019 /* NotificationSettingsView.swift */; };
 		ADAA7597609064FD766A7CB6 /* SSHAuthenticatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD25E5F829FB49210857487 /* SSHAuthenticatable.swift */; };
 		B0A4BB719C90594C0DAD5279 /* HostKeyVerificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F430BA2F6D0BB7F56D40DBBF /* HostKeyVerificationTests.swift */; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* RealSSHConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* RealSSHConnectionTests.swift */; };
@@ -168,6 +172,10 @@
 		CC0002030000001400000014 /* ShortcutPackCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPackCatalog.swift; sourceTree = "<group>"; };
 		CC0002040000001500000015 /* ToolbarSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarSettingsView.swift; sourceTree = "<group>"; };
 		CC14D026864E2E70E3AD617A /* KeyManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerView.swift; sourceTree = "<group>"; };
+		DD0001010000001600000016 /* TerminalEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalEvent.swift; sourceTree = "<group>"; };
+		DD0001020000001700000017 /* TerminalEventReactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalEventReactor.swift; sourceTree = "<group>"; };
+		DD0001030000001800000018 /* EventNotificationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventNotificationSettings.swift; sourceTree = "<group>"; };
+		DD0001040000001900000019 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
 		CEAA06BC02431C42E488BA7C /* KeychainKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainKeyManager.swift; sourceTree = "<group>"; };
 		D4765ACF8EE3591F7B6CB52D /* FingerprintURIParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintURIParser.swift; sourceTree = "<group>"; };
 		D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
@@ -266,6 +274,8 @@
 				1215C5CC26170094FD12DEA7 /* KeyboardAccessoryView.swift */,
 				BB00020E0000000E0000000E /* SpeechComposeBar.swift */,
 				F39D80F8D6D6A41615731388 /* SSHTerminalDataSource.swift */,
+				DD0001010000001600000016 /* TerminalEvent.swift */,
+				DD0001020000001700000017 /* TerminalEventReactor.swift */,
 				0767CB4BDDF289700A12EE1C /* TerminalScreen.swift */,
 				EAA6846E7FD0815AFB4AC585 /* TerminalViewController.swift */,
 				B22F0262FF6A695FB9E517FC /* TerminalViewRepresentable.swift */,
@@ -316,6 +326,7 @@
 		7C4E4C9122683FC6AC7612AA /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				DD0001030000001800000018 /* EventNotificationSettings.swift */,
 				CC0002020000001300000013 /* ShortcutPack.swift */,
 				CC0002030000001400000014 /* ShortcutPackCatalog.swift */,
 				3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */,
@@ -393,6 +404,7 @@
 			children = (
 				AA00020A0000000A0000000A /* AboutView.swift */,
 				AA0002040000000400000004 /* AppearanceViewModel.swift */,
+				DD0001040000001900000019 /* NotificationSettingsView.swift */,
 				AA0002090000000900000009 /* SettingsView.swift */,
 				CC0002040000001500000015 /* ToolbarSettingsView.swift */,
 				AA0002050000000500000005 /* VisualSettingsView.swift */,
@@ -672,6 +684,10 @@
 				BB00010E0000000E0000000E /* SpeechComposeBar.swift in Sources */,
 				BB0001110000001100000011 /* VoiceInputSettingsView.swift in Sources */,
 				AA00010A0000000A0000000A /* AboutView.swift in Sources */,
+				DD0002010000001600000016 /* TerminalEvent.swift in Sources */,
+				DD0002020000001700000017 /* TerminalEventReactor.swift in Sources */,
+				DD0002030000001800000018 /* EventNotificationSettings.swift in Sources */,
+				DD0002040000001900000019 /* NotificationSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,6 +11,7 @@ struct TerminalAppearance: Codable, Sendable, Equatable {
     var enabledShortcutPacks: [ShortcutPackID] = [.shell]
     var favoriteShortcuts: [Shortcut] = []
     var customizedPacks: [ShortcutPackID: [Shortcut]] = [:]
+    var eventNotifications: EventNotificationSettings = EventNotificationSettings()
 
     func shortcuts(for packID: ShortcutPackID) -> [Shortcut] {
         customizedPacks[packID] ?? ShortcutPackCatalog.shortcuts(for: packID)
@@ -30,6 +31,7 @@ struct TerminalAppearance: Codable, Sendable, Equatable {
         enabledShortcutPacks = try container.decodeIfPresent([ShortcutPackID].self, forKey: .enabledShortcutPacks) ?? [.shell]
         favoriteShortcuts = try container.decodeIfPresent([Shortcut].self, forKey: .favoriteShortcuts) ?? []
         customizedPacks = try container.decodeIfPresent([ShortcutPackID: [Shortcut]].self, forKey: .customizedPacks) ?? [:]
+        eventNotifications = try container.decodeIfPresent(EventNotificationSettings.self, forKey: .eventNotifications) ?? EventNotificationSettings()
     }
 }
 

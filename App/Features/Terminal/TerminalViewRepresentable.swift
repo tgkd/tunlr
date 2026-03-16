@@ -7,6 +7,7 @@ struct TerminalViewRepresentable: UIViewControllerRepresentable {
     var voiceInputEnabled: Bool = false
     var onTerminalReady: ((TerminalViewController) -> Void)?
     var onMicrophoneTapped: (() -> Void)?
+    var onTerminalEvent: ((TerminalEvent) -> Void)?
 
     func makeUIViewController(context: Context) -> TerminalViewController {
         let dataSource = SSHTerminalDataSource(sshSession: sshSession)
@@ -15,6 +16,7 @@ struct TerminalViewRepresentable: UIViewControllerRepresentable {
             terminalTitle = title
         }
         viewController.onMicrophoneTapped = onMicrophoneTapped
+        viewController.onTerminalEvent = onTerminalEvent
         viewController.voiceInputEnabled = voiceInputEnabled
         context.coordinator.viewController = viewController
         return viewController

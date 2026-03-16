@@ -9,6 +9,7 @@ final class TerminalViewController: UIViewController {
     var onTitleChange: ((String) -> Void)?
     var onSizeChange: ((Int, Int) -> Void)?
     var onMicrophoneTapped: (() -> Void)?
+    var onTerminalEvent: ((TerminalEvent) -> Void)?
     var voiceInputEnabled: Bool = false {
         didSet {
             if let accessory = terminalView?.inputAccessoryView as? SimpleTerminalAccessory {
@@ -170,4 +171,8 @@ extension TerminalViewController: SSHTerminalDataSourceDelegate {
     func dataSource(_ dataSource: SSHTerminalDataSource, didUpdateScrollPosition position: Double) {}
 
     func dataSource(_ dataSource: SSHTerminalDataSource, didRequestOpenLink link: String) {}
+
+    func dataSource(_ dataSource: SSHTerminalDataSource, didEmitEvent event: TerminalEvent) {
+        onTerminalEvent?(event)
+    }
 }

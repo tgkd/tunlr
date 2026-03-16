@@ -7,6 +7,8 @@ struct TerminalScreen: View {
     @ObservedObject var appearanceViewModel: AppearanceViewModel
     let onDisconnect: () -> Void
 
+    @State private var eventReactor: TerminalEventReactor?
+    @State private var flashColor: Color?
     @State private var terminalTitle: String = ""
     @State private var connectionState: ConnectionState = .disconnected
     @State private var showDisconnectAlert = false
@@ -16,6 +18,8 @@ struct TerminalScreen: View {
     @State private var showComposeBar = false
     @State private var transcribedText = ""
     @State private var showMicPermissionAlert = false
+    @State private var showAppearance = false
+    @State private var showNotifications = false
     @Environment(\.dismiss) private var dismiss
 
     private var themeBackgroundColor: Color {
@@ -34,9 +38,20 @@ struct TerminalScreen: View {
                 terminalTitle: $terminalTitle,
                 appearanceViewModel: appearanceViewModel,
                 voiceInputEnabled: voiceInputEnabled,
-                onMicrophoneTapped: { handleMicTap() }
+                onMicrophoneTapped: { handleMicTap() },
+                onTerminalEvent: { event in
+                    eventReactor?.handle(event)
+                }
             )
             .ignoresSafeArea(.container, edges: .bottom)
+
+            if let flashColor {
+                RoundedRectangle(cornerRadius: 0)
+                    .stroke(flashColor, lineWidth: 4)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
 
             if showComposeBar {
                 SpeechComposeBar(
@@ -81,6 +96,45 @@ struct TerminalScreen: View {
                     .foregroundStyle(appearanceViewModel.currentTheme.isDark ? .white : .primary)
                     .lineLimit(1)
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button {
+                        showAppearance = true
+                    } label: {
+                        Label("Appearance", systemImage: "paintbrush")
+                    }
+                    Button {
+                        showNotifications = true
+                    } label: {
+                        Label("Notifications", systemImage: "bell.badge")
+                    }
+                } label: {
+                    Image(systemName: "gearshape")
+                        .frame(width: 32, height: 32)
+                        .contentShape(Rectangle())
+                }
+                .tint(appearanceViewModel.currentTheme.isDark ? .white : .primary)
+            }
+        }
+        .sheet(isPresented: $showAppearance) {
+            NavigationStack {
+                VisualSettingsView(viewModel: appearanceViewModel)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") { showAppearance = false }
+                        }
+                    }
+            }
+        }
+        .sheet(isPresented: $showNotifications) {
+            NavigationStack {
+                NotificationSettingsView(viewModel: appearanceViewModel)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") { showNotifications = false }
+                        }
+                    }
+            }
         }
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(appearanceViewModel.currentTheme.backgroundColor.swiftUIColor, for: .navigationBar)
@@ -119,6 +173,25 @@ struct TerminalScreen: View {
             if voiceInputEnabled {
                 try? await whisperService.ensureModelReady()
             }
+        }
+        .onAppear {
+            let reactor = TerminalEventReactor(appearanceViewModel: appearanceViewModel)
+            reactor.onFlash = { style in
+                let color: Color = switch style {
+                case .bell: .orange
+                case .success: .green
+                case .failure: .red
+                }
+                withAnimation(.easeIn(duration: 0.05)) { flashColor = color }
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: 150_000_000)
+                    withAnimation(.easeOut(duration: 0.2)) { flashColor = nil }
+                }
+            }
+            eventReactor = reactor
+        }
+        .onChange(of: terminalTitle) { _, newTitle in
+            eventReactor?.updateTitle(newTitle)
         }
     }
 

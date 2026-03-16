@@ -65,7 +65,7 @@ struct ContentView: View {
                 selectedProfile = nil
             }
         } message: {
-            Text(connectionError ?? "Unknown error")
+            Text("Could not connect to the server.")
         }
         .onChange(of: showTerminal) { _, isShowing in
             if isShowing, let profile = selectedProfile {

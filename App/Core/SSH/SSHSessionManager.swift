@@ -120,27 +120,32 @@ final class SSHSessionManager: ObservableObject, Sendable {
     private func handleEnteredBackground() async {
         guard let profile = activeProfile, let session = activeSession else { return }
 
-        let taskID = backgroundTaskProvider.beginBackgroundTask(
-            name: "ssh-disconnect"
-        ) { [weak self] in
-            Task { @MainActor [weak self] in
-                self?.endBackgroundTaskIfNeeded()
-            }
-        }
-        backgroundTaskID = taskID
-
         state = .backgrounded(profileID: profile.id)
 
         await saveTerminalState(profileID: profile.id, session: session, wasExplicitQuit: false)
 
-        await session.disconnect()
-
-        endBackgroundTaskIfNeeded()
+        let taskID = backgroundTaskProvider.beginBackgroundTask(
+            name: "ssh-keepalive"
+        ) { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                await self.activeSession?.disconnect()
+                self.endBackgroundTaskIfNeeded()
+            }
+        }
+        backgroundTaskID = taskID
     }
 
     private func handleEnteredForeground() async {
         guard case .backgrounded(let profileID) = state else { return }
         guard let profile = activeProfile, profile.id == profileID else { return }
+
+        endBackgroundTaskIfNeeded()
+
+        if let session = activeSession, await session.connectionState == .connected {
+            state = .active(profileID: profileID)
+            return
+        }
 
         guard profile.autoReconnect else {
             state = .idle

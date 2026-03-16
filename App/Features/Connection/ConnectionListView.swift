@@ -122,7 +122,7 @@ struct ConnectionRow: View {
                 authIcon
             }
             if let lastConnected = profile.lastConnected {
-                Text(lastConnected, style: .relative)
+                Text("Last connected: \(lastConnected.formatted(date: .abbreviated, time: .shortened))")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

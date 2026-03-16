@@ -26,6 +26,12 @@ struct SettingsView: View {
             }
 
             NavigationLink {
+                NotificationSettingsView(viewModel: appearanceViewModel)
+            } label: {
+                Label("Notifications", systemImage: "bell.badge")
+            }
+
+            NavigationLink {
                 VoiceInputSettingsView()
             } label: {
                 Label("Voice Input", systemImage: "mic")

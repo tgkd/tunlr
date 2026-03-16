@@ -6,6 +6,11 @@ protocol SSHTerminalDataSourceDelegate: AnyObject {
     @MainActor func dataSource(_ dataSource: SSHTerminalDataSource, didUpdateTitle title: String)
     @MainActor func dataSource(_ dataSource: SSHTerminalDataSource, didUpdateScrollPosition position: Double)
     @MainActor func dataSource(_ dataSource: SSHTerminalDataSource, didRequestOpenLink link: String)
+    @MainActor func dataSource(_ dataSource: SSHTerminalDataSource, didEmitEvent event: TerminalEvent)
+}
+
+extension SSHTerminalDataSourceDelegate {
+    func dataSource(_ dataSource: SSHTerminalDataSource, didEmitEvent event: TerminalEvent) {}
 }
 
 @MainActor
@@ -30,6 +35,7 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     func attachTerminalView(_ terminalView: TerminalView) {
         self.terminalView = terminalView
         terminalView.terminalDelegate = self
+        registerOscHandlers(terminalView)
         beginShellOutputFeed()
     }
 
@@ -98,7 +104,13 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
         }
     }
 
-    nonisolated func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {}
+    nonisolated func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
+        guard let directory else { return }
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.delegate?.dataSource(self, didEmitEvent: .directoryChanged(directory))
+        }
+    }
 
     nonisolated func requestOpenLink(source: TerminalView, link: String, params: [String: String]) {
         Task { @MainActor [weak self] in
@@ -107,7 +119,12 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
         }
     }
 
-    nonisolated func bell(source: TerminalView) {}
+    nonisolated func bell(source: TerminalView) {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.delegate?.dataSource(self, didEmitEvent: .bell)
+        }
+    }
     nonisolated func clipboardCopy(source: TerminalView, content: Data) {}
     nonisolated func iTermContent(source: TerminalView, content: ArraySlice<UInt8>) {}
     nonisolated func rangeChanged(source: TerminalView, startY: Int, endY: Int) {}
@@ -117,6 +134,44 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     }
 
     // MARK: - Private
+
+    private func registerOscHandlers(_ terminalView: TerminalView) {
+        let terminal = terminalView.getTerminal()
+
+        terminal.registerOscHandler(code: 133) { [weak self] data in
+            let str = String(bytes: data, encoding: .utf8) ?? ""
+            let event: TerminalEvent? = switch str {
+            case "A":
+                .promptReady
+            case "B":
+                .commandStarted
+            case "C":
+                .commandFinished(exitCode: nil)
+            case _ where str.hasPrefix("D"):
+                .commandFinished(exitCode: str.split(separator: ";").dropFirst().first.flatMap { Int($0) })
+            default:
+                nil
+            }
+            if let event {
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    self.delegate?.dataSource(self, didEmitEvent: event)
+                }
+            }
+        }
+
+        terminal.registerOscHandler(code: 777) { [weak self] data in
+            let str = String(bytes: data, encoding: .utf8) ?? ""
+            let parts = str.split(separator: ";", maxSplits: 2)
+            guard parts.first == "notify", parts.count >= 3 else { return }
+            let title = String(parts[1])
+            let body = String(parts[2])
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.delegate?.dataSource(self, didEmitEvent: .notification(title: title, body: body))
+            }
+        }
+    }
 
     private func handleOutput(_ output: ShellOutput) {
         switch output {
