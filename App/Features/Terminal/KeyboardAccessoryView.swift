@@ -110,6 +110,7 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     private var buttonColor: UIColor = UIColor(white: 0.22, alpha: 1)
     private var textColor: UIColor = .white
     private let pad: CGFloat = 4
+    private let isIPad = UIDevice.current.userInterfaceIdiom == .pad
 
     init(frame: CGRect, terminalView: TerminalView) {
         self.terminalView = terminalView
@@ -143,9 +144,11 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         trailingButtons.removeAll()
         micButton = nil
 
+        let iconSize: CGFloat = isIPad ? 18 : 14
+
         if showMicButton {
             let micBtn = makeButton(title: nil, action: #selector(micTapped))
-            let cfg = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+            let cfg = UIImage.SymbolConfiguration(pointSize: iconSize, weight: .medium)
             micBtn.setImage(
                 UIImage(systemName: "mic.fill", withConfiguration: cfg)?
                     .withTintColor(textColor, renderingMode: .alwaysOriginal),
@@ -157,7 +160,7 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         }
 
         let hideBtn = makeButton(title: nil, action: #selector(hideKeyboard))
-        let cfg = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        let cfg = UIImage.SymbolConfiguration(pointSize: iconSize, weight: .medium)
         hideBtn.setImage(
             UIImage(systemName: "keyboard.chevron.compact.down", withConfiguration: cfg)?
                 .withTintColor(textColor, renderingMode: .alwaysOriginal),
@@ -183,7 +186,7 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         }
 
         let current = panels[selectedPanelIndex]
-        let iconCfg = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        let iconCfg = UIImage.SymbolConfiguration(pointSize: isIPad ? 18 : 14, weight: .medium)
         panelPickerButton.setImage(
             UIImage(systemName: current.icon, withConfiguration: iconCfg)?
                 .withTintColor(.white, renderingMode: .alwaysOriginal),
@@ -236,12 +239,12 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
 
     private func makeButton(title: String?, action: Selector) -> UIButton {
         let btn = UIButton(type: .system)
-        btn.layer.cornerRadius = 5
+        btn.layer.cornerRadius = isIPad ? 7 : 5
         btn.layer.masksToBounds = true
         btn.backgroundColor = buttonColor
         if let title {
             btn.setTitle(title, for: .normal)
-            btn.titleLabel?.font = .monospacedSystemFont(ofSize: 13, weight: .medium)
+            btn.titleLabel?.font = .monospacedSystemFont(ofSize: isIPad ? 16 : 13, weight: .medium)
             btn.titleLabel?.lineBreakMode = .byClipping
         }
         btn.setTitleColor(textColor, for: .normal)
@@ -255,11 +258,11 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         let h = frame.height - 8
         guard h > 0 else { return }
 
-        let btnMinW: CGFloat = 44
+        let btnMinW: CGFloat = isIPad ? 52 : 44
         let trailingW: CGFloat = CGFloat(trailingButtons.count) * (btnMinW + pad)
 
         // Panel picker (circle)
-        let pickerSize: CGFloat = min(h, 36)
+        let pickerSize: CGFloat = min(h, isIPad ? 42 : 36)
         let pickerY = 4 + (h - pickerSize) / 2
         panelPickerButton.frame = CGRect(x: pad, y: pickerY, width: pickerSize, height: pickerSize)
         panelPickerButton.layer.cornerRadius = pickerSize / 2

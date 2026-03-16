@@ -3,6 +3,7 @@ import SwiftUI
 struct ConnectionListView: View {
     @ObservedObject var viewModel: ConnectionViewModel
     @ObservedObject var appearanceViewModel: AppearanceViewModel
+    var activeProfileID: UUID?
     var onConnect: (SSHConnectionProfile) -> Void
 
     @State private var showingEditor = false
@@ -19,18 +20,23 @@ struct ConnectionListView: View {
                 )
             } else {
                 ForEach(viewModel.profiles) { profile in
-                    ConnectionRow(profile: profile)
+                    let isActive = profile.id == activeProfileID
+                    ConnectionRow(profile: profile, isActive: isActive)
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            onConnect(profile)
+                            if !isActive {
+                                onConnect(profile)
+                            }
                         }
                         .swipeActions(edge: .leading) {
-                            Button {
-                                onConnect(profile)
-                            } label: {
-                                Label("Connect", systemImage: "bolt.fill")
+                            if !isActive {
+                                Button {
+                                    onConnect(profile)
+                                } label: {
+                                    Label("Connect", systemImage: "bolt.fill")
+                                }
+                                .tint(.green)
                             }
-                            .tint(.green)
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
@@ -107,10 +113,16 @@ struct ConnectionListView: View {
 
 struct ConnectionRow: View {
     let profile: SSHConnectionProfile
+    var isActive: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
+                if isActive {
+                    Circle()
+                        .fill(Color.green)
+                        .frame(width: 8, height: 8)
+                }
                 Text("\(profile.username)@\(profile.host)")
                     .font(.body.monospaced())
                 if profile.port != 22 {

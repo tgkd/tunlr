@@ -45,8 +45,9 @@ final class TerminalViewController: UIViewController {
             view.keyboardLayoutGuide.topAnchor.constraint(equalTo: terminalView.bottomAnchor),
         ])
 
+        let accessoryHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
         let accessory = SimpleTerminalAccessory(
-            frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 44),
+            frame: CGRect(x: 0, y: 0, width: view.frame.width, height: accessoryHeight),
             terminalView: terminalView
         )
         accessory.onMicrophoneTapped = { [weak self] in
@@ -90,6 +91,10 @@ final class TerminalViewController: UIViewController {
         }()
         terminalView.getTerminal().setCursorStyle(swiftTermCursorStyle)
         terminalView.getTerminal().changeHistorySize(appearance.scrollbackSize.rawValue)
+
+        terminalView.selectedTextBackgroundColor = theme.isDark
+            ? UIColor(white: 0.3, alpha: 0.6)
+            : UIColor(white: 0.7, alpha: 0.6)
 
         if let accessory = terminalView.inputAccessoryView as? SimpleTerminalAccessory {
             let btnBg = theme.isDark ? UIColor(white: 0.22, alpha: 1) : UIColor(white: 0.88, alpha: 1)
