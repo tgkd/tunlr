@@ -39,6 +39,11 @@ struct SettingsView: View {
 
             Section {
                 NavigationLink {
+                    GettingStartedView()
+                } label: {
+                    Label("Getting Started", systemImage: "questionmark.circle")
+                }
+                NavigationLink {
                     AboutView()
                 } label: {
                     Label("About", systemImage: "info.circle")

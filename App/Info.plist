@@ -13,7 +13,11 @@
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>NSCameraUsageDescription</key>
-	<string>DivineMarssh may use the camera to scan QR codes for importing SSH keys.</string>
+	<string>tunlr uses the camera to scan QR codes for importing SSH keys.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>tunlr uses Face ID to protect your SSH keys and authenticate securely.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>tunlr needs local network access to connect to SSH servers on your network.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>tunlr needs microphone access for voice input of terminal commands.</string>
 	<key>UISupportedInterfaceOrientations</key>

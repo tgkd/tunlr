@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 import CoreImage.CIFilterBuiltins
 
 struct ScreenshotProtectionModifier: ViewModifier {
@@ -175,12 +176,28 @@ struct AddKeyView: View {
             }
 
             if mode == .importPEM {
-                Section("Private Key (PEM)") {
+                Section("Private Key") {
+                    Button {
+                        showingDocumentPicker = true
+                    } label: {
+                        Label("Import from File", systemImage: "doc")
+                    }
+
                     TextEditor(text: $pemText)
                         .font(.caption.monospaced())
                         .frame(minHeight: 120)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
+                        .overlay(alignment: .topLeading) {
+                            if pemText.isEmpty {
+                                Text("Paste PEM key or import a file")
+                                    .font(.caption.monospaced())
+                                    .foregroundStyle(.tertiary)
+                                    .padding(.top, 8)
+                                    .padding(.leading, 4)
+                                    .allowsHitTesting(false)
+                            }
+                        }
                 }
 
                 Section("Passphrase (optional)") {
@@ -190,6 +207,28 @@ struct AddKeyView: View {
         }
         .navigationTitle("Add Key")
         .navigationBarTitleDisplayMode(.inline)
+        .fileImporter(
+            isPresented: $showingDocumentPicker,
+            allowedContentTypes: [.data, .plainText],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else { return }
+                let didAccess = url.startAccessingSecurityScopedResource()
+                defer { if didAccess { url.stopAccessingSecurityScopedResource() } }
+                if let data = try? Data(contentsOf: url),
+                   let text = String(data: data, encoding: .utf8) {
+                    pemText = text
+                    if label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        label = url.deletingPathExtension().lastPathComponent
+                    }
+                }
+            case .failure(let error):
+                errorMessage = error.localizedDescription
+                showingError = true
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") { dismiss() }

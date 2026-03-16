@@ -93,6 +93,8 @@
 		E715A52FA98920593259C502 /* ConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B428FC24145CC0B43756EDB /* ConnectionState.swift */; };
 		E74578747A4FBF8E4E804D9C /* FingerprintURIParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E83A2CA8BCE8225B9D60542 /* FingerprintURIParserTests.swift */; };
 		E80C391E44A3D00F71AD5B05 /* ConnectionEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5B3A76DC18E11A6C4EE191 /* ConnectionEditorView.swift */; };
+		EE0001200000002000000020 /* GettingStartedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0002200000002000000020 /* GettingStartedView.swift */; };
+		EE0001210000002100000021 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EE0002210000002100000021 /* PrivacyInfo.xcprivacy */; };
 		EFA7A8C6FDF50B9AF179C8C7 /* HostKeyVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */; };
 		F3830A3D5A1A57773DC0585B /* TerminalStateCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30FDEEBF0100D866023CFB16 /* TerminalStateCache.swift */; };
 		FBB248C450F3C3855A16C4DE /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */; };
@@ -188,6 +190,8 @@
 		EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyVerifier.swift; sourceTree = "<group>"; };
 		EAA6846E7FD0815AFB4AC585 /* TerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalViewController.swift; sourceTree = "<group>"; };
 		ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConnectionProfile.swift; sourceTree = "<group>"; };
+		EE0002200000002000000020 /* GettingStartedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GettingStartedView.swift; sourceTree = "<group>"; };
+		EE0002210000002100000021 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F1BD15FB37ED81BF14121F53 /* SEKeyAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyAuthenticator.swift; sourceTree = "<group>"; };
 		F39D80F8D6D6A41615731388 /* SSHTerminalDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHTerminalDataSource.swift; sourceTree = "<group>"; };
 		F430BA2F6D0BB7F56D40DBBF /* HostKeyVerificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyVerificationTests.swift; sourceTree = "<group>"; };
@@ -404,6 +408,7 @@
 			children = (
 				AA00020A0000000A0000000A /* AboutView.swift */,
 				AA0002040000000400000004 /* AppearanceViewModel.swift */,
+				EE0002200000002000000020 /* GettingStartedView.swift */,
 				DD0001040000001900000019 /* NotificationSettingsView.swift */,
 				AA0002090000000900000009 /* SettingsView.swift */,
 				CC0002040000001500000015 /* ToolbarSettingsView.swift */,
@@ -504,6 +509,7 @@
 				2C166692098888B8C32934E2 /* ContentView.swift */,
 				3449C1609F5287002478D159 /* DivineMarsshApp.swift */,
 				BF424B1FAA7BAEB86C24BAAB /* Info.plist */,
+				EE0002210000002100000021 /* PrivacyInfo.xcprivacy */,
 				D2C90341B05E88715F12E40A /* Core */,
 				C9847DB39C6F648B620F2168 /* Features */,
 				AA0003020000000200000002 /* Resources */,
@@ -615,6 +621,7 @@
 				AA0001060000000600000006 /* FiraCode-Regular.ttf in Resources */,
 				AA0001070000000700000007 /* JetBrainsMono-Regular.ttf in Resources */,
 				AA0001080000000800000008 /* SourceCodePro-Regular.ttf in Resources */,
+				EE0001210000002100000021 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -684,6 +691,7 @@
 				BB00010E0000000E0000000E /* SpeechComposeBar.swift in Sources */,
 				BB0001110000001100000011 /* VoiceInputSettingsView.swift in Sources */,
 				AA00010A0000000A0000000A /* AboutView.swift in Sources */,
+				EE0001200000002000000020 /* GettingStartedView.swift in Sources */,
 				DD0002010000001600000016 /* TerminalEvent.swift in Sources */,
 				DD0002020000001700000017 /* TerminalEventReactor.swift in Sources */,
 				DD0002030000001800000018 /* EventNotificationSettings.swift in Sources */,
@@ -737,7 +745,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -840,7 +848,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;

@@ -9,6 +9,7 @@ struct ConnectionListView: View {
     @State private var showingEditor = false
     @State private var editingProfile: SSHConnectionProfile?
     @State private var showingSettings = false
+    @State private var profileToDelete: SSHConnectionProfile?
 
     var body: some View {
         List {
@@ -40,9 +41,7 @@ struct ConnectionListView: View {
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
-                                Task {
-                                    try? await viewModel.deleteProfile(id: profile.id)
-                                }
+                                profileToDelete = profile
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
@@ -103,6 +102,21 @@ struct ConnectionListView: View {
                     appearanceViewModel: appearanceViewModel,
                     keyManagerViewModel: KeyManagerViewModel(keyManager: viewModel.keyManager)
                 )
+            }
+        }
+        .alert("Delete Connection?", isPresented: Binding(
+            get: { profileToDelete != nil },
+            set: { if !$0 { profileToDelete = nil } }
+        )) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                if let profile = profileToDelete {
+                    Task { try? await viewModel.deleteProfile(id: profile.id) }
+                }
+            }
+        } message: {
+            if let profile = profileToDelete {
+                Text("Delete \(profile.username)@\(profile.host)? This cannot be undone.")
             }
         }
         .task {
