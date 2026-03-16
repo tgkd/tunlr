@@ -3,6 +3,7 @@ import Foundation
 enum ToolbarButtonKind: String, Codable, Sendable, CaseIterable, Identifiable {
     case esc
     case ctrl
+    case alt
     case tab
     case arrowUp
     case arrowDown
@@ -20,6 +21,7 @@ enum ToolbarButtonKind: String, Codable, Sendable, CaseIterable, Identifiable {
         switch self {
         case .esc: return "Esc"
         case .ctrl: return "Ctrl"
+        case .alt: return "Alt"
         case .tab: return "Tab"
         case .arrowUp: return "\u{2191}"
         case .arrowDown: return "\u{2193}"
@@ -37,6 +39,7 @@ enum ToolbarButtonKind: String, Codable, Sendable, CaseIterable, Identifiable {
         switch self {
         case .esc: return "Esc"
         case .ctrl: return "Ctrl"
+        case .alt: return "Alt (Meta)"
         case .tab: return "Tab"
         case .arrowUp: return "Arrow Up"
         case .arrowDown: return "Arrow Down"
@@ -54,6 +57,7 @@ enum ToolbarButtonKind: String, Codable, Sendable, CaseIterable, Identifiable {
         switch self {
         case .esc: return [0x1b]
         case .ctrl: return nil
+        case .alt: return nil
         case .tab: return [0x09]
         case .arrowUp: return [0x1b, 0x5b, 0x41]
         case .arrowDown: return [0x1b, 0x5b, 0x42]
@@ -67,5 +71,5 @@ enum ToolbarButtonKind: String, Codable, Sendable, CaseIterable, Identifiable {
         }
     }
 
-    var isModifier: Bool { self == .ctrl }
+    var isModifier: Bool { self == .ctrl || self == .alt }
 }

@@ -88,6 +88,7 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     private var actionButtons: [UIButton] = []
     private var actionItems: [UIButton: ToolbarPanel.ToolbarItem] = [:]
     private var ctrlButton: UIButton?
+    private var altButton: UIButton?
     private var micButton: UIButton?
     private var trailingButtons: [UIButton] = []
 
@@ -96,6 +97,16 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
             ctrlButton?.isSelected = controlModifier
             ctrlButton?.backgroundColor = controlModifier ? UIView().tintColor : buttonColor
             terminalView?.controlModifier = controlModifier
+            if controlModifier { metaModifier = false }
+        }
+    }
+
+    var metaModifier: Bool = false {
+        didSet {
+            altButton?.isSelected = metaModifier
+            altButton?.backgroundColor = metaModifier ? UIView().tintColor : buttonColor
+            terminalView?.metaModifier = metaModifier
+            if metaModifier { controlModifier = false }
         }
     }
 
@@ -117,6 +128,19 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         super.init(frame: frame, inputViewStyle: .keyboard)
         allowsSelfSizing = true
         setupSubviews()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(controlModifierWasReset(_:)),
+            name: .terminalViewControlModifierReset,
+            object: terminalView
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(metaModifierWasReset(_:)),
+            name: .terminalViewMetaModifierReset,
+            object: terminalView
+        )
     }
 
     @available(*, unavailable)
@@ -218,6 +242,7 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         actionButtons.removeAll()
         actionItems.removeAll()
         ctrlButton = nil
+        altButton = nil
 
         guard !panels.isEmpty else {
             setNeedsLayout()
@@ -229,6 +254,7 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
             let btn = makeButton(title: item.label, action: #selector(actionButtonTapped(_:)))
             actionItems[btn] = item
             if case .toolbarButton(.ctrl) = item { ctrlButton = btn }
+            if case .toolbarButton(.alt) = item { altButton = btn }
             actionButtons.append(btn)
             scrollView.addSubview(btn)
         }
@@ -296,11 +322,25 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         }
     }
 
+    @objc private func controlModifierWasReset(_ notification: Notification) {
+        if controlModifier {
+            terminalView?.controlModifier = true
+        }
+    }
+
+    @objc private func metaModifierWasReset(_ notification: Notification) {
+        if metaModifier {
+            terminalView?.metaModifier = true
+        }
+    }
+
     @objc private func actionButtonTapped(_ sender: UIButton) {
         UIDevice.current.playInputClick()
         guard let item = actionItems[sender] else { return }
-        if item.isModifier {
+        if case .toolbarButton(.ctrl) = item {
             controlModifier.toggle()
+        } else if case .toolbarButton(.alt) = item {
+            metaModifier.toggle()
         } else if let bytes = item.bytes {
             terminalView?.send(bytes)
         }
@@ -337,6 +377,9 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         }
         if controlModifier {
             ctrlButton?.backgroundColor = UIView().tintColor
+        }
+        if metaModifier {
+            altButton?.backgroundColor = UIView().tintColor
         }
         if isMicActive {
             micButton?.backgroundColor = .systemRed
