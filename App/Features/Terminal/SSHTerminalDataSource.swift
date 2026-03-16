@@ -27,6 +27,9 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     private(set) var lastSentData: ArraySlice<UInt8>?
     private(set) var pendingResize: (cols: Int, rows: Int)?
 
+    private var outputBuffer: [UInt8] = []
+    private var flushTask: Task<Void, Never>?
+
     init(sshSession: SSHSession) {
         self.sshSession = sshSession
         super.init()
@@ -69,6 +72,8 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     func stopOutputFeed() {
         outputTask?.cancel()
         outputTask = nil
+        flushTask?.cancel()
+        flushTask = nil
     }
 
     // MARK: - TerminalViewDelegate
@@ -125,7 +130,13 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
             self.delegate?.dataSource(self, didEmitEvent: .bell)
         }
     }
-    nonisolated func clipboardCopy(source: TerminalView, content: Data) {}
+    nonisolated func clipboardCopy(source: TerminalView, content: Data) {
+        Task { @MainActor in
+            if let text = String(data: content, encoding: .utf8) {
+                UIPasteboard.general.string = text
+            }
+        }
+    }
     nonisolated func iTermContent(source: TerminalView, content: ArraySlice<UInt8>) {}
     nonisolated func rangeChanged(source: TerminalView, startY: Int, endY: Int) {}
 
@@ -174,11 +185,24 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     }
 
     private func handleOutput(_ output: ShellOutput) {
+        let bytes: [UInt8]
         switch output {
-        case .stdout(let data):
-            terminalView?.feed(byteArray: ArraySlice(data))
-        case .stderr(let data):
-            terminalView?.feed(byteArray: ArraySlice(data))
+        case .stdout(let data): bytes = Array(data)
+        case .stderr(let data): bytes = Array(data)
+        }
+        outputBuffer.append(contentsOf: bytes)
+        scheduleFlush()
+    }
+
+    private func scheduleFlush() {
+        guard flushTask == nil else { return }
+        flushTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 16_000_000)
+            guard let self, !Task.isCancelled else { return }
+            let data = self.outputBuffer
+            self.outputBuffer.removeAll(keepingCapacity: true)
+            self.flushTask = nil
+            self.terminalView?.feed(byteArray: ArraySlice(data))
         }
     }
 
@@ -197,5 +221,6 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     deinit {
         outputTask?.cancel()
         resizeDebounceTask?.cancel()
+        flushTask?.cancel()
     }
 }

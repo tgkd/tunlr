@@ -60,6 +60,7 @@ actor SSHSession {
 
     private var client: (any SSHClientWrapping)?
     private var shellHandle: (any SSHShellHandle)?
+    private var keepaliveTask: Task<Void, Never>?
     private var stateContinuations: [UUID: AsyncStream<ConnectionState>.Continuation] = [:]
 
     private let connectionHandler: any SSHConnectionHandling
@@ -106,6 +107,8 @@ actor SSHSession {
             newClient.onDisconnect { [weak self] in
                 Task { await self?.handleUnexpectedDisconnect() }
             }
+
+            startKeepalive(interval: profile.keepaliveInterval)
         } catch {
             updateState(.disconnected)
             throw error
@@ -113,6 +116,9 @@ actor SSHSession {
     }
 
     func disconnect() async {
+        keepaliveTask?.cancel()
+        keepaliveTask = nil
+
         shellHandle?.cancel()
         shellHandle = nil
 
@@ -176,6 +182,22 @@ actor SSHSession {
 
     private func removeStateContinuation(id: UUID) {
         stateContinuations.removeValue(forKey: id)
+    }
+
+    private func startKeepalive(interval: TimeInterval) {
+        guard interval > 0 else { return }
+        keepaliveTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+                guard !Task.isCancelled else { break }
+                await self.sendKeepalive()
+            }
+        }
+    }
+
+    private func sendKeepalive() {
+        guard connectionState == .connected, let shellHandle else { return }
+        Task { try? await shellHandle.write(Data()) }
     }
 
     private func handleUnexpectedDisconnect() {

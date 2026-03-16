@@ -58,10 +58,6 @@
 		AA0001080000000800000008 /* SourceCodePro-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0002080000000800000008 /* SourceCodePro-Regular.ttf */; };
 		AA0001090000000900000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002090000000900000009 /* SettingsView.swift */; };
 		AA00010A0000000A0000000A /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00020A0000000A0000000A /* AboutView.swift */; };
-		DD0002010000001600000016 /* TerminalEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001010000001600000016 /* TerminalEvent.swift */; };
-		DD0002020000001700000017 /* TerminalEventReactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001020000001700000017 /* TerminalEventReactor.swift */; };
-		DD0002030000001800000018 /* EventNotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001030000001800000018 /* EventNotificationSettings.swift */; };
-		DD0002040000001900000019 /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001040000001900000019 /* NotificationSettingsView.swift */; };
 		ADAA7597609064FD766A7CB6 /* SSHAuthenticatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD25E5F829FB49210857487 /* SSHAuthenticatable.swift */; };
 		B0A4BB719C90594C0DAD5279 /* HostKeyVerificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F430BA2F6D0BB7F56D40DBBF /* HostKeyVerificationTests.swift */; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* RealSSHConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* RealSSHConnectionTests.swift */; };
@@ -88,6 +84,10 @@
 		D660C9FAA47A828AE4B1BDB7 /* SSHConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F57D93D45F2499CF1E02E79 /* SSHConnectionTests.swift */; };
 		DC5DC8A620D087485D216AD2 /* TerminalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0767CB4BDDF289700A12EE1C /* TerminalScreen.swift */; };
 		DCF884D3F0BB762E52B97C90 /* KeyManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC14D026864E2E70E3AD617A /* KeyManagerView.swift */; };
+		DD0002010000001600000016 /* TerminalEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001010000001600000016 /* TerminalEvent.swift */; };
+		DD0002020000001700000017 /* TerminalEventReactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001020000001700000017 /* TerminalEventReactor.swift */; };
+		DD0002030000001800000018 /* EventNotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001030000001800000018 /* EventNotificationSettings.swift */; };
+		DD0002040000001900000019 /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001040000001900000019 /* NotificationSettingsView.swift */; };
 		DD2F8E418AD9F2CBEFE6B6F4 /* KeychainKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31DA89DE913B3AB75B40B78 /* KeychainKeyManagerTests.swift */; };
 		E44C6BB1D045F61D3E2262A0 /* TerminalViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22F0262FF6A695FB9E517FC /* TerminalViewRepresentable.swift */; };
 		E715A52FA98920593259C502 /* ConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B428FC24145CC0B43756EDB /* ConnectionState.swift */; };
@@ -172,15 +172,15 @@
 		CC0002030000001400000014 /* ShortcutPackCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPackCatalog.swift; sourceTree = "<group>"; };
 		CC0002040000001500000015 /* ToolbarSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarSettingsView.swift; sourceTree = "<group>"; };
 		CC14D026864E2E70E3AD617A /* KeyManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManagerView.swift; sourceTree = "<group>"; };
-		DD0001010000001600000016 /* TerminalEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalEvent.swift; sourceTree = "<group>"; };
-		DD0001020000001700000017 /* TerminalEventReactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalEventReactor.swift; sourceTree = "<group>"; };
-		DD0001030000001800000018 /* EventNotificationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventNotificationSettings.swift; sourceTree = "<group>"; };
-		DD0001040000001900000019 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
 		CEAA06BC02431C42E488BA7C /* KeychainKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainKeyManager.swift; sourceTree = "<group>"; };
 		D4765ACF8EE3591F7B6CB52D /* FingerprintURIParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintURIParser.swift; sourceTree = "<group>"; };
 		D75A8CA23BAADAA7CCB1B90F /* ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
 		D7737EBBF766E68C2877198E /* SSHTerminalDataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHTerminalDataSourceTests.swift; sourceTree = "<group>"; };
 		D9286C2B03FA0F033E38A698 /* SSHSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHSessionManager.swift; sourceTree = "<group>"; };
+		DD0001010000001600000016 /* TerminalEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalEvent.swift; sourceTree = "<group>"; };
+		DD0001020000001700000017 /* TerminalEventReactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalEventReactor.swift; sourceTree = "<group>"; };
+		DD0001030000001800000018 /* EventNotificationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventNotificationSettings.swift; sourceTree = "<group>"; };
+		DD0001040000001900000019 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
 		DF40EEE2F77ABF44DC954BC9 /* ConnectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionViewModel.swift; sourceTree = "<group>"; };
 		E31DA89DE913B3AB75B40B78 /* KeychainKeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainKeyManagerTests.swift; sourceTree = "<group>"; };
 		E5045FB9640565348B5A8110 /* BiometricPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricPolicy.swift; sourceTree = "<group>"; };
@@ -737,7 +737,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -840,7 +840,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
