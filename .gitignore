@@ -10,3 +10,6 @@ xcuserdata/
 
 # Test SSH keys (generated locally, not committed)
 tests-ssh-keys/
+
+# App Store screenshot generator
+appstore-screenshots/

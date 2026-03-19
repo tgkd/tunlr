@@ -51,6 +51,11 @@ enum TerminalThemeCatalog {
         case .oneDark: return oneDark
         case .githubLight: return githubLight
         case .gruvboxLight: return gruvboxLight
+        case .catppuccinMocha: return catppuccinMocha
+        case .tokyoNight: return tokyoNight
+        case .rosePine: return rosePine
+        case .synthwave: return synthwave
+        case .kanagawa: return kanagawa
         }
     }
 
@@ -301,5 +306,140 @@ enum TerminalThemeCatalog {
             ColorValue(red: 60, green: 56, blue: 54),       // bright white
         ],
         isDark: false
+    )
+
+    private static let catppuccinMocha = TerminalTheme(
+        name: .catppuccinMocha,
+        displayName: "Catppuccin Mocha",
+        backgroundColor: ColorValue(red: 30, green: 30, blue: 46),
+        foregroundColor: ColorValue(red: 205, green: 214, blue: 244),
+        cursorColor: ColorValue(red: 245, green: 224, blue: 220),
+        ansiColors: [
+            ColorValue(red: 69, green: 71, blue: 90),        // black
+            ColorValue(red: 243, green: 139, blue: 168),     // red
+            ColorValue(red: 166, green: 227, blue: 161),     // green
+            ColorValue(red: 249, green: 226, blue: 175),     // yellow
+            ColorValue(red: 137, green: 180, blue: 250),     // blue
+            ColorValue(red: 245, green: 194, blue: 231),     // magenta
+            ColorValue(red: 148, green: 226, blue: 213),     // cyan
+            ColorValue(red: 166, green: 173, blue: 200),     // white
+            ColorValue(red: 88, green: 91, blue: 112),       // bright black
+            ColorValue(red: 243, green: 119, blue: 153),     // bright red
+            ColorValue(red: 137, green: 216, blue: 139),     // bright green
+            ColorValue(red: 235, green: 211, blue: 145),     // bright yellow
+            ColorValue(red: 116, green: 168, blue: 252),     // bright blue
+            ColorValue(red: 242, green: 174, blue: 222),     // bright magenta
+            ColorValue(red: 107, green: 215, blue: 202),     // bright cyan
+            ColorValue(red: 186, green: 194, blue: 222),     // bright white
+        ],
+        isDark: true
+    )
+
+    private static let tokyoNight = TerminalTheme(
+        name: .tokyoNight,
+        displayName: "Tokyo Night",
+        backgroundColor: ColorValue(red: 26, green: 27, blue: 38),
+        foregroundColor: ColorValue(red: 192, green: 202, blue: 245),
+        cursorColor: ColorValue(red: 192, green: 202, blue: 245),
+        ansiColors: [
+            ColorValue(red: 21, green: 22, blue: 30),        // black
+            ColorValue(red: 247, green: 118, blue: 142),     // red
+            ColorValue(red: 158, green: 206, blue: 106),     // green
+            ColorValue(red: 224, green: 175, blue: 104),     // yellow
+            ColorValue(red: 122, green: 162, blue: 247),     // blue
+            ColorValue(red: 187, green: 154, blue: 247),     // magenta
+            ColorValue(red: 125, green: 207, blue: 255),     // cyan
+            ColorValue(red: 169, green: 177, blue: 214),     // white
+            ColorValue(red: 65, green: 72, blue: 104),       // bright black
+            ColorValue(red: 247, green: 118, blue: 142),     // bright red
+            ColorValue(red: 158, green: 206, blue: 106),     // bright green
+            ColorValue(red: 224, green: 175, blue: 104),     // bright yellow
+            ColorValue(red: 122, green: 162, blue: 247),     // bright blue
+            ColorValue(red: 187, green: 154, blue: 247),     // bright magenta
+            ColorValue(red: 125, green: 207, blue: 255),     // bright cyan
+            ColorValue(red: 192, green: 202, blue: 245),     // bright white
+        ],
+        isDark: true
+    )
+
+    private static let rosePine = TerminalTheme(
+        name: .rosePine,
+        displayName: "Rosé Pine",
+        backgroundColor: ColorValue(red: 25, green: 23, blue: 36),
+        foregroundColor: ColorValue(red: 224, green: 222, blue: 244),
+        cursorColor: ColorValue(red: 224, green: 222, blue: 244),
+        ansiColors: [
+            ColorValue(red: 38, green: 35, blue: 58),        // black
+            ColorValue(red: 235, green: 111, blue: 146),     // red
+            ColorValue(red: 49, green: 116, blue: 143),      // green
+            ColorValue(red: 246, green: 193, blue: 119),     // yellow
+            ColorValue(red: 156, green: 207, blue: 216),     // blue
+            ColorValue(red: 196, green: 167, blue: 231),     // magenta
+            ColorValue(red: 235, green: 188, blue: 186),     // cyan
+            ColorValue(red: 224, green: 222, blue: 244),     // white
+            ColorValue(red: 110, green: 106, blue: 134),     // bright black
+            ColorValue(red: 235, green: 111, blue: 146),     // bright red
+            ColorValue(red: 49, green: 116, blue: 143),      // bright green
+            ColorValue(red: 246, green: 193, blue: 119),     // bright yellow
+            ColorValue(red: 156, green: 207, blue: 216),     // bright blue
+            ColorValue(red: 196, green: 167, blue: 231),     // bright magenta
+            ColorValue(red: 235, green: 188, blue: 186),     // bright cyan
+            ColorValue(red: 224, green: 222, blue: 244),     // bright white
+        ],
+        isDark: true
+    )
+
+    private static let synthwave = TerminalTheme(
+        name: .synthwave,
+        displayName: "Synthwave",
+        backgroundColor: ColorValue(red: 36, green: 27, blue: 48),
+        foregroundColor: ColorValue(red: 242, green: 242, blue: 227),
+        cursorColor: ColorValue(red: 242, green: 242, blue: 227),
+        ansiColors: [
+            ColorValue(red: 36, green: 27, blue: 48),        // black
+            ColorValue(red: 230, green: 10, blue: 112),      // red
+            ColorValue(red: 0, green: 152, blue: 108),       // green
+            ColorValue(red: 173, green: 173, blue: 62),      // yellow
+            ColorValue(red: 110, green: 41, blue: 173),      // blue
+            ColorValue(red: 179, green: 0, blue: 173),       // magenta
+            ColorValue(red: 0, green: 176, blue: 177),       // cyan
+            ColorValue(red: 185, green: 177, blue: 188),     // white
+            ColorValue(red: 127, green: 112, blue: 148),     // bright black
+            ColorValue(red: 230, green: 10, blue: 112),      // bright red
+            ColorValue(red: 10, green: 228, blue: 164),      // bright green
+            ColorValue(red: 249, green: 249, blue: 114),     // bright yellow
+            ColorValue(red: 170, green: 84, blue: 249),      // bright blue
+            ColorValue(red: 255, green: 0, blue: 246),       // bright magenta
+            ColorValue(red: 0, green: 251, blue: 253),       // bright cyan
+            ColorValue(red: 242, green: 242, blue: 227),     // bright white
+        ],
+        isDark: true
+    )
+
+    private static let kanagawa = TerminalTheme(
+        name: .kanagawa,
+        displayName: "Kanagawa",
+        backgroundColor: ColorValue(red: 24, green: 22, blue: 22),
+        foregroundColor: ColorValue(red: 197, green: 201, blue: 197),
+        cursorColor: ColorValue(red: 200, green: 192, blue: 147),
+        ansiColors: [
+            ColorValue(red: 13, green: 12, blue: 12),        // black
+            ColorValue(red: 196, green: 116, blue: 110),     // red
+            ColorValue(red: 138, green: 154, blue: 123),     // green
+            ColorValue(red: 196, green: 178, blue: 138),     // yellow
+            ColorValue(red: 139, green: 164, blue: 176),     // blue
+            ColorValue(red: 162, green: 146, blue: 163),     // magenta
+            ColorValue(red: 142, green: 164, blue: 162),     // cyan
+            ColorValue(red: 200, green: 192, blue: 147),     // white
+            ColorValue(red: 166, green: 166, blue: 156),     // bright black
+            ColorValue(red: 228, green: 104, blue: 118),     // bright red
+            ColorValue(red: 135, green: 169, blue: 135),     // bright green
+            ColorValue(red: 230, green: 195, blue: 132),     // bright yellow
+            ColorValue(red: 127, green: 180, blue: 202),     // bright blue
+            ColorValue(red: 147, green: 138, blue: 169),     // bright magenta
+            ColorValue(red: 122, green: 168, blue: 159),     // bright cyan
+            ColorValue(red: 197, green: 201, blue: 197),     // bright white
+        ],
+        isDark: true
     )
 }

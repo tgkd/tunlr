@@ -107,4 +107,9 @@ enum TerminalThemeName: String, Codable, Sendable, CaseIterable {
     case oneDark
     case githubLight
     case gruvboxLight
+    case catppuccinMocha
+    case tokyoNight
+    case rosePine
+    case synthwave
+    case kanagawa
 }

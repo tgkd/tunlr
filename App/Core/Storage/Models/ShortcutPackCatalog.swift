@@ -67,5 +67,6 @@ enum ShortcutPackCatalog {
         Shortcut(label: "Undo", shortcutDisplay: "Ctrl+_", icon: "arrow.uturn.backward", bytes: [0x1F]),
         Shortcut(label: "Cycle Mode", shortcutDisplay: "Shift+Tab", icon: "arrow.triangle.2.circlepath", bytes: [0x1B, 0x5B, 0x5A]),
         Shortcut(label: "History", shortcutDisplay: "Ctrl+R", icon: "clock.arrow.circlepath", bytes: [0x12]),
+        Shortcut(label: "macOS Claude", shortcutDisplay: "unlock+run", icon: "laptopcomputer", bytes: Array("security unlock-keychain ~/Library/Keychains/login.keychain-db && claude\r".utf8)),
     ]
 }
