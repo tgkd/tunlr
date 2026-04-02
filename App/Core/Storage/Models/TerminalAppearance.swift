@@ -12,6 +12,8 @@ struct TerminalAppearance: Codable, Sendable, Equatable {
     var favoriteShortcuts: [Shortcut] = []
     var customizedPacks: [ShortcutPackID: [Shortcut]] = [:]
     var eventNotifications: EventNotificationSettings = EventNotificationSettings()
+    var useMetalRenderer: Bool = false
+    var metalBufferingMode: TerminalMetalBuffering = .perRow
 
     func shortcuts(for packID: ShortcutPackID) -> [Shortcut] {
         customizedPacks[packID] ?? ShortcutPackCatalog.shortcuts(for: packID)
@@ -32,6 +34,8 @@ struct TerminalAppearance: Codable, Sendable, Equatable {
         favoriteShortcuts = try container.decodeIfPresent([Shortcut].self, forKey: .favoriteShortcuts) ?? []
         customizedPacks = try container.decodeIfPresent([ShortcutPackID: [Shortcut]].self, forKey: .customizedPacks) ?? [:]
         eventNotifications = try container.decodeIfPresent(EventNotificationSettings.self, forKey: .eventNotifications) ?? EventNotificationSettings()
+        useMetalRenderer = try container.decodeIfPresent(Bool.self, forKey: .useMetalRenderer) ?? false
+        metalBufferingMode = try container.decodeIfPresent(TerminalMetalBuffering.self, forKey: .metalBufferingMode) ?? .perRow
     }
 }
 
@@ -94,6 +98,25 @@ enum TerminalFontName: String, Codable, Sendable, CaseIterable {
             return font
         }
         return .monospacedSystemFont(ofSize: size, weight: .regular)
+    }
+}
+
+enum TerminalMetalBuffering: String, Codable, Sendable, CaseIterable {
+    case perRow
+    case perFrame
+
+    var displayName: String {
+        switch self {
+        case .perRow: return "Per Row"
+        case .perFrame: return "Per Frame"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .perRow: return "Caches rows, redraws only changes"
+        case .perFrame: return "Redraws all rows each frame, better for full-screen TUIs"
+        }
     }
 }
 

@@ -8,6 +8,7 @@ struct VisualSettingsView: View {
             fontSection
             cursorSection
             scrollbackSection
+            renderingSection
             themeSection
         }
         .navigationTitle("Appearance")
@@ -64,6 +65,30 @@ struct VisualSettingsView: View {
                 }
             }
             .pickerStyle(.segmented)
+        }
+    }
+
+    // MARK: - Rendering
+
+    @ViewBuilder
+    private var renderingSection: some View {
+        Section {
+            Toggle("GPU Acceleration", isOn: binding(\.useMetalRenderer))
+            if viewModel.appearance.useMetalRenderer {
+                Picker("Buffering Mode", selection: binding(\.metalBufferingMode)) {
+                    ForEach(TerminalMetalBuffering.allCases, id: \.self) { mode in
+                        Text(mode.displayName).tag(mode)
+                    }
+                }
+            }
+        } header: {
+            Text("Rendering")
+        } footer: {
+            if viewModel.appearance.useMetalRenderer {
+                Text(viewModel.appearance.metalBufferingMode.description)
+            } else {
+                Text("Uses Metal for hardware-accelerated terminal rendering")
+            }
         }
     }
 

@@ -96,6 +96,17 @@ final class TerminalViewController: UIViewController {
             ? UIColor(white: 0.3, alpha: 0.6)
             : UIColor(white: 0.7, alpha: 0.6)
 
+        let wantsMetal = appearance.useMetalRenderer
+        let hadMetal = terminalView.isUsingMetalRenderer
+        if wantsMetal != hadMetal {
+            try? terminalView.setUseMetal(wantsMetal)
+        }
+        if wantsMetal {
+            let mode: MetalBufferingMode = appearance.metalBufferingMode == .perFrame
+                ? .perFrameAggregated : .perRowPersistent
+            terminalView.metalBufferingMode = mode
+        }
+
         if let accessory = terminalView.inputAccessoryView as? SimpleTerminalAccessory {
             let btnBg = theme.isDark ? UIColor(white: 0.22, alpha: 1) : UIColor(white: 0.88, alpha: 1)
             let txtColor: UIColor = theme.isDark ? .white : .black

@@ -1,5 +1,5 @@
 @preconcurrency import AVFoundation
-import WhisperKit
+@preconcurrency import WhisperKit
 
 enum WhisperModelSize: String, CaseIterable, Sendable {
     case tiny = "openai_whisper-tiny"
@@ -92,11 +92,7 @@ actor WhisperService {
     }
 
     nonisolated func requestMicrophonePermission() async -> Bool {
-        do {
-            return try await AVAudioApplication.requestRecordPermission()
-        } catch {
-            return false
-        }
+        await AVAudioApplication.requestRecordPermission()
     }
 
     func ensureModelReady() async throws {
