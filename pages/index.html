@@ -12,125 +12,140 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #e5e5e5;
-            background: #111;
+            font-family: 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #c0c0c0;
+            background: #0c0c0c;
             min-height: 100vh;
-            padding: 2rem 0;
+            padding: 2rem 1rem;
         }
 
-        .container {
-            max-width: 800px;
+        .terminal {
+            max-width: 720px;
             margin: 0 auto;
-            background: #1a1a1a;
-            border-radius: 12px;
-            border: 1px solid #2a2a2a;
-            padding: 3rem 2rem;
-            text-align: center;
+        }
+
+        .prompt {
+            color: #569cd6;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background: #c0c0c0;
+            vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
         }
 
         h1 {
-            font-size: 3rem;
-            color: #e5e5e5;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-            font-family: 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: normal;
+            color: #c0c0c0;
+            margin-bottom: 1.5rem;
         }
 
-        .tagline {
-            font-size: 1.25rem;
-            color: #888;
-            margin-bottom: 2rem;
+        h1 strong {
+            color: #4ec9b0;
+            font-weight: normal;
         }
 
         .section {
-            text-align: left;
-            margin-top: 2rem;
+            margin-bottom: 1.5rem;
         }
 
-        .section h2 {
-            font-size: 1.5rem;
-            color: #ccc;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
+        .section-title {
+            color: #569cd6;
+            margin-bottom: 0.25rem;
         }
 
         .section p {
-            color: #999;
-            margin-bottom: 1rem;
+            color: #808080;
+            margin-bottom: 0.5rem;
+        }
+
+        .divider {
+            color: #333;
+            margin: 1.5rem 0;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
         .links {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #2a2a2a;
+            margin-top: 1.5rem;
         }
 
         .links a {
-            color: #888;
+            color: #808080;
             text-decoration: none;
-            margin: 0 1rem;
-            font-size: 0.95rem;
+            margin-right: 2rem;
         }
 
         .links a:hover {
-            color: #e5e5e5;
-            text-decoration: underline;
+            color: #4ec9b0;
         }
 
-        .contact {
-            margin-top: 2rem;
-            font-size: 0.85rem;
-            color: #555;
-        }
-
-        .contact a {
-            color: #666;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 2rem 1.5rem;
+        @media (max-width: 600px) {
+            body {
+                font-size: 13px;
+                padding: 1.5rem 1rem;
             }
 
-            h1 {
-                font-size: 2.5rem;
+            .links a {
+                display: block;
+                margin-right: 0;
+                margin-bottom: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>tunlr</h1>
-        <p class="tagline">SSH terminal for iOS.</p>
+    <div class="terminal">
+        <h1><span class="prompt">$</span> ssh <strong>tunlr</strong> <span class="cursor"></span></h1>
 
         <div class="section">
-            <h2>Features</h2>
-            <p>Full terminal emulation with xterm-256color support. Save connection profiles and reconnect with a tap. Auto-reconnect restores your session when you switch back to the app.</p>
-            <p>Authenticate with Secure Enclave keys protected by Face ID, imported Ed25519 or ECDSA keys, or passwords stored in Keychain. Host key verification uses trust-on-first-use with QR code scanning for fingerprint import.</p>
+            <div class="section-title"># terminal</div>
+            <p>Full PTY emulation, xterm-256color, scrollback up to 50k lines. Metal GPU rendering. iPhone and iPad, portrait and landscape.</p>
         </div>
 
         <div class="section">
-            <h2>Voice Input</h2>
-            <p>Dictate terminal commands using on-device speech recognition powered by WhisperKit. No audio leaves your device.</p>
+            <div class="section-title"># auth</div>
+            <p>Secure Enclave keys with Face ID. Imported Ed25519, ECDSA, or RSA keys in Keychain. Passwords in Keychain. All biometric-protected.</p>
         </div>
 
         <div class="section">
-            <h2>Customizable</h2>
-            <p>9 color themes, 4 monospace fonts, adjustable font size, and a keyboard toolbar with shortcut packs for Shell, Tmux, Vim, and Claude.</p>
+            <div class="section-title"># host verification</div>
+            <p>Trust-on-first-use. Warns on fingerprint change. QR code scanning for fingerprint import.</p>
         </div>
 
         <div class="section">
-            <h2>Private by Design</h2>
-            <p>No accounts, no analytics, no tracking. Everything runs on your device.</p>
+            <div class="section-title"># input</div>
+            <p>On-device voice input via WhisperKit. No audio leaves your device. Keyboard toolbar with shortcut packs for Shell, Tmux, Vim, Claude Code.</p>
         </div>
+
+        <div class="section">
+            <div class="section-title"># appearance</div>
+            <p>14 themes. 4 monospace fonts. Adjustable font size.</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title"># privacy</div>
+            <p>No accounts. No analytics. No tracking. Everything on-device.</p>
+        </div>
+
+        <div class="divider">────────────────────────────────────────────────────────────────────────────────</div>
 
         <div class="links">
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Service</a>
-            <a href="https://github.com/tgkd/tunlr" target="_blank">GitHub</a>
-            <a href="mailto:tunlr@proton.me">Support</a>
+            <a href="/privacy">privacy</a>
+            <a href="/terms">terms</a>
+            <a href="https://github.com/tgkd/tunlr" target="_blank">github</a>
+            <a href="mailto:tunlrapp@proton.me">support</a>
         </div>
     </div>
 </body>
