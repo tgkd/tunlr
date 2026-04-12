@@ -15,7 +15,11 @@ actor ProfileStore {
         useBiometricProtection: Bool = true
     ) throws {
         self.biometricPolicy = biometricPolicy
+        #if DEBUG
         self.useBiometricProtection = useBiometricProtection
+        #else
+        self.useBiometricProtection = true
+        #endif
         let dir = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             .appendingPathComponent("DivineMarssh", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)

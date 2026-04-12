@@ -1,10 +1,12 @@
 import Foundation
 
-struct HostKeyVerificationRequest: Sendable {
+struct HostKeyVerificationRequest: Sendable, Identifiable {
     let hostname: String
     let port: UInt16
     let keyType: String
     let fingerprint: String
+
+    var id: String { "\(hostname):\(port):\(keyType)" }
 }
 
 enum HostKeyVerificationResult: Sendable {

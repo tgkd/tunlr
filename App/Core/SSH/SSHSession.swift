@@ -254,7 +254,9 @@ final class CitadelConnectionHandler: SSHConnectionHandling, @unchecked Sendable
             let stored = try JSONDecoder().decode(StoredKeyData.self, from: rawData)
             return try buildAuthMethod(username: profile.username, stored: stored)
         case .password:
-            let password = await profileStore.password(for: profile.id) ?? ""
+            guard let password = await profileStore.password(for: profile.id) else {
+                throw SSHSessionError.authenticationFailed
+            }
             return .passwordBased(username: profile.username, password: password)
         }
     }

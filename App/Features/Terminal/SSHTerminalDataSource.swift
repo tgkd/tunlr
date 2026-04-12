@@ -133,7 +133,10 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     nonisolated func clipboardCopy(source: TerminalView, content: Data) {
         Task { @MainActor in
             if let text = String(data: content, encoding: .utf8) {
-                UIPasteboard.general.string = text
+                UIPasteboard.general.setItems(
+                    [[UIPasteboard.typeAutomatic: text]],
+                    options: [.expirationDate: Date().addingTimeInterval(60)]
+                )
             }
         }
     }
@@ -200,7 +203,7 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
             try? await Task.sleep(nanoseconds: 16_000_000)
             guard let self, !Task.isCancelled else { return }
             let data = self.outputBuffer
-            self.outputBuffer.removeAll(keepingCapacity: true)
+            MemoryHygiene.zeroOut(&self.outputBuffer)
             self.flushTask = nil
             self.terminalView?.feed(byteArray: ArraySlice(data))
         }
