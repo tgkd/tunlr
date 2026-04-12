@@ -13,3 +13,6 @@ tests-ssh-keys/
 
 # App Store screenshot generator
 appstore-screenshots/
+
+# Wrangler cache
+.wrangler/
