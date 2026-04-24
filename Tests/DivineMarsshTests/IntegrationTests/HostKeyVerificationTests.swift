@@ -3,16 +3,6 @@ import Foundation
 import CryptoKit
 @testable import DivineMarssh
 
-private actor Counter {
-    var value: Int = 0
-    func increment() { value += 1 }
-}
-
-private actor FingerprintCollector {
-    var values: [String] = []
-    func append(_ fp: String) { values.append(fp) }
-}
-
 // MARK: - Integration: Host Key Verification Flow
 
 struct HostKeyVerificationIntegrationTests {
@@ -31,20 +21,11 @@ struct HostKeyVerificationIntegrationTests {
         return try KnownHostsStore(directory: dir)
     }
 
-    // MARK: - First Connect Accepts (TOFU)
+    // MARK: - First Connect Auto-Trusts (TOFU)
 
-    @Test func firstConnectionRequestsApproval() async throws {
+    @Test func firstConnectionSilentlyStoresKey() async throws {
         let store = try makeStore()
-        let approvalCounter = Counter()
-
-        let verifier = HostKeyVerifier(store: store) { request in
-            await approvalCounter.increment()
-            #expect(request.hostname == "newhost.example.com")
-            #expect(request.port == 22)
-            #expect(request.keyType == "ssh-ed25519")
-            #expect(request.fingerprint.hasPrefix("SHA256:"))
-            return true
-        }
+        let verifier = HostKeyVerifier(store: store)
 
         let pubKeyData = makeTestPublicKeyData()
         try await verifier.verify(
@@ -54,44 +35,17 @@ struct HostKeyVerificationIntegrationTests {
             publicKeyData: pubKeyData
         )
 
-        let count = await approvalCounter.value
-        #expect(count == 1)
-
         let stored = await store.lookup(hostname: "newhost.example.com", port: 22, keyType: "ssh-ed25519")
         #expect(stored != nil)
         #expect(stored?.publicKeyData == pubKeyData)
-    }
-
-    @Test func firstConnectionRejectedDoesNotStore() async throws {
-        let store = try makeStore()
-
-        let verifier = HostKeyVerifier(store: store) { _ in false }
-
-        let pubKeyData = makeTestPublicKeyData()
-
-        await #expect(throws: HostKeyVerificationError.self) {
-            try await verifier.verify(
-                hostname: "rejected.example.com",
-                port: 22,
-                keyType: "ssh-ed25519",
-                publicKeyData: pubKeyData
-            )
-        }
-
-        let stored = await store.lookup(hostname: "rejected.example.com", port: 22, keyType: "ssh-ed25519")
-        #expect(stored == nil)
+        #expect(stored?.fingerprint == FingerprintFormatter.sha256Fingerprint(of: pubKeyData))
     }
 
     // MARK: - Second Connect Matches
 
     @Test func secondConnectionWithSameKeySilentlySucceeds() async throws {
         let store = try makeStore()
-        let approvalCounter = Counter()
-
-        let verifier = HostKeyVerifier(store: store) { _ in
-            await approvalCounter.increment()
-            return true
-        }
+        let verifier = HostKeyVerifier(store: store)
 
         let pubKeyData = makeTestPublicKeyData()
 
@@ -101,8 +55,6 @@ struct HostKeyVerificationIntegrationTests {
             keyType: "ssh-ed25519",
             publicKeyData: pubKeyData
         )
-        let count1 = await approvalCounter.value
-        #expect(count1 == 1)
 
         try await verifier.verify(
             hostname: "known.example.com",
@@ -110,16 +62,16 @@ struct HostKeyVerificationIntegrationTests {
             keyType: "ssh-ed25519",
             publicKeyData: pubKeyData
         )
-        let count2 = await approvalCounter.value
-        #expect(count2 == 1)
+
+        let stored = await store.lookup(hostname: "known.example.com", port: 22, keyType: "ssh-ed25519")
+        #expect(stored?.publicKeyData == pubKeyData)
     }
 
     // MARK: - Changed Key Blocks
 
     @Test func changedKeyTriggersHardBlock() async throws {
         let store = try makeStore()
-
-        let verifier = HostKeyVerifier(store: store) { _ in true }
+        let verifier = HostKeyVerifier(store: store)
 
         let originalKey = makeTestPublicKeyData(seed: 0xAA)
         try await verifier.verify(
@@ -152,8 +104,7 @@ struct HostKeyVerificationIntegrationTests {
 
     @Test func changedKeyDoesNotOverwriteOriginal() async throws {
         let store = try makeStore()
-
-        let verifier = HostKeyVerifier(store: store) { _ in true }
+        let verifier = HostKeyVerifier(store: store)
 
         let originalKey = makeTestPublicKeyData(seed: 0xCC)
         try await verifier.verify(
@@ -179,7 +130,7 @@ struct HostKeyVerificationIntegrationTests {
 
     @Test func checkReturnsNeedsApprovalForUnknownHost() async throws {
         let store = try makeStore()
-        let verifier = HostKeyVerifier(store: store) { _ in true }
+        let verifier = HostKeyVerifier(store: store)
         let pubKeyData = makeTestPublicKeyData()
 
         let result = await verifier.check(
@@ -199,7 +150,7 @@ struct HostKeyVerificationIntegrationTests {
 
     @Test func checkReturnsTrustedForKnownHost() async throws {
         let store = try makeStore()
-        let verifier = HostKeyVerifier(store: store) { _ in true }
+        let verifier = HostKeyVerifier(store: store)
         let pubKeyData = makeTestPublicKeyData()
 
         try await verifier.verify(
@@ -225,7 +176,7 @@ struct HostKeyVerificationIntegrationTests {
 
     @Test func checkReturnsMismatchForChangedKey() async throws {
         let store = try makeStore()
-        let verifier = HostKeyVerifier(store: store) { _ in true }
+        let verifier = HostKeyVerifier(store: store)
 
         let originalKey = makeTestPublicKeyData(seed: 0x11)
         try await verifier.verify(
@@ -254,7 +205,7 @@ struct HostKeyVerificationIntegrationTests {
 
     @Test func differentHostsAreIndependent() async throws {
         let store = try makeStore()
-        let verifier = HostKeyVerifier(store: store) { _ in true }
+        let verifier = HostKeyVerifier(store: store)
 
         let key1 = makeTestPublicKeyData(seed: 0x01)
         let key2 = makeTestPublicKeyData(seed: 0x02)
@@ -272,7 +223,7 @@ struct HostKeyVerificationIntegrationTests {
 
     @Test func sameHostDifferentPortsAreIndependent() async throws {
         let store = try makeStore()
-        let verifier = HostKeyVerifier(store: store) { _ in true }
+        let verifier = HostKeyVerifier(store: store)
 
         let key1 = makeTestPublicKeyData(seed: 0x03)
         let key2 = makeTestPublicKeyData(seed: 0x04)
@@ -291,31 +242,26 @@ struct HostKeyVerificationIntegrationTests {
 
     @Test func fingerprintIsConsistentAcrossVerifications() async throws {
         let store = try makeStore()
-        let collector = FingerprintCollector()
-
-        let verifier = HostKeyVerifier(store: store) { request in
-            await collector.append(request.fingerprint)
-            return true
-        }
+        let verifier = HostKeyVerifier(store: store)
 
         let pubKeyData = makeTestPublicKeyData(seed: 0xEE)
+        let directFingerprint = FingerprintFormatter.sha256Fingerprint(of: pubKeyData)
 
         try await verifier.verify(hostname: "fp1.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: pubKeyData)
         try await verifier.verify(hostname: "fp2.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: pubKeyData)
 
-        let fingerprints = await collector.values
-        #expect(fingerprints.count == 2)
-        #expect(fingerprints[0] == fingerprints[1])
+        let stored1 = await store.lookup(hostname: "fp1.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored2 = await store.lookup(hostname: "fp2.example.com", port: 22, keyType: "ssh-ed25519")
 
-        let directFingerprint = FingerprintFormatter.sha256Fingerprint(of: pubKeyData)
-        #expect(fingerprints[0] == directFingerprint)
+        #expect(stored1?.fingerprint == directFingerprint)
+        #expect(stored2?.fingerprint == directFingerprint)
     }
 
     // MARK: - Revoke and Re-trust
 
     @Test func revokeAndRetrust() async throws {
         let store = try makeStore()
-        let verifier = HostKeyVerifier(store: store) { _ in true }
+        let verifier = HostKeyVerifier(store: store)
 
         let key1 = makeTestPublicKeyData(seed: 0xF0)
         try await verifier.verify(hostname: "revoke.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: key1)

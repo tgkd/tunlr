@@ -17,19 +17,13 @@ enum HostKeyVerificationResult: Sendable {
 
 enum HostKeyVerificationError: Error, Equatable {
     case mismatch(existingFingerprint: String, newFingerprint: String)
-    case rejected
 }
 
 actor HostKeyVerifier {
     private let store: KnownHostsStore
-    private let approvalHandler: @Sendable (HostKeyVerificationRequest) async -> Bool
 
-    init(
-        store: KnownHostsStore,
-        approvalHandler: @escaping @Sendable (HostKeyVerificationRequest) async -> Bool
-    ) {
+    init(store: KnownHostsStore) {
         self.store = store
-        self.approvalHandler = approvalHandler
     }
 
     func verify(
@@ -53,27 +47,15 @@ actor HostKeyVerifier {
             }
         }
 
-        let request = HostKeyVerificationRequest(
+        let hostKeyEntry = SSHHostKey(
             hostname: hostname,
             port: port,
             keyType: keyType,
-            fingerprint: fingerprint
+            publicKeyData: publicKeyData,
+            fingerprint: fingerprint,
+            firstSeenDate: Date()
         )
-        let approved = await approvalHandler(request)
-
-        if approved {
-            let hostKeyEntry = SSHHostKey(
-                hostname: hostname,
-                port: port,
-                keyType: keyType,
-                publicKeyData: publicKeyData,
-                fingerprint: fingerprint,
-                firstSeenDate: Date()
-            )
-            try await store.trust(hostKey: hostKeyEntry)
-        } else {
-            throw HostKeyVerificationError.rejected
-        }
+        try await store.trust(hostKey: hostKeyEntry)
     }
 
     func check(

@@ -4,17 +4,15 @@ struct ContentView: View {
     @StateObject private var viewModel: ConnectionViewModel
     @ObservedObject var sessionManager: SSHSessionManager
     @ObservedObject var appearanceViewModel: AppearanceViewModel
-    @ObservedObject var approvalCoordinator: HostKeyApprovalCoordinator
     @Environment(\.horizontalSizeClass) private var sizeClass
 
-    init(profileStore: ProfileStore, keyManager: KeyManager, sessionManager: SSHSessionManager, appearanceViewModel: AppearanceViewModel, approvalCoordinator: HostKeyApprovalCoordinator) {
+    init(profileStore: ProfileStore, keyManager: KeyManager, sessionManager: SSHSessionManager, appearanceViewModel: AppearanceViewModel) {
         _viewModel = StateObject(wrappedValue: ConnectionViewModel(
             profileStore: profileStore,
             keyManager: keyManager
         ))
         self.sessionManager = sessionManager
         self.appearanceViewModel = appearanceViewModel
-        self.approvalCoordinator = approvalCoordinator
     }
 
     @State private var selectedProfile: SSHConnectionProfile?
@@ -56,13 +54,6 @@ struct ContentView: View {
             }
         } message: {
             Text("Could not connect to the server.")
-        }
-        .sheet(item: $approvalCoordinator.pendingRequest) { request in
-            HostVerificationSheet(
-                request: request,
-                onTrust: { approvalCoordinator.userTrusted() },
-                onCancel: { approvalCoordinator.userRejected() }
-            )
         }
         .onChange(of: showTerminal) { _, isShowing in
             if sizeClass == .regular {

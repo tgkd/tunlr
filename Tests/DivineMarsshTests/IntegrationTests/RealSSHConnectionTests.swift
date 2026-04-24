@@ -17,6 +17,7 @@ struct RealSSHConnectionTests {
 
     private struct TestDeps {
         let hostKeyVerifier: HostKeyVerifier
+        let knownHostsStore: KnownHostsStore
         let keyManager: KeyManager
         let profileStore: ProfileStore
         let tempDir: URL
@@ -31,19 +32,14 @@ struct RealSSHConnectionTests {
         }
     }
 
-    private static func makeDeps(
-        approvalHandler: @escaping @Sendable (HostKeyVerificationRequest) async -> Bool = { _ in true }
-    ) throws -> TestDeps {
+    private static func makeDeps() throws -> TestDeps {
         let tempDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("RealSSHTest-\(UUID().uuidString)")
 
         let knownHostsStore = try KnownHostsStore(
             directory: tempDir.appendingPathComponent("hosts")
         )
-        let hostKeyVerifier = HostKeyVerifier(
-            store: knownHostsStore,
-            approvalHandler: approvalHandler
-        )
+        let hostKeyVerifier = HostKeyVerifier(store: knownHostsStore)
 
         let keychainServiceName = "com.divinemarssh.real-test.\(UUID().uuidString)"
         let keychainManager = try KeychainKeyManager(
@@ -63,6 +59,7 @@ struct RealSSHConnectionTests {
 
         return TestDeps(
             hostKeyVerifier: hostKeyVerifier,
+            knownHostsStore: knownHostsStore,
             keyManager: keyManager,
             profileStore: profileStore,
             tempDir: tempDir,
@@ -223,12 +220,7 @@ struct RealSSHConnectionTests {
 
     @Test(.tags(.integration))
     func hostKeyTOFUFlow() async throws {
-        let approvalCount = ApprovalCounter()
-
-        let deps = try Self.makeDeps { _ in
-            await approvalCount.increment()
-            return true
-        }
+        let deps = try Self.makeDeps()
         defer { Task { await deps.cleanup() } }
 
         let profile = SSHConnectionProfile(
@@ -237,19 +229,25 @@ struct RealSSHConnectionTests {
         )
         try await deps.profileStore.addProfile(profile, password: Self.password)
 
+        let storedBefore = await deps.knownHostsStore.allHostKeys()
+        #expect(storedBefore.isEmpty)
+
         let handler = Self.makeHandler(deps)
 
         let session1 = SSHSession(connectionHandler: handler)
         try await session1.connect(profile: profile)
-        let count1 = await approvalCount.count
-        #expect(count1 == 1)
         await session1.disconnect()
+
+        let storedAfterFirst = await deps.knownHostsStore.allHostKeys()
+        #expect(storedAfterFirst.count == 1)
+        #expect(storedAfterFirst.first?.hostname == Self.host)
 
         let session2 = SSHSession(connectionHandler: handler)
         try await session2.connect(profile: profile)
-        let count2 = await approvalCount.count
-        #expect(count2 == 1)
         await session2.disconnect()
+
+        let storedAfterSecond = await deps.knownHostsStore.allHostKeys()
+        #expect(storedAfterSecond.count == 1)
     }
 
     // MARK: - Wrong Password
@@ -313,10 +311,3 @@ struct RealSSHConnectionTests {
     }
 }
 
-private actor ApprovalCounter {
-    var count = 0
-
-    func increment() {
-        count += 1
-    }
-}

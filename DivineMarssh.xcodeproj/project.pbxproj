@@ -31,7 +31,6 @@
 		52D4F28FFD4B56D92302CE01 /* SSHAuthMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */; };
 		52E7AB6928DBD7BAB5A18380 /* KeyManagerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EEE35B4F24CB319C9E4F1F9 /* KeyManagerViewModel.swift */; };
 		54930B16B8EF78B8B57941FE /* HostKeyMismatchWarning.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FA6A4F8545F824FBC305CB /* HostKeyMismatchWarning.swift */; };
-		556A984D197DAFEBF5BC93BE /* HostVerificationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7140A8A516B797F7F054F66 /* HostVerificationSheet.swift */; };
 		62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */; };
 		62DA3B8306E2D92DC46C2827 /* ConnectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF40EEE2F77ABF44DC954BC9 /* ConnectionViewModel.swift */; };
 		68B6CE365228FB402E99CA9B /* KeyManagerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABDEBA215FDB5E01EFD84A0 /* KeyManagerViewModelTests.swift */; };
@@ -186,7 +185,6 @@
 		DF40EEE2F77ABF44DC954BC9 /* ConnectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionViewModel.swift; sourceTree = "<group>"; };
 		E31DA89DE913B3AB75B40B78 /* KeychainKeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainKeyManagerTests.swift; sourceTree = "<group>"; };
 		E5045FB9640565348B5A8110 /* BiometricPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricPolicy.swift; sourceTree = "<group>"; };
-		E7140A8A516B797F7F054F66 /* HostVerificationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostVerificationSheet.swift; sourceTree = "<group>"; };
 		EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyVerifier.swift; sourceTree = "<group>"; };
 		EAA6846E7FD0815AFB4AC585 /* TerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalViewController.swift; sourceTree = "<group>"; };
 		ED0E54054300024933D2EE69 /* SSHConnectionProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConnectionProfile.swift; sourceTree = "<group>"; };
@@ -306,7 +304,6 @@
 				D4765ACF8EE3591F7B6CB52D /* FingerprintURIParser.swift */,
 				B9FA6A4F8545F824FBC305CB /* HostKeyMismatchWarning.swift */,
 				EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */,
-				E7140A8A516B797F7F054F66 /* HostVerificationSheet.swift */,
 				34E955FDE77CC95F55C1A9E1 /* QRFingerprintScanner.swift */,
 			);
 			path = HostVerification;
@@ -651,7 +648,6 @@
 				C84CCEF2AF6526D10E0A3CE8 /* FingerprintURIParser.swift in Sources */,
 				54930B16B8EF78B8B57941FE /* HostKeyMismatchWarning.swift in Sources */,
 				EFA7A8C6FDF50B9AF179C8C7 /* HostKeyVerifier.swift in Sources */,
-				556A984D197DAFEBF5BC93BE /* HostVerificationSheet.swift in Sources */,
 				8384A1830E10386A052CF5F7 /* ImportedKeyAuthenticator.swift in Sources */,
 				28E7FD8035F83249632CA4D6 /* KeyDetailView.swift in Sources */,
 				CC9F75D8825F0FBCD66AA7A5 /* KeyManager.swift in Sources */,
@@ -745,7 +741,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -848,7 +844,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
