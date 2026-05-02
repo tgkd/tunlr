@@ -122,6 +122,15 @@ final class SimpleTerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     private var textColor: UIColor = .white
     private let pad: CGFloat = 4
     private let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+    private var preferredHeight: CGFloat { isIPad ? 52 : 44 }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: preferredHeight)
+    }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        CGSize(width: size.width, height: preferredHeight)
+    }
 
     init(frame: CGRect, terminalView: TerminalView) {
         self.terminalView = terminalView

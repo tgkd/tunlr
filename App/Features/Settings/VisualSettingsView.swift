@@ -73,7 +73,7 @@ struct VisualSettingsView: View {
     @ViewBuilder
     private var renderingSection: some View {
         Section {
-            Toggle("GPU Acceleration", isOn: binding(\.useMetalRenderer))
+            Toggle("GPU Acceleration (Beta)", isOn: binding(\.useMetalRenderer))
             if viewModel.appearance.useMetalRenderer {
                 Picker("Buffering Mode", selection: binding(\.metalBufferingMode)) {
                     ForEach(TerminalMetalBuffering.allCases, id: \.self) { mode in
@@ -87,7 +87,7 @@ struct VisualSettingsView: View {
             if viewModel.appearance.useMetalRenderer {
                 Text(viewModel.appearance.metalBufferingMode.description)
             } else {
-                Text("Uses Metal for hardware-accelerated terminal rendering")
+                Text("Uses Metal for hardware-accelerated terminal rendering. Beta — may clip the bottom row at larger fonts when the keyboard is open.")
             }
         }
     }

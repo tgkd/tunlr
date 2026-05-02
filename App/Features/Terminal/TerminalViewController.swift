@@ -12,15 +12,14 @@ final class TerminalViewController: UIViewController {
     var onTerminalEvent: ((TerminalEvent) -> Void)?
     var voiceInputEnabled: Bool = false {
         didSet {
-            if let accessory = terminalView?.inputAccessoryView as? SimpleTerminalAccessory {
-                accessory.showMicButton = voiceInputEnabled
-            }
+            toolbarAccessory?.showMicButton = voiceInputEnabled
         }
     }
 
     private var currentAppearance: TerminalAppearance?
-    private var terminalBottomConstraint: NSLayoutConstraint!
-    private var keyboardOverlap: CGFloat = 0
+    private var toolbarAccessory: SimpleTerminalAccessory?
+    private var toolbarHeightConstraint: NSLayoutConstraint!
+    private let toolbarVisibleHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
 
     init(dataSource: SSHTerminalDataSource) {
         self.dataSource = dataSource
@@ -41,26 +40,35 @@ final class TerminalViewController: UIViewController {
 
         terminalView = TerminalView(frame: .zero, font: nil)
         terminalView.translatesAutoresizingMaskIntoConstraints = false
+        terminalView.contentInsetAdjustmentBehavior = .never
+        terminalView.inputAccessoryView = nil
         view.addSubview(terminalView)
 
+        let accessory = SimpleTerminalAccessory(
+            frame: CGRect(x: 0, y: 0, width: view.frame.width, height: toolbarVisibleHeight),
+            terminalView: terminalView
+        )
+        accessory.translatesAutoresizingMaskIntoConstraints = false
+        accessory.isHidden = true
+        accessory.onMicrophoneTapped = { [weak self] in
+            self?.onMicrophoneTapped?()
+        }
+        view.addSubview(accessory)
+        toolbarAccessory = accessory
+
         let hPadding: CGFloat = 12
-        terminalBottomConstraint = terminalView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        toolbarHeightConstraint = accessory.heightAnchor.constraint(equalToConstant: 0)
         NSLayoutConstraint.activate([
             terminalView.topAnchor.constraint(equalTo: view.topAnchor),
             terminalView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: hPadding),
             terminalView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -hPadding),
-            terminalBottomConstraint,
-        ])
+            terminalView.bottomAnchor.constraint(equalTo: accessory.topAnchor),
 
-        let accessoryHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
-        let accessory = SimpleTerminalAccessory(
-            frame: CGRect(x: 0, y: 0, width: view.frame.width, height: accessoryHeight),
-            terminalView: terminalView
-        )
-        accessory.onMicrophoneTapped = { [weak self] in
-            self?.onMicrophoneTapped?()
-        }
-        terminalView.inputAccessoryView = accessory
+            accessory.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            accessory.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            accessory.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            toolbarHeightConstraint,
+        ])
 
         dataSource.attachTerminalView(terminalView)
         dataSource.delegate = self
@@ -68,8 +76,8 @@ final class TerminalViewController: UIViewController {
         let center = NotificationCenter.default
         center.addObserver(
             self,
-            selector: #selector(keyboardFrameWillChange(_:)),
-            name: UIResponder.keyboardWillChangeFrameNotification,
+            selector: #selector(keyboardWillShow(_:)),
+            name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
         center.addObserver(
@@ -82,51 +90,34 @@ final class TerminalViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        applyBottomInset()
         notifyTerminalSize()
     }
 
-    override func viewSafeAreaInsetsDidChange() {
-        super.viewSafeAreaInsetsDidChange()
-        applyBottomInset()
-    }
-
-    @objc private func keyboardFrameWillChange(_ notification: Notification) {
-        updateKeyboardOverlap(from: notification, hiding: false)
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        setToolbarVisible(true, notification: notification)
     }
 
     @objc private func keyboardWillHide(_ notification: Notification) {
-        updateKeyboardOverlap(from: notification, hiding: true)
+        setToolbarVisible(false, notification: notification)
     }
 
-    private func updateKeyboardOverlap(from notification: Notification, hiding: Bool) {
-        guard let userInfo = notification.userInfo,
-              let endValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-        else { return }
+    private func setToolbarVisible(_ visible: Bool, notification: Notification) {
+        guard let accessory = toolbarAccessory else { return }
+        let targetHeight = visible ? toolbarVisibleHeight : 0
+        guard toolbarHeightConstraint.constant != targetHeight else { return }
+        toolbarHeightConstraint.constant = targetHeight
+        if visible { accessory.isHidden = false }
 
-        let endFrameInWindow = endValue.cgRectValue
-        let endFrameInView = view.convert(endFrameInWindow, from: nil)
-        let overlap = hiding ? 0 : max(0, view.bounds.maxY - endFrameInView.minY)
-        guard overlap != keyboardOverlap else { return }
-        keyboardOverlap = overlap
-
-        let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.25
-        let curveRaw = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt
+        let userInfo = notification.userInfo
+        let duration = userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.25
+        let curveRaw = userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt
             ?? UInt(UIView.AnimationCurve.easeInOut.rawValue)
         let options = UIView.AnimationOptions(rawValue: curveRaw << 16)
-
-        applyBottomInset()
-        UIView.animate(withDuration: duration, delay: 0, options: options) {
+        UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
             self.view.layoutIfNeeded()
-        }
-    }
-
-    private func applyBottomInset() {
-        let safeBottom = view.safeAreaInsets.bottom
-        let inset = max(safeBottom, keyboardOverlap)
-        if terminalBottomConstraint.constant != -inset {
-            terminalBottomConstraint.constant = -inset
-        }
+        }, completion: { _ in
+            if !visible { accessory.isHidden = true }
+        })
     }
 
     func applyAppearance(_ appearance: TerminalAppearance) {
@@ -161,6 +152,15 @@ final class TerminalViewController: UIViewController {
             ? UIColor(white: 0.3, alpha: 0.6)
             : UIColor(white: 0.7, alpha: 0.6)
 
+        // Metal renderer is opt-in (Beta). Known issue: at larger font sizes the
+        // Metal path renders one extra partial row past the visible viewport so
+        // the bottom row appears clipped under the keyboard accessory toolbar.
+        // CoreGraphics path is unaffected. Source: SwiftTerm
+        // MetalTerminalRenderer.swift `rowInfo` uses
+        // `Int(floor((offsetY + viewHeight - 1) / cellHeight))` for `lastRow`
+        // (any row touching the viewport) instead of `Int(viewHeight/cellHeight)`
+        // (only fully-fitting rows). No upstream fix as of pin 8e7a1e1; revisit
+        // when SwiftTerm is bumped or file an upstream PR.
         let wantsMetal = appearance.useMetalRenderer
         let hadMetal = terminalView.isUsingMetalRenderer
         if wantsMetal != hadMetal {
@@ -172,7 +172,7 @@ final class TerminalViewController: UIViewController {
             terminalView.metalBufferingMode = mode
         }
 
-        if let accessory = terminalView.inputAccessoryView as? SimpleTerminalAccessory {
+        if let accessory = toolbarAccessory {
             let btnBg = theme.isDark ? UIColor(white: 0.22, alpha: 1) : UIColor(white: 0.88, alpha: 1)
             let txtColor: UIColor = theme.isDark ? .white : .black
             accessory.updateColors(buttonBg: btnBg, textColor: txtColor)
@@ -203,9 +203,7 @@ final class TerminalViewController: UIViewController {
     }
 
     func setMicActive(_ active: Bool) {
-        if let accessory = terminalView?.inputAccessoryView as? SimpleTerminalAccessory {
-            accessory.isMicActive = active
-        }
+        toolbarAccessory?.isMicActive = active
     }
 
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
