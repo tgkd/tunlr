@@ -19,10 +19,16 @@ final class TerminalViewController: UIViewController {
     }
 
     private var currentAppearance: TerminalAppearance?
+    private var terminalBottomConstraint: NSLayoutConstraint!
+    private var keyboardOverlap: CGFloat = 0
 
     init(dataSource: SSHTerminalDataSource) {
         self.dataSource = dataSource
         super.init(nibName: nil, bundle: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     @available(*, unavailable)
@@ -38,11 +44,12 @@ final class TerminalViewController: UIViewController {
         view.addSubview(terminalView)
 
         let hPadding: CGFloat = 12
+        terminalBottomConstraint = terminalView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         NSLayoutConstraint.activate([
             terminalView.topAnchor.constraint(equalTo: view.topAnchor),
             terminalView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: hPadding),
             terminalView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -hPadding),
-            view.keyboardLayoutGuide.topAnchor.constraint(equalTo: terminalView.bottomAnchor),
+            terminalBottomConstraint,
         ])
 
         let accessoryHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
@@ -57,11 +64,69 @@ final class TerminalViewController: UIViewController {
 
         dataSource.attachTerminalView(terminalView)
         dataSource.delegate = self
+
+        let center = NotificationCenter.default
+        center.addObserver(
+            self,
+            selector: #selector(keyboardFrameWillChange(_:)),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
+        center.addObserver(
+            self,
+            selector: #selector(keyboardWillHide(_:)),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        applyBottomInset()
         notifyTerminalSize()
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        applyBottomInset()
+    }
+
+    @objc private func keyboardFrameWillChange(_ notification: Notification) {
+        updateKeyboardOverlap(from: notification, hiding: false)
+    }
+
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        updateKeyboardOverlap(from: notification, hiding: true)
+    }
+
+    private func updateKeyboardOverlap(from notification: Notification, hiding: Bool) {
+        guard let userInfo = notification.userInfo,
+              let endValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        else { return }
+
+        let endFrameInWindow = endValue.cgRectValue
+        let endFrameInView = view.convert(endFrameInWindow, from: nil)
+        let overlap = hiding ? 0 : max(0, view.bounds.maxY - endFrameInView.minY)
+        guard overlap != keyboardOverlap else { return }
+        keyboardOverlap = overlap
+
+        let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.25
+        let curveRaw = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt
+            ?? UInt(UIView.AnimationCurve.easeInOut.rawValue)
+        let options = UIView.AnimationOptions(rawValue: curveRaw << 16)
+
+        applyBottomInset()
+        UIView.animate(withDuration: duration, delay: 0, options: options) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    private func applyBottomInset() {
+        let safeBottom = view.safeAreaInsets.bottom
+        let inset = max(safeBottom, keyboardOverlap)
+        if terminalBottomConstraint.constant != -inset {
+            terminalBottomConstraint.constant = -inset
+        }
     }
 
     func applyAppearance(_ appearance: TerminalAppearance) {
