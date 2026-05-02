@@ -37,6 +37,10 @@ struct SettingsView: View {
                 Label("Voice Input", systemImage: "mic")
             }
 
+            Section("Behavior") {
+                Toggle("Prevent device sleep while connected", isOn: binding(\.preventDeviceSleepWhileConnected))
+            }
+
             Section {
                 NavigationLink {
                     GettingStartedView()
@@ -57,5 +61,16 @@ struct SettingsView: View {
                 Button("Done") { dismiss() }
             }
         }
+    }
+
+    private func binding<T>(_ keyPath: WritableKeyPath<TerminalAppearance, T>) -> Binding<T> {
+        Binding(
+            get: { appearanceViewModel.appearance[keyPath: keyPath] },
+            set: { newValue in
+                var updated = appearanceViewModel.appearance
+                updated[keyPath: keyPath] = newValue
+                Task { await appearanceViewModel.update(updated) }
+            }
+        )
     }
 }

@@ -14,6 +14,7 @@ struct TerminalAppearance: Codable, Sendable, Equatable {
     var eventNotifications: EventNotificationSettings = EventNotificationSettings()
     var useMetalRenderer: Bool = false
     var metalBufferingMode: TerminalMetalBuffering = .perRow
+    var preventDeviceSleepWhileConnected: Bool = false
 
     func shortcuts(for packID: ShortcutPackID) -> [Shortcut] {
         customizedPacks[packID] ?? ShortcutPackCatalog.shortcuts(for: packID)
@@ -36,6 +37,7 @@ struct TerminalAppearance: Codable, Sendable, Equatable {
         eventNotifications = try container.decodeIfPresent(EventNotificationSettings.self, forKey: .eventNotifications) ?? EventNotificationSettings()
         useMetalRenderer = try container.decodeIfPresent(Bool.self, forKey: .useMetalRenderer) ?? false
         metalBufferingMode = try container.decodeIfPresent(TerminalMetalBuffering.self, forKey: .metalBufferingMode) ?? .perRow
+        preventDeviceSleepWhileConnected = try container.decodeIfPresent(Bool.self, forKey: .preventDeviceSleepWhileConnected) ?? false
     }
 }
 

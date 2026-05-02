@@ -6,6 +6,7 @@ struct DivineMarsshApp: App {
     private let keyManager: KeyManager
     @StateObject private var sessionManager: SSHSessionManager
     @StateObject private var appearanceViewModel: AppearanceViewModel
+    @State private var idleTimerController: IdleTimerController?
 
     init() {
         let store: ProfileStore
@@ -61,6 +62,10 @@ struct DivineMarsshApp: App {
             .task {
                 await sessionManager.checkForRestoredSession()
                 await appearanceViewModel.load()
+                idleTimerController = IdleTimerController(
+                    sessionManager: sessionManager,
+                    appearanceViewModel: appearanceViewModel
+                )
             }
         }
     }
