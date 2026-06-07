@@ -16,3 +16,6 @@ appstore-screenshots/
 
 # Wrangler cache
 .wrangler/
+
+# Local security review (kept out of the repo)
+SECURITY_REVIEW.md
