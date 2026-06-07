@@ -55,6 +55,40 @@ struct ContentView: View {
         } message: {
             Text("Could not connect to the server.")
         }
+        .alert("Host Key Changed", isPresented: Binding(
+            get: { sessionManager.pendingHostKeyMismatch != nil },
+            set: { presented in if !presented { sessionManager.dismissPendingHostKey() } }
+        ), presenting: sessionManager.pendingHostKeyMismatch) { pending in
+            Button("Trust & Connect", role: .destructive) {
+                guard let profile = selectedProfile else { return }
+                Task {
+                    await sessionManager.trust(pending)
+                    do {
+                        try await sessionManager.startSession(for: profile)
+                        try? await viewModel.markConnected(id: profile.id)
+                    } catch {
+                        if sessionManager.pendingHostKeyMismatch == nil {
+                            connectionError = error.localizedDescription
+                            showingConnectionError = true
+                        }
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                sessionManager.dismissPendingHostKey()
+                showTerminal = false
+                selectedProfile = nil
+            }
+        } message: { pending in
+            Text("""
+            The host key for \(pending.hostname):\(String(pending.port)) has changed. This could indicate a man-in-the-middle attack.
+
+            Stored:   \(pending.existingFingerprint)
+            Received: \(pending.newFingerprint)
+
+            Only continue if you expected this change.
+            """)
+        }
         .onChange(of: showTerminal) { _, isShowing in
             if sizeClass == .regular {
                 columnVisibility = isShowing ? .detailOnly : .doubleColumn
@@ -65,8 +99,10 @@ struct ContentView: View {
                         try await sessionManager.startSession(for: profile)
                         try? await viewModel.markConnected(id: profile.id)
                     } catch {
-                        connectionError = error.localizedDescription
-                        showingConnectionError = true
+                        if sessionManager.pendingHostKeyMismatch == nil {
+                            connectionError = error.localizedDescription
+                            showingConnectionError = true
+                        }
                     }
                 }
             } else if !isShowing {
@@ -152,8 +188,10 @@ struct ContentView: View {
                     try await sessionManager.startSession(for: profile)
                     try? await viewModel.markConnected(id: profile.id)
                 } catch {
-                    connectionError = error.localizedDescription
-                    showingConnectionError = true
+                    if sessionManager.pendingHostKeyMismatch == nil {
+                        connectionError = error.localizedDescription
+                        showingConnectionError = true
+                    }
                 }
                 isSwitchingConnection = false
             }

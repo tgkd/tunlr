@@ -37,6 +37,13 @@ actor KnownHostsStore {
         hostKeys.first { $0.hostname == hostname && $0.port == port && $0.keyType == keyType }
     }
 
+    /// All pinned keys for a host/port, across every key type. Used to pin per
+    /// host rather than per (host, type), so a server presenting a different
+    /// host-key algorithm than the one stored cannot bypass verification.
+    func lookupAll(hostname: String, port: UInt16) -> [SSHHostKey] {
+        hostKeys.filter { $0.hostname == hostname && $0.port == port }
+    }
+
     func allHostKeys() -> [SSHHostKey] {
         hostKeys
     }

@@ -126,79 +126,73 @@ struct HostKeyVerificationIntegrationTests {
         #expect(stored?.publicKeyData == originalKey)
     }
 
-    // MARK: - Check API (non-throwing)
+    // MARK: - Cross-Type Pinning (MITM bypass closed)
 
-    @Test func checkReturnsNeedsApprovalForUnknownHost() async throws {
+    @Test func differentKeyTypeOnKnownHostIsBlocked() async throws {
         let store = try makeStore()
         let verifier = HostKeyVerifier(store: store)
-        let pubKeyData = makeTestPublicKeyData()
 
-        let result = await verifier.check(
-            hostname: "unknown.example.com",
-            port: 22,
-            keyType: "ssh-ed25519",
-            publicKeyData: pubKeyData
+        let edKey = makeTestPublicKeyData(keyType: "ssh-ed25519", seed: 0xA1)
+        try await verifier.verify(
+            hostname: "pinned.example.com", port: 22,
+            keyType: "ssh-ed25519", publicKeyData: edKey
         )
 
-        if case .needsUserApproval(let request) = result {
-            #expect(request.hostname == "unknown.example.com")
-            #expect(request.fingerprint.hasPrefix("SHA256:"))
-        } else {
-            Issue.record("Expected needsUserApproval, got: \(result)")
+        // Attacker presents a different host-key algorithm for the same host.
+        let ecdsaKey = makeTestPublicKeyData(keyType: "ecdsa-sha2-nistp256", seed: 0xB2)
+        await #expect(throws: HostKeyVerificationError.self) {
+            try await verifier.verify(
+                hostname: "pinned.example.com", port: 22,
+                keyType: "ecdsa-sha2-nistp256", publicKeyData: ecdsaKey
+            )
         }
+
+        // The new type must NOT have been auto-stored.
+        let storedEcdsa = await store.lookup(
+            hostname: "pinned.example.com", port: 22, keyType: "ecdsa-sha2-nistp256"
+        )
+        #expect(storedEcdsa == nil)
+
+        // The verifier exposes the pending decision for the UI.
+        let pending = await verifier.takePendingMismatch()
+        #expect(pending?.hostname == "pinned.example.com")
+        #expect(pending?.keyType == "ecdsa-sha2-nistp256")
+        // Taking it clears it.
+        let cleared = await verifier.takePendingMismatch()
+        #expect(cleared == nil)
     }
 
-    @Test func checkReturnsTrustedForKnownHost() async throws {
-        let store = try makeStore()
-        let verifier = HostKeyVerifier(store: store)
-        let pubKeyData = makeTestPublicKeyData()
-
-        try await verifier.verify(
-            hostname: "trusted.example.com",
-            port: 22,
-            keyType: "ssh-ed25519",
-            publicKeyData: pubKeyData
-        )
-
-        let result = await verifier.check(
-            hostname: "trusted.example.com",
-            port: 22,
-            keyType: "ssh-ed25519",
-            publicKeyData: pubKeyData
-        )
-
-        if case .trusted = result {
-            // OK
-        } else {
-            Issue.record("Expected trusted, got: \(result)")
-        }
-    }
-
-    @Test func checkReturnsMismatchForChangedKey() async throws {
+    @Test func trustingPendingKeyPinsItAlongsideExisting() async throws {
         let store = try makeStore()
         let verifier = HostKeyVerifier(store: store)
 
-        let originalKey = makeTestPublicKeyData(seed: 0x11)
+        let edKey = makeTestPublicKeyData(keyType: "ssh-ed25519", seed: 0xC3)
         try await verifier.verify(
-            hostname: "mismatch.example.com",
-            port: 22,
-            keyType: "ssh-ed25519",
-            publicKeyData: originalKey
+            hostname: "multi.example.com", port: 22,
+            keyType: "ssh-ed25519", publicKeyData: edKey
         )
 
-        let changedKey = makeTestPublicKeyData(seed: 0x22)
-        let result = await verifier.check(
-            hostname: "mismatch.example.com",
-            port: 22,
-            keyType: "ssh-ed25519",
-            publicKeyData: changedKey
+        let ecdsaKey = makeTestPublicKeyData(keyType: "ecdsa-sha2-nistp256", seed: 0xD4)
+        _ = try? await verifier.verify(
+            hostname: "multi.example.com", port: 22,
+            keyType: "ecdsa-sha2-nistp256", publicKeyData: ecdsaKey
         )
+        let pending = await verifier.takePendingMismatch()
+        #expect(pending != nil)
 
-        if case .mismatch(let existing, let new) = result {
-            #expect(existing != new)
-        } else {
-            Issue.record("Expected mismatch, got: \(result)")
-        }
+        await verifier.trust(pending!)
+
+        // Both key types are now pinned and verify cleanly.
+        try await verifier.verify(
+            hostname: "multi.example.com", port: 22,
+            keyType: "ssh-ed25519", publicKeyData: edKey
+        )
+        try await verifier.verify(
+            hostname: "multi.example.com", port: 22,
+            keyType: "ecdsa-sha2-nistp256", publicKeyData: ecdsaKey
+        )
+        let all = await store.lookupAll(hostname: "multi.example.com", port: 22)
+        #expect(all.count == 2)
     }
 
     // MARK: - Multi-host Verification

@@ -35,10 +35,12 @@ final class SSHSessionManager: ObservableObject, Sendable {
     @Published private(set) var activeSession: SSHSession?
     @Published private(set) var activeProfile: SSHConnectionProfile?
     @Published private(set) var restoredProfileID: UUID?
+    @Published private(set) var pendingHostKeyMismatch: PendingHostKeyMismatch?
 
     private let connectionHandlerFactory: @Sendable () -> any SSHConnectionHandling
     private let profileStore: ProfileStore
     private let terminalStateCache: TerminalStateCache?
+    private let hostKeyVerifier: HostKeyVerifier?
     private let scenePhaseProvider: any ScenePhaseProviding
     private let networkPathProvider: any NetworkPathProviding
     private let backgroundTaskProvider: any BackgroundTaskProviding
@@ -50,6 +52,7 @@ final class SSHSessionManager: ObservableObject, Sendable {
         connectionHandlerFactory: @escaping @Sendable () -> any SSHConnectionHandling,
         profileStore: ProfileStore,
         terminalStateCache: TerminalStateCache? = nil,
+        hostKeyVerifier: HostKeyVerifier? = nil,
         scenePhaseProvider: any ScenePhaseProviding = DefaultScenePhaseProvider(),
         networkPathProvider: any NetworkPathProviding = DefaultNetworkPathProvider(),
         backgroundTaskProvider: any BackgroundTaskProviding = DefaultBackgroundTaskProvider()
@@ -57,6 +60,7 @@ final class SSHSessionManager: ObservableObject, Sendable {
         self.connectionHandlerFactory = connectionHandlerFactory
         self.profileStore = profileStore
         self.terminalStateCache = terminalStateCache
+        self.hostKeyVerifier = hostKeyVerifier
         self.scenePhaseProvider = scenePhaseProvider
         self.networkPathProvider = networkPathProvider
         self.backgroundTaskProvider = backgroundTaskProvider
@@ -77,8 +81,26 @@ final class SSHSessionManager: ObservableObject, Sendable {
             activeSession = nil
             activeProfile = nil
             state = .idle
+            if let hostKeyVerifier,
+               let pending = await hostKeyVerifier.takePendingMismatch() {
+                pendingHostKeyMismatch = pending
+            }
             throw error
         }
+    }
+
+    /// Pin the key the user approved from the mismatch warning. Takes the value
+    /// explicitly (captured from the alert) because the published property may
+    /// already be cleared by the alert's dismissal by the time this runs. The
+    /// caller is responsible for retrying `startSession` afterwards.
+    func trust(_ pending: PendingHostKeyMismatch) async {
+        guard let hostKeyVerifier else { return }
+        await hostKeyVerifier.trust(pending)
+        pendingHostKeyMismatch = nil
+    }
+
+    func dismissPendingHostKey() {
+        pendingHostKeyMismatch = nil
     }
 
     func disconnect() async {

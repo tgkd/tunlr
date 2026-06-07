@@ -30,7 +30,6 @@
 		4B9DEA460021D7BDD124B72C /* SSHTerminalDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39D80F8D6D6A41615731388 /* SSHTerminalDataSource.swift */; };
 		52D4F28FFD4B56D92302CE01 /* SSHAuthMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */; };
 		52E7AB6928DBD7BAB5A18380 /* KeyManagerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EEE35B4F24CB319C9E4F1F9 /* KeyManagerViewModel.swift */; };
-		54930B16B8EF78B8B57941FE /* HostKeyMismatchWarning.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FA6A4F8545F824FBC305CB /* HostKeyMismatchWarning.swift */; };
 		62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA26D923336E9986B11E505 /* DivineMarsshTests.swift */; };
 		62DA3B8306E2D92DC46C2827 /* ConnectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF40EEE2F77ABF44DC954BC9 /* ConnectionViewModel.swift */; };
 		68B6CE365228FB402E99CA9B /* KeyManagerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABDEBA215FDB5E01EFD84A0 /* KeyManagerViewModelTests.swift */; };
@@ -80,7 +79,6 @@
 		CEC85CEEF1042D46E21E8BCA /* SSHSessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73AFBB77C48A1B7263A73446 /* SSHSessionManagerTests.swift */; };
 		D14F4724981E1504598EFE21 /* KeyboardAccessoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819F9A8534F1E11676D0F2CE /* KeyboardAccessoryTests.swift */; };
 		D2E23856384289A09491A18A /* ConnectionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A435866C8ECA26644D53B4 /* ConnectionListView.swift */; };
-		D4A476A41069FAA64DB729C1 /* AlgorithmPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E9F1FAF6880BFB5263AC9E /* AlgorithmPolicyTests.swift */; };
 		D660C9FAA47A828AE4B1BDB7 /* SSHConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F57D93D45F2499CF1E02E79 /* SSHConnectionTests.swift */; };
 		DC5DC8A620D087485D216AD2 /* TerminalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0767CB4BDDF289700A12EE1C /* TerminalScreen.swift */; };
 		DCF884D3F0BB762E52B97C90 /* KeyManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC14D026864E2E70E3AD617A /* KeyManagerView.swift */; };
@@ -162,7 +160,6 @@
 		AA0002090000000900000009 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AA00020A0000000A0000000A /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		B22F0262FF6A695FB9E517FC /* TerminalViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalViewRepresentable.swift; sourceTree = "<group>"; };
-		B9FA6A4F8545F824FBC305CB /* HostKeyMismatchWarning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyMismatchWarning.swift; sourceTree = "<group>"; };
 		BB00020D0000000D0000000D /* WhisperService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperService.swift; sourceTree = "<group>"; };
 		BB00020E0000000E0000000E /* SpeechComposeBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechComposeBar.swift; sourceTree = "<group>"; };
 		BB0002110000001100000011 /* VoiceInputSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputSettingsView.swift; sourceTree = "<group>"; };
@@ -197,7 +194,6 @@
 		F430BA2F6D0BB7F56D40DBBF /* HostKeyVerificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostKeyVerificationTests.swift; sourceTree = "<group>"; };
 		F689CDC112E74FF8BAC48F6F /* ProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileStore.swift; sourceTree = "<group>"; };
 		F7C052B361AFB7594E6E138D /* KnownHostsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownHostsStore.swift; sourceTree = "<group>"; };
-		F9E9F1FAF6880BFB5263AC9E /* AlgorithmPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmPolicyTests.swift; sourceTree = "<group>"; };
 		FC5B3A76DC18E11A6C4EE191 /* ConnectionEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionEditorView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -266,7 +262,6 @@
 		2AD268845C6703CED2769572 /* SecurityTests */ = {
 			isa = PBXGroup;
 			children = (
-				F9E9F1FAF6880BFB5263AC9E /* AlgorithmPolicyTests.swift */,
 				96C3BB66AB8B1FB2E1B3DC76 /* MemoryHygieneTests.swift */,
 			);
 			path = SecurityTests;
@@ -305,7 +300,6 @@
 			children = (
 				7F2691FB1C8F1EA60EEC2961 /* FingerprintFormatter.swift */,
 				D4765ACF8EE3591F7B6CB52D /* FingerprintURIParser.swift */,
-				B9FA6A4F8545F824FBC305CB /* HostKeyMismatchWarning.swift */,
 				EAA5F6DD8ECF756774F4F1D8 /* HostKeyVerifier.swift */,
 				34E955FDE77CC95F55C1A9E1 /* QRFingerprintScanner.swift */,
 			);
@@ -649,7 +643,6 @@
 				91A89F90F471FA64909AC9C6 /* DivineMarsshApp.swift in Sources */,
 				48638450079FE7B30D2533E1 /* FingerprintFormatter.swift in Sources */,
 				C84CCEF2AF6526D10E0A3CE8 /* FingerprintURIParser.swift in Sources */,
-				54930B16B8EF78B8B57941FE /* HostKeyMismatchWarning.swift in Sources */,
 				EFA7A8C6FDF50B9AF179C8C7 /* HostKeyVerifier.swift in Sources */,
 				8384A1830E10386A052CF5F7 /* ImportedKeyAuthenticator.swift in Sources */,
 				28E7FD8035F83249632CA4D6 /* KeyDetailView.swift in Sources */,
@@ -703,7 +696,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D4A476A41069FAA64DB729C1 /* AlgorithmPolicyTests.swift in Sources */,
 				9D9219D22F28756A10FFD088 /* ConnectionViewModelTests.swift in Sources */,
 				3213B4DE2E8F121C5FE61DCC /* CoverageBoostTests.swift in Sources */,
 				62260ED7A2BDB8D615C488F6 /* DivineMarsshTests.swift in Sources */,
@@ -745,7 +737,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -758,7 +750,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.3;
+				MARKETING_VERSION = 0.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tunlr.app;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -848,7 +840,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_TEAM = ULU867Y7LC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = App/Info.plist;
@@ -861,7 +853,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.3;
+				MARKETING_VERSION = 0.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tunlr.app;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

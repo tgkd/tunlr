@@ -39,7 +39,8 @@ struct DivineMarsshApp: App {
                 )
             },
             profileStore: store,
-            terminalStateCache: terminalStateCache
+            terminalStateCache: terminalStateCache,
+            hostKeyVerifier: hostKeyVerifier
         ))
 
         let appearanceStore: AppearanceStore
