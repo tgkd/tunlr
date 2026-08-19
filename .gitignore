@@ -19,3 +19,6 @@ appstore-screenshots/
 
 # Local security review (kept out of the repo)
 SECURITY_REVIEW.md
+
+# Claude session notes (local only)
+.claude/notes/
