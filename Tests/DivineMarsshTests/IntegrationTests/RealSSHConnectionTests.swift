@@ -15,6 +15,31 @@ struct RealSSHConnectionTests {
     private static let username = "testuser"
     private static let password = "testpassword"
 
+    private static let serverReachable: Bool = {
+        let descriptor = socket(AF_INET, SOCK_STREAM, 0)
+        guard descriptor >= 0 else { return false }
+        defer { close(descriptor) }
+        var timeout = timeval(tv_sec: 2, tv_usec: 0)
+        setsockopt(descriptor, SOL_SOCKET, SO_SNDTIMEO, &timeout, socklen_t(MemoryLayout<timeval>.size))
+        var address = sockaddr_in()
+        address.sin_family = sa_family_t(AF_INET)
+        address.sin_port = port.bigEndian
+        address.sin_addr.s_addr = inet_addr(host)
+        let outcome = withUnsafePointer(to: &address) { pointer in
+            pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { rebound in
+                connect(descriptor, rebound, socklen_t(MemoryLayout<sockaddr_in>.size))
+            }
+        }
+        return outcome == 0
+    }()
+
+    private static let keyFixturesAvailable: Bool = {
+        let bundle = Bundle(for: BundleToken.self)
+        return ["test_ed25519", "test_ecdsa"].allSatisfy {
+            bundle.url(forResource: $0, withExtension: nil, subdirectory: "tests-ssh-keys") != nil
+        }
+    }()
+
     private struct TestDeps {
         let hostKeyVerifier: HostKeyVerifier
         let knownHostsStore: KnownHostsStore
@@ -26,7 +51,7 @@ struct RealSSHConnectionTests {
         func cleanup() async {
             let allKeys = await keyManager.listAllKeys()
             for key in allKeys {
-                await keyManager.deleteKey(identity: key)
+                try? await keyManager.deleteKey(identity: key)
             }
             try? FileManager.default.removeItem(at: tempDir)
         }
@@ -123,7 +148,7 @@ struct RealSSHConnectionTests {
 
     // MARK: - Password Auth
 
-    @Test(.tags(.integration))
+    @Test(.tags(.integration), .enabled(if: RealSSHConnectionTests.serverReachable, "requires the docker SSH server on 127.0.0.1:2222 (docker compose up -d)"))
     func passwordAuthConnectAndRunCommand() async throws {
         let deps = try Self.makeDeps()
         defer { Task { await deps.cleanup() } }
@@ -152,7 +177,7 @@ struct RealSSHConnectionTests {
 
     // MARK: - Ed25519 Key Auth
 
-    @Test(.tags(.integration))
+    @Test(.tags(.integration), .enabled(if: RealSSHConnectionTests.serverReachable && RealSSHConnectionTests.keyFixturesAvailable, "requires the docker SSH server and the test_ed25519/test_ecdsa bundle fixtures"))
     func ed25519KeyAuthConnect() async throws {
         let deps = try Self.makeDeps()
         defer { Task { await deps.cleanup() } }
@@ -185,7 +210,7 @@ struct RealSSHConnectionTests {
 
     // MARK: - ECDSA Key Auth
 
-    @Test(.tags(.integration))
+    @Test(.tags(.integration), .enabled(if: RealSSHConnectionTests.serverReachable && RealSSHConnectionTests.keyFixturesAvailable, "requires the docker SSH server and the test_ed25519/test_ecdsa bundle fixtures"))
     func ecdsaKeyAuthConnect() async throws {
         let deps = try Self.makeDeps()
         defer { Task { await deps.cleanup() } }
@@ -218,7 +243,7 @@ struct RealSSHConnectionTests {
 
     // MARK: - Host Key TOFU
 
-    @Test(.tags(.integration))
+    @Test(.tags(.integration), .enabled(if: RealSSHConnectionTests.serverReachable, "requires the docker SSH server on 127.0.0.1:2222 (docker compose up -d)"))
     func hostKeyTOFUFlow() async throws {
         let deps = try Self.makeDeps()
         defer { Task { await deps.cleanup() } }
@@ -229,7 +254,7 @@ struct RealSSHConnectionTests {
         )
         try await deps.profileStore.addProfile(profile, password: Self.password)
 
-        let storedBefore = await deps.knownHostsStore.allHostKeys()
+        let storedBefore = try await deps.knownHostsStore.allHostKeys()
         #expect(storedBefore.isEmpty)
 
         let handler = Self.makeHandler(deps)
@@ -238,7 +263,7 @@ struct RealSSHConnectionTests {
         try await session1.connect(profile: profile)
         await session1.disconnect()
 
-        let storedAfterFirst = await deps.knownHostsStore.allHostKeys()
+        let storedAfterFirst = try await deps.knownHostsStore.allHostKeys()
         #expect(storedAfterFirst.count == 1)
         #expect(storedAfterFirst.first?.hostname == Self.host)
 
@@ -246,13 +271,13 @@ struct RealSSHConnectionTests {
         try await session2.connect(profile: profile)
         await session2.disconnect()
 
-        let storedAfterSecond = await deps.knownHostsStore.allHostKeys()
+        let storedAfterSecond = try await deps.knownHostsStore.allHostKeys()
         #expect(storedAfterSecond.count == 1)
     }
 
     // MARK: - Wrong Password
 
-    @Test(.tags(.integration))
+    @Test(.tags(.integration), .enabled(if: RealSSHConnectionTests.serverReachable, "requires the docker SSH server on 127.0.0.1:2222 (docker compose up -d)"))
     func connectionFailsWithWrongPassword() async throws {
         let deps = try Self.makeDeps()
         defer { Task { await deps.cleanup() } }
@@ -275,7 +300,7 @@ struct RealSSHConnectionTests {
 
     // MARK: - Full PTY Lifecycle
 
-    @Test(.tags(.integration))
+    @Test(.tags(.integration), .enabled(if: RealSSHConnectionTests.serverReachable, "requires the docker SSH server on 127.0.0.1:2222 (docker compose up -d)"))
     func fullPTYLifecycle() async throws {
         let deps = try Self.makeDeps()
         defer { Task { await deps.cleanup() } }
