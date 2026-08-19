@@ -9,20 +9,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build
-xcodebuild build -project DivineMarssh.xcodeproj -scheme DivineMarssh -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+xcodebuild build -project DivineMarssh.xcodeproj -scheme DivineMarssh -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 
 # Test (all)
-xcodebuild test -project DivineMarssh.xcodeproj -scheme DivineMarssh -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+xcodebuild test -project DivineMarssh.xcodeproj -scheme DivineMarssh -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 
 # Test (single suite)
-xcodebuild test -project DivineMarssh.xcodeproj -scheme DivineMarssh -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -only-testing:DivineMarsshTests/ProfileStoreTests
+xcodebuild test -project DivineMarssh.xcodeproj -scheme DivineMarssh -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:DivineMarsshTests/ProfileStoreTests
 
 # Integration test SSH server (Docker)
 docker compose up -d    # start server on port 2222
 docker compose down     # stop server
 ```
 
-If `name=iPhone 16 Pro` is ambiguous (multiple iOS versions installed), use a specific simulator UUID from `xcrun simctl list devices available`.
+Simulator names go stale as Xcode updates drop old device types. Before trusting the destination above, confirm it exists: `xcrun simctl list devices available`, or `xcodebuild -project DivineMarssh.xcodeproj -scheme DivineMarssh -showdestinations` for exact `id=` values. If the name is missing or ambiguous (several iOS runtimes installed), use `-destination 'id=<UUID>'` instead.
 
 **Never launch or boot the iOS Simulator.** The user tests in Xcode directly. Only use `xcodebuild build` and `xcodebuild test` for CLI verification.
 
