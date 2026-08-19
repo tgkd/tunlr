@@ -2,6 +2,10 @@ import Foundation
 import Network
 import UIKit
 
+enum SSHSessionManagerError: Error, Equatable {
+    case superseded
+}
+
 enum SessionManagerState: Sendable, Equatable {
     case idle
     case active(profileID: UUID)
@@ -47,6 +51,8 @@ final class SSHSessionManager: ObservableObject, Sendable {
 
     private var scenePhaseTask: Task<Void, Never>?
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
+    private var connectionGeneration: Int = 0
+    private var restoredPTY: (profileID: UUID, configuration: PTYConfiguration)?
 
     init(
         connectionHandlerFactory: @escaping @Sendable () -> any SSHConnectionHandling,
@@ -69,33 +75,55 @@ final class SSHSessionManager: ObservableObject, Sendable {
     func startSession(for profile: SSHConnectionProfile) async throws {
         await cleanupCurrentSession()
 
+        connectionGeneration += 1
+        let generation = connectionGeneration
+
         let session = SSHSession(connectionHandler: connectionHandlerFactory())
+        if let restoredPTY, restoredPTY.profileID == profile.id {
+            await session.requestPTY(
+                cols: restoredPTY.configuration.cols,
+                rows: restoredPTY.configuration.rows,
+                term: restoredPTY.configuration.term
+            )
+            self.restoredPTY = nil
+        }
         activeProfile = profile
 
         do {
             try await session.connect(profile: profile)
-            activeSession = session
-            state = .active(profileID: profile.id)
-            startScenePhaseObservation()
         } catch {
+            let pending = await hostKeyVerifier?.takePendingMismatch(
+                hostname: profile.host,
+                port: profile.port
+            )
+            guard generation == connectionGeneration else {
+                throw SSHSessionManagerError.superseded
+            }
             activeSession = nil
             activeProfile = nil
             state = .idle
-            if let hostKeyVerifier,
-               let pending = await hostKeyVerifier.takePendingMismatch() {
+            if let pending {
                 pendingHostKeyMismatch = pending
             }
             throw error
         }
+
+        guard generation == connectionGeneration else {
+            await session.disconnect()
+            throw SSHSessionManagerError.superseded
+        }
+        activeSession = session
+        state = .active(profileID: profile.id)
+        startScenePhaseObservation()
     }
 
     /// Pin the key the user approved from the mismatch warning. Takes the value
     /// explicitly (captured from the alert) because the published property may
     /// already be cleared by the alert's dismissal by the time this runs. The
     /// caller is responsible for retrying `startSession` afterwards.
-    func trust(_ pending: PendingHostKeyMismatch) async {
+    func trust(_ pending: PendingHostKeyMismatch) async throws {
         guard let hostKeyVerifier else { return }
-        await hostKeyVerifier.trust(pending)
+        try await hostKeyVerifier.trust(pending)
         pendingHostKeyMismatch = nil
     }
 
@@ -104,6 +132,7 @@ final class SSHSessionManager: ObservableObject, Sendable {
     }
 
     func disconnect() async {
+        connectionGeneration += 1
         await cleanupCurrentSession()
         await markExplicitQuit()
         state = .idle
@@ -118,6 +147,14 @@ final class SSHSessionManager: ObservableObject, Sendable {
             await cache.clear()
             return
         }
+        restoredPTY = (
+            profileID: cached.profileID,
+            configuration: PTYConfiguration(
+                cols: cached.ptyConfiguration.cols,
+                rows: cached.ptyConfiguration.rows,
+                term: cached.ptyConfiguration.term
+            )
+        )
         restoredProfileID = cached.profileID
     }
 
@@ -142,6 +179,8 @@ final class SSHSessionManager: ObservableObject, Sendable {
     private func handleEnteredBackground() async {
         guard let profile = activeProfile, let session = activeSession else { return }
 
+        let generation = connectionGeneration
+
         state = .backgrounded(profileID: profile.id)
 
         await saveTerminalState(profileID: profile.id, session: session, wasExplicitQuit: false)
@@ -150,21 +189,41 @@ final class SSHSessionManager: ObservableObject, Sendable {
             name: "ssh-keepalive"
         ) { [weak self] in
             Task { @MainActor [weak self] in
-                guard let self else { return }
-                await self.activeSession?.disconnect()
-                self.endBackgroundTaskIfNeeded()
+                await self?.expireBackgroundTask(session: session, generation: generation)
             }
         }
         backgroundTaskID = taskID
+    }
+
+    func handleBackgroundExpiration() async {
+        guard let session = activeSession else {
+            endBackgroundTaskIfNeeded()
+            return
+        }
+        await expireBackgroundTask(session: session, generation: connectionGeneration)
+    }
+
+    private func expireBackgroundTask(session: SSHSession, generation: Int) async {
+        guard generation == connectionGeneration, activeSession === session else { return }
+        await session.disconnect()
+        endBackgroundTaskIfNeeded()
     }
 
     private func handleEnteredForeground() async {
         guard case .backgrounded(let profileID) = state else { return }
         guard let profile = activeProfile, profile.id == profileID else { return }
 
+        let expected = connectionGeneration
+
         endBackgroundTaskIfNeeded()
 
-        if let session = activeSession, await session.connectionState == .connected {
+        var wasConnected = false
+        if let session = activeSession {
+            wasConnected = await session.connectionState == .connected
+        }
+        guard expected == connectionGeneration else { return }
+
+        if wasConnected {
             state = .active(profileID: profileID)
             return
         }
@@ -177,6 +236,7 @@ final class SSHSessionManager: ObservableObject, Sendable {
         }
 
         let hasNetwork = await networkPathProvider.currentPathSatisfied()
+        guard expected == connectionGeneration else { return }
         guard hasNetwork else {
             state = .idle
             activeSession = nil
@@ -184,18 +244,43 @@ final class SSHSessionManager: ObservableObject, Sendable {
             return
         }
 
+        let previousPTY = await activeSession?.ptyConfiguration
+        guard expected == connectionGeneration else { return }
+
         state = .reconnecting(profileID: profileID)
 
+        connectionGeneration += 1
+        let generation = connectionGeneration
+
+        let session = SSHSession(connectionHandler: connectionHandlerFactory())
+        if let previousPTY {
+            await session.requestPTY(
+                cols: previousPTY.cols,
+                rows: previousPTY.rows,
+                term: previousPTY.term
+            )
+        }
+        guard generation == connectionGeneration else {
+            await session.disconnect()
+            return
+        }
+
         do {
-            let session = SSHSession(connectionHandler: connectionHandlerFactory())
-            activeSession = session
             try await session.connect(profile: profile)
-            state = .active(profileID: profileID)
         } catch {
+            guard generation == connectionGeneration else { return }
             state = .idle
             activeSession = nil
             activeProfile = nil
+            return
         }
+
+        guard generation == connectionGeneration else {
+            await session.disconnect()
+            return
+        }
+        activeSession = session
+        state = .active(profileID: profileID)
     }
 
     // MARK: - Private

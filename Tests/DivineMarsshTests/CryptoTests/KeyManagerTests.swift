@@ -81,7 +81,7 @@ struct KeyManagerTests {
         let pem = Self.buildEd25519PEM(key)
         let identity = try await manager.importKey(pemData: pem, label: "to delete")
 
-        await manager.deleteKey(identity: identity)
+        try await manager.deleteKey(identity: identity)
         let allKeys = await manager.listAllKeys()
         #expect(allKeys.isEmpty)
     }
@@ -307,6 +307,18 @@ struct KeyManagerTests {
         return wrapPEM(blob)
     }
 
+
+    static func sshMPInt(_ scalar: [UInt8]) -> [UInt8] {
+        var bytes = scalar
+        while bytes.count > 1 && bytes[0] == 0 {
+            bytes.removeFirst()
+        }
+        if let first = bytes.first, first & 0x80 != 0 {
+            bytes.insert(0, at: 0)
+        }
+        return bytes
+    }
+
     static func buildECDSAPEM(_ key: P256.Signing.PrivateKey) -> Data {
         var blob = [UInt8]()
         blob.append(contentsOf: "openssh-key-v1\0".utf8)
@@ -328,7 +340,7 @@ struct KeyManagerTests {
         KeychainKeyManager.writeSSHString("ecdsa-sha2-nistp256", to: &privSection)
         KeychainKeyManager.writeSSHString("nistp256", to: &privSection)
         KeychainKeyManager.writeSSHBytes(Array(key.publicKey.x963Representation), to: &privSection)
-        KeychainKeyManager.writeSSHBytes(Array(key.rawRepresentation), to: &privSection)
+        KeychainKeyManager.writeSSHBytes(Self.sshMPInt(Array(key.rawRepresentation)), to: &privSection)
         KeychainKeyManager.writeSSHString("test", to: &privSection)
         padTo8(&privSection)
         KeychainKeyManager.writeSSHBytes(privSection, to: &blob)

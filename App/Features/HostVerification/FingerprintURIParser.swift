@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 struct ParsedFingerprint: Sendable, Equatable {
     let hostname: String
@@ -62,9 +63,11 @@ struct FingerprintURIParser: Sendable {
         }
 
         let base64Part = String(fpValue.dropFirst("SHA256:".count))
-        guard !base64Part.isEmpty, base64Part.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "+" || $0 == "/" || $0 == "=" }) else {
+        guard let digest = decodeBase64(base64Part), digest.count == SHA256.byteCount else {
             throw FingerprintURIParserError.invalidFingerprintFormat
         }
+        let canonicalFingerprint = "SHA256:" + digest.base64EncodedString()
+            .replacingOccurrences(of: "=", with: "")
 
         guard let keyType = queryItems.first(where: { $0.name == "type" })?.value, !keyType.isEmpty else {
             throw FingerprintURIParserError.missingKeyType
@@ -77,9 +80,19 @@ struct FingerprintURIParser: Sendable {
         return ParsedFingerprint(
             hostname: host,
             port: port,
-            fingerprint: fpValue,
+            fingerprint: canonicalFingerprint,
             keyType: keyType
         )
+    }
+
+    static func decodeBase64(_ value: String) -> Data? {
+        let unpadded = String(value.reversed().drop(while: { $0 == "=" }).reversed())
+        guard !unpadded.isEmpty, !unpadded.contains("=") else { return nil }
+        let padding = (4 - unpadded.count % 4) % 4
+        guard value.count == unpadded.count + padding || value.count == unpadded.count else {
+            return nil
+        }
+        return Data(base64Encoded: unpadded + String(repeating: "=", count: padding))
     }
 
     static func buildURI(hostname: String, port: UInt16, fingerprint: String, keyType: String) -> String {

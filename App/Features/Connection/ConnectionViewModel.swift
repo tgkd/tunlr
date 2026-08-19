@@ -12,6 +12,7 @@ enum ConnectionViewModelError: Error, Equatable {
     case usernameTooLong
     case profileNotFound
     case hostUnreachable(String)
+    case invalidKeepaliveInterval
 }
 
 @MainActor
@@ -55,6 +56,7 @@ final class ConnectionViewModel: ObservableObject, Sendable {
         keepaliveInterval: TimeInterval = 60
     ) async throws {
         try validateFields(host: host, username: username, port: port)
+        try validateKeepaliveInterval(keepaliveInterval)
 
         let profile = SSHConnectionProfile(
             host: host.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -73,6 +75,7 @@ final class ConnectionViewModel: ObservableObject, Sendable {
         password: String?
     ) async throws {
         try validateFields(host: profile.host, username: profile.username, port: profile.port)
+        try validateKeepaliveInterval(profile.keepaliveInterval)
         try await profileStore.updateProfile(profile, password: password)
         await loadProfiles()
     }
@@ -151,6 +154,14 @@ final class ConnectionViewModel: ObservableObject, Sendable {
     }
 
     // MARK: - Validation
+
+    nonisolated func validateKeepaliveInterval(_ interval: TimeInterval) throws {
+        guard interval.isFinite,
+              interval >= 0,
+              interval <= SSHConnectionProfile.maximumKeepaliveInterval else {
+            throw ConnectionViewModelError.invalidKeepaliveInterval
+        }
+    }
 
     nonisolated func validateFields(host: String, username: String, port: UInt16) throws {
         let trimmedHost = host.trimmingCharacters(in: .whitespacesAndNewlines)

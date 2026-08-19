@@ -173,8 +173,16 @@ actor KeychainKeyManager {
 
     // MARK: - Public API
 
+    static let authenticatableKeyTypes: Set<String> = [
+        "ssh-ed25519",
+        "ecdsa-sha2-nistp256",
+    ]
+
     func importKey(pemData: Data, label: String, passphrase: String? = nil) throws -> SSHIdentity {
         let parsed = try Self.parsePEM(pemData, passphrase: passphrase)
+        guard Self.authenticatableKeyTypes.contains(parsed.keyType) else {
+            throw KeychainKeyError.unsupportedKeyType(parsed.keyType)
+        }
         let id = UUID()
 
         let storedData = try JSONEncoder().encode(StoredKeyData(
@@ -330,14 +338,46 @@ actor KeychainKeyManager {
     private static func parseECDSAPrivateSection(
         _ data: [UInt8], offset: inout Int, keyType: String
     ) throws -> ParsedSSHKey {
-        _ = try readSSHString(data, offset: &offset) // curve name
+        let curveName = try readSSHString(data, offset: &offset)
         let publicKeyBytes = try readSSHBytes(data, offset: &offset)
         let privateKeyBytes = try readSSHBytes(data, offset: &offset)
+        guard keyType == "ecdsa-sha2-nistp256", curveName == "nistp256",
+              let scalarByteCount = ecdsaScalarByteCount(for: keyType) else {
+            throw KeychainKeyError.unsupportedKeyType(keyType)
+        }
+        let scalar = try normalizedScalar(privateKeyBytes, byteCount: scalarByteCount)
+        let privateKey = try P256.Signing.PrivateKey(rawRepresentation: scalar)
+        guard Data(publicKeyBytes) == privateKey.publicKey.x963Representation else {
+            throw KeychainKeyError.invalidKeyData
+        }
         return ParsedSSHKey(
             keyType: keyType,
-            privateKeyData: Data(privateKeyBytes),
+            privateKeyData: scalar,
             publicKeyData: Data(publicKeyBytes)
         )
+    }
+
+    private static func ecdsaScalarByteCount(for keyType: String) -> Int? {
+        switch keyType {
+        case "ecdsa-sha2-nistp256": return 32
+        case "ecdsa-sha2-nistp384": return 48
+        case "ecdsa-sha2-nistp521": return 66
+        default: return nil
+        }
+    }
+
+    private static func normalizedScalar(_ mpint: [UInt8], byteCount: Int) throws -> Data {
+        guard let first = mpint.first, first & 0x80 == 0 else {
+            throw KeychainKeyError.invalidKeyData
+        }
+        var magnitude = mpint
+        while magnitude.count > 1 && magnitude[0] == 0 {
+            magnitude.removeFirst()
+        }
+        guard magnitude.count <= byteCount, magnitude.contains(where: { $0 != 0 }) else {
+            throw KeychainKeyError.invalidKeyData
+        }
+        return Data(repeating: 0, count: byteCount - magnitude.count) + Data(magnitude)
     }
 
     // MARK: - Encrypted Key Support

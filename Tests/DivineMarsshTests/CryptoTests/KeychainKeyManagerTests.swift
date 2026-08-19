@@ -52,6 +52,33 @@ struct KeychainKeyManagerTests {
         #expect(parsed.publicKeyData == Data(key.publicKey.x963Representation))
     }
 
+    @Test func parsePEMECDSAStripsMPIntSignPadding() throws {
+        let key = P256.Signing.PrivateKey()
+        let pem = Self.buildECDSAPEM(key, scalarOverride: [0x00] + Array(key.rawRepresentation))
+        let parsed = try KeychainKeyManager.parsePEM(pem)
+        #expect(parsed.privateKeyData == Data(key.rawRepresentation))
+    }
+
+    @Test func parsePEMECDSALeftPadsShortScalar() throws {
+        var key = P256.Signing.PrivateKey()
+        while key.rawRepresentation.first != 0
+            || (key.rawRepresentation.dropFirst().first ?? 0) >= 0x80 {
+            key = P256.Signing.PrivateKey()
+        }
+        let scalar = Array(key.rawRepresentation)
+        let pem = Self.buildECDSAPEM(key, scalarOverride: Array(scalar.drop(while: { $0 == 0 })))
+        let parsed = try KeychainKeyManager.parsePEM(pem)
+        #expect(parsed.privateKeyData == Data(scalar))
+    }
+
+    @Test func parsePEMECDSARejectsNegativeScalar() throws {
+        let key = P256.Signing.PrivateKey()
+        let pem = Self.buildECDSAPEM(key, scalarOverride: [0xFF] + Array(key.rawRepresentation.dropFirst()))
+        #expect(throws: KeychainKeyManager.KeychainKeyError.invalidKeyData) {
+            try KeychainKeyManager.parsePEM(pem)
+        }
+    }
+
     @Test func parsePEMECDSAExtractsCorrectPrivateKey() throws {
         let key = P256.Signing.PrivateKey()
         let pem = Self.buildECDSAPEM(key)
@@ -294,7 +321,22 @@ struct KeychainKeyManagerTests {
         return wrapPEM(blob)
     }
 
-    private static func buildECDSAPEM(_ key: P256.Signing.PrivateKey) -> Data {
+
+    private static func sshMPInt(_ scalar: [UInt8]) -> [UInt8] {
+        var bytes = scalar
+        while bytes.count > 1 && bytes[0] == 0 {
+            bytes.removeFirst()
+        }
+        if let first = bytes.first, first & 0x80 != 0 {
+            bytes.insert(0, at: 0)
+        }
+        return bytes
+    }
+
+    private static func buildECDSAPEM(
+        _ key: P256.Signing.PrivateKey,
+        scalarOverride: [UInt8]? = nil
+    ) -> Data {
         var blob = [UInt8]()
         blob.append(contentsOf: "openssh-key-v1\0".utf8)
 
@@ -316,7 +358,10 @@ struct KeychainKeyManagerTests {
         KeychainKeyManager.writeSSHString("ecdsa-sha2-nistp256", to: &privSection)
         KeychainKeyManager.writeSSHString("nistp256", to: &privSection)
         KeychainKeyManager.writeSSHBytes(Array(key.publicKey.x963Representation), to: &privSection)
-        KeychainKeyManager.writeSSHBytes(Array(key.rawRepresentation), to: &privSection)
+        KeychainKeyManager.writeSSHBytes(
+            scalarOverride ?? Self.sshMPInt(Array(key.rawRepresentation)),
+            to: &privSection
+        )
         KeychainKeyManager.writeSSHString("test", to: &privSection)
         padTo8(&privSection)
 

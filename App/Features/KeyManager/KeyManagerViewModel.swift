@@ -37,7 +37,12 @@ class KeyManagerViewModel: ObservableObject {
     }
 
     func deleteKey(_ identity: SSHIdentity) async {
-        await keyManager.deleteKey(identity: identity)
+        do {
+            try await keyManager.deleteKey(identity: identity)
+        } catch {
+            errorMessage = error.localizedDescription
+            return
+        }
         keys.removeAll { $0.id == identity.id }
     }
 
@@ -53,7 +58,23 @@ class KeyManagerViewModel: ObservableObject {
         }
     }
 
+    func publicKeyBlob(for identity: SSHIdentity) -> Data {
+        switch identity.storageType {
+        case .secureEnclave:
+            return SecureEnclaveKeyManager.encodeSSHPublicKeyBlob(
+                publicKeyData: identity.publicKeyData
+            )
+        case .keychain:
+            return importedPublicKeyBlob(identity)
+        }
+    }
+
     private func formatImportedPublicKey(_ identity: SSHIdentity) -> String {
+        let base64 = importedPublicKeyBlob(identity).base64EncodedString()
+        return "\(identity.keyType) \(base64) \(identity.label)"
+    }
+
+    private func importedPublicKeyBlob(_ identity: SSHIdentity) -> Data {
         var blob = Data()
 
         func appendSSHString(_ string: String) {
@@ -81,8 +102,7 @@ class KeyManagerViewModel: ObservableObject {
             appendSSHData(identity.publicKeyData)
         }
 
-        let base64 = blob.base64EncodedString()
-        return "\(identity.keyType) \(base64) \(identity.label)"
+        return blob
     }
 
     func keyTypeBadge(for identity: SSHIdentity) -> (label: String, icon: String) {

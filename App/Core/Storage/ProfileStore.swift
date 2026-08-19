@@ -6,6 +6,7 @@ actor ProfileStore {
     private var profiles: [SSHConnectionProfile] = []
     private let biometricPolicy: BiometricPolicy
     private let useBiometricProtection: Bool
+    private let isUnreadable: Bool
 
     private static let keychainServiceName = "com.divinemarssh.passwords"
 
@@ -24,13 +25,35 @@ actor ProfileStore {
             .appendingPathComponent("DivineMarssh", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         self.fileURL = dir.appendingPathComponent("profiles.json")
-        self.profiles = Self.loadFromDisk(url: fileURL)
+        let loaded = Self.loadFromDisk(url: fileURL)
+        self.profiles = loaded.profiles
+        self.isUnreadable = loaded.isUnreadable
         Self.excludeFromBackup(url: fileURL)
     }
 
-    private static func loadFromDisk(url: URL) -> [SSHConnectionProfile] {
-        guard let data = try? Data(contentsOf: url) else { return [] }
-        return (try? JSONDecoder().decode([SSHConnectionProfile].self, from: data)) ?? []
+    private static func loadFromDisk(url: URL) -> (profiles: [SSHConnectionProfile], isUnreadable: Bool) {
+        guard let data = try? Data(contentsOf: url) else { return ([], false) }
+        if let profiles = try? JSONDecoder().decode([SSHConnectionProfile].self, from: data) {
+            return (profiles, false)
+        }
+        return ([], !quarantineUnreadableFile(at: url))
+    }
+
+    private static func quarantineUnreadableFile(at url: URL) -> Bool {
+        let stamp = ISO8601DateFormatter().string(from: Date())
+            .replacingOccurrences(of: ":", with: "-")
+        let destination = url.deletingPathExtension()
+            .appendingPathExtension("unreadable-\(stamp).json")
+        do {
+            try FileManager.default.moveItem(at: url, to: destination)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    private func requireWritableStore() throws {
+        guard !isUnreadable else { throw ProfileStoreError.storeUnreadable }
     }
 
     private func saveToDisk() throws {
@@ -57,6 +80,7 @@ actor ProfileStore {
     }
 
     func addProfile(_ profile: SSHConnectionProfile, password: String? = nil) throws {
+        try requireWritableStore()
         profiles.append(profile)
         if let password, case .password = profile.authMethod {
             try savePassword(password, for: profile.id)
@@ -65,6 +89,7 @@ actor ProfileStore {
     }
 
     func updateProfile(_ profile: SSHConnectionProfile, password: String? = nil) throws {
+        try requireWritableStore()
         guard let index = profiles.firstIndex(where: { $0.id == profile.id }) else {
             throw ProfileStoreError.profileNotFound
         }
@@ -76,6 +101,7 @@ actor ProfileStore {
     }
 
     func deleteProfile(id: UUID) throws {
+        try requireWritableStore()
         profiles.removeAll { $0.id == id }
         deletePassword(for: id)
         try saveToDisk()
@@ -89,13 +115,13 @@ actor ProfileStore {
 
     private func savePassword(_ password: String, for profileID: UUID) throws {
         let account = profileID.uuidString
-        deletePassword(for: profileID)
+        let secret = Data(password.utf8)
 
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: Self.keychainServiceName,
             kSecAttrAccount as String: account,
-            kSecValueData as String: Data(password.utf8),
+            kSecValueData as String: secret,
         ]
 
         if useBiometricProtection,
@@ -111,9 +137,26 @@ actor ProfileStore {
             query[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         }
 
-        let status = SecItemAdd(query as CFDictionary, nil)
-        guard status == errSecSuccess else {
-            throw ProfileStoreError.keychainError(status)
+        let addStatus = SecItemAdd(query as CFDictionary, nil)
+        if addStatus == errSecSuccess { return }
+        guard addStatus == errSecDuplicateItem else {
+            throw ProfileStoreError.keychainError(addStatus)
+        }
+
+        var searchQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: Self.keychainServiceName,
+            kSecAttrAccount as String: account,
+        ]
+        if useBiometricProtection {
+            searchQuery[kSecUseAuthenticationContext as String] = biometricPolicy.createContext()
+        }
+        let updateStatus = SecItemUpdate(
+            searchQuery as CFDictionary,
+            [kSecValueData as String: secret] as CFDictionary
+        )
+        guard updateStatus == errSecSuccess else {
+            throw ProfileStoreError.keychainError(updateStatus)
         }
     }
 
@@ -149,4 +192,5 @@ actor ProfileStore {
 enum ProfileStoreError: Error, Equatable {
     case profileNotFound
     case keychainError(OSStatus)
+    case storeUnreadable
 }

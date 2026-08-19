@@ -121,6 +121,7 @@ final class TerminalViewController: UIViewController {
     }
 
     func applyAppearance(_ appearance: TerminalAppearance) {
+        dataSource.allowRemoteClipboardWrite = appearance.allowRemoteClipboardWrite
         guard appearance != currentAppearance else { return }
         currentAppearance = appearance
 

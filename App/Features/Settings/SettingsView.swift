@@ -37,8 +37,13 @@ struct SettingsView: View {
                 Label("Voice Input", systemImage: "mic")
             }
 
-            Section("Behavior") {
+            Section {
                 Toggle("Prevent device sleep while connected", isOn: binding(\.preventDeviceSleepWhileConnected))
+                Toggle("Allow remote clipboard writes", isOn: binding(\.allowRemoteClipboardWrite))
+            } header: {
+                Text("Behavior")
+            } footer: {
+                Text("When enabled, the remote host can replace your clipboard contents using OSC 52 escape sequences.")
             }
 
             Section {

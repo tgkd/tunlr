@@ -18,7 +18,9 @@ struct KeyDetailView: View {
             }
 
             Section("Fingerprint") {
-                let fingerprint = FingerprintFormatter.sha256Fingerprint(of: identity.publicKeyData)
+                let fingerprint = FingerprintFormatter.sha256Fingerprint(
+                    of: viewModel.publicKeyBlob(for: identity)
+                )
                 Text(fingerprint)
                     .font(.caption.monospaced())
                     .textSelection(.enabled)

@@ -177,11 +177,17 @@ private struct CameraPreview: UIViewControllerRepresentable {
 private final class CameraViewController: UIViewController, @preconcurrency AVCaptureMetadataOutputObjectsDelegate {
     var onCodeScanned: (@MainActor (String) -> Void)?
     private let captureSession = AVCaptureSession()
+    private let sessionQueue = DispatchQueue(label: "com.divinemarssh.qrscanner.session")
     private var previewLayer: AVCaptureVideoPreviewLayer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCamera()
+        attachPreviewLayer()
+        let session = captureSession
+        let delegate = self
+        sessionQueue.async {
+            Self.configure(session: session, delegate: delegate)
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -192,37 +198,22 @@ private final class CameraViewController: UIViewController, @preconcurrency AVCa
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         let session = captureSession
-        if !session.isRunning {
-            DispatchQueue.global(qos: .userInitiated).async {
-                session.startRunning()
-            }
+        sessionQueue.async {
+            guard !session.isRunning else { return }
+            session.startRunning()
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if captureSession.isRunning {
-            captureSession.stopRunning()
+        let session = captureSession
+        sessionQueue.async {
+            guard session.isRunning else { return }
+            session.stopRunning()
         }
     }
 
-    private func setupCamera() {
-        guard let device = AVCaptureDevice.default(for: .video),
-              let input = try? AVCaptureDeviceInput(device: device) else {
-            return
-        }
-
-        if captureSession.canAddInput(input) {
-            captureSession.addInput(input)
-        }
-
-        let output = AVCaptureMetadataOutput()
-        if captureSession.canAddOutput(output) {
-            captureSession.addOutput(output)
-            output.setMetadataObjectsDelegate(self, queue: .main)
-            output.metadataObjectTypes = [.qr]
-        }
-
+    private func attachPreviewLayer() {
         let layer = AVCaptureVideoPreviewLayer(session: captureSession)
         layer.videoGravity = .resizeAspectFill
         layer.frame = view.bounds
@@ -230,12 +221,37 @@ private final class CameraViewController: UIViewController, @preconcurrency AVCa
         previewLayer = layer
     }
 
-    func setTorch(on: Bool) {
+    private static func configure(
+        session: AVCaptureSession,
+        delegate: AVCaptureMetadataOutputObjectsDelegate
+    ) {
         guard let device = AVCaptureDevice.default(for: .video),
-              device.hasTorch else { return }
-        try? device.lockForConfiguration()
-        device.torchMode = on ? .on : .off
-        device.unlockForConfiguration()
+              let input = try? AVCaptureDeviceInput(device: device) else {
+            return
+        }
+
+        session.beginConfiguration()
+        defer { session.commitConfiguration() }
+
+        if session.canAddInput(input) {
+            session.addInput(input)
+        }
+
+        let output = AVCaptureMetadataOutput()
+        if session.canAddOutput(output) {
+            session.addOutput(output)
+            output.setMetadataObjectsDelegate(delegate, queue: .main)
+            output.metadataObjectTypes = [.qr]
+        }
+    }
+
+    func setTorch(on: Bool) {
+        sessionQueue.async {
+            guard let device = AVCaptureDevice.default(for: .video), device.hasTorch else { return }
+            guard (try? device.lockForConfiguration()) != nil else { return }
+            device.torchMode = on ? .on : .off
+            device.unlockForConfiguration()
+        }
     }
 
     func metadataOutput(

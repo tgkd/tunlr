@@ -194,6 +194,10 @@ struct SSHSessionManagerLifecycleTests {
 
         #expect(manager.state == .backgrounded(profileID: profile.id))
         #expect(bgProvider.beginCalled)
+        #expect(bgProvider.expirationHandler != nil)
+
+        await manager.handleBackgroundExpiration()
+
         #expect(bgProvider.endCalled)
     }
 
@@ -206,6 +210,7 @@ struct SSHSessionManagerLifecycleTests {
 
         #expect(manager.state == .backgrounded(profileID: profile.id))
 
+        await manager.handleBackgroundExpiration()
         await manager.handleScenePhaseChange(.active)
 
         #expect(manager.state == .active(profileID: profile.id))
@@ -218,6 +223,7 @@ struct SSHSessionManagerLifecycleTests {
 
         try await manager.startSession(for: profile)
         await manager.handleScenePhaseChange(.background)
+        await manager.handleBackgroundExpiration()
         await manager.handleScenePhaseChange(.active)
 
         #expect(manager.state == .idle)
@@ -230,6 +236,7 @@ struct SSHSessionManagerLifecycleTests {
 
         try await manager.startSession(for: profile)
         await manager.handleScenePhaseChange(.background)
+        await manager.handleBackgroundExpiration()
 
         networkProvider.isSatisfied = false
         await manager.handleScenePhaseChange(.active)
@@ -287,6 +294,11 @@ struct SSHSessionManagerLifecycleTests {
         await manager.handleScenePhaseChange(.background)
 
         #expect(bgProvider.beginCalled)
+        #expect(bgProvider.expirationHandler != nil)
+
+        bgProvider.expirationHandler?()
+        await manager.handleBackgroundExpiration()
+
         #expect(bgProvider.endCalled)
     }
 }

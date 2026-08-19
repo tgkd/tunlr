@@ -62,10 +62,11 @@ struct ContentView: View {
             Button("Trust & Connect", role: .destructive) {
                 guard let profile = selectedProfile else { return }
                 Task {
-                    await sessionManager.trust(pending)
                     do {
+                        try await sessionManager.trust(pending)
                         try await sessionManager.startSession(for: profile)
                         try? await viewModel.markConnected(id: profile.id)
+                    } catch SSHSessionManagerError.superseded {
                     } catch {
                         if sessionManager.pendingHostKeyMismatch == nil {
                             connectionError = error.localizedDescription
@@ -98,6 +99,7 @@ struct ContentView: View {
                     do {
                         try await sessionManager.startSession(for: profile)
                         try? await viewModel.markConnected(id: profile.id)
+                    } catch SSHSessionManagerError.superseded {
                     } catch {
                         if sessionManager.pendingHostKeyMismatch == nil {
                             connectionError = error.localizedDescription
@@ -115,12 +117,30 @@ struct ContentView: View {
             guard let profileID else { return }
             Task {
                 await viewModel.loadProfiles()
-                if let profile = viewModel.profiles.first(where: { $0.id == profileID }) {
+                if let profile = viewModel.profiles.first(where: { $0.id == profileID }),
+                   profile.autoReconnect {
                     selectedProfile = profile
                     showTerminal = true
                 }
                 await sessionManager.clearRestoredSession()
             }
+        }
+        .onChange(of: sessionManager.state) { oldState, newState in
+            guard showTerminal, newState == .idle else { return }
+            switch oldState {
+            case .backgrounded, .reconnecting:
+                showTerminal = false
+                selectedProfile = nil
+            case .idle, .active:
+                break
+            }
+        }
+    }
+
+    private var isManagerDrivenTeardown: Bool {
+        switch sessionManager.state {
+        case .backgrounded, .reconnecting: return true
+        case .idle, .active: return false
         }
     }
 
@@ -143,13 +163,13 @@ struct ContentView: View {
                     sshSession: session,
                     appearanceViewModel: appearanceViewModel,
                     onDisconnect: {
-                        if !isSwitchingConnection {
-                            showTerminal = false
-                            selectedProfile = nil
-                        }
+                        guard !isSwitchingConnection, !isManagerDrivenTeardown else { return }
+                        showTerminal = false
+                        selectedProfile = nil
                     }
                 )
                 .navigationBarBackButtonHidden()
+                .id(ObjectIdentifier(session))
             } else {
                 VStack(spacing: 12) {
                     ProgressView()
@@ -187,6 +207,7 @@ struct ContentView: View {
                 do {
                     try await sessionManager.startSession(for: profile)
                     try? await viewModel.markConnected(id: profile.id)
+                } catch SSHSessionManagerError.superseded {
                 } catch {
                     if sessionManager.pendingHostKeyMismatch == nil {
                         connectionError = error.localizedDescription

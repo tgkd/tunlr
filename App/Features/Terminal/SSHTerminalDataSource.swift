@@ -16,6 +16,7 @@ extension SSHTerminalDataSourceDelegate {
 @MainActor
 final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     weak var delegate: SSHTerminalDataSourceDelegate?
+    var allowRemoteClipboardWrite: Bool = false
 
     private let sshSession: SSHSession
     private var outputTask: Task<Void, Never>?
@@ -131,13 +132,13 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
         }
     }
     nonisolated func clipboardCopy(source: TerminalView, content: Data) {
-        Task { @MainActor in
-            if let text = String(data: content, encoding: .utf8) {
-                UIPasteboard.general.setItems(
-                    [[UIPasteboard.typeAutomatic: text]],
-                    options: [.expirationDate: Date().addingTimeInterval(60)]
-                )
-            }
+        Task { @MainActor [weak self] in
+            guard let self, self.allowRemoteClipboardWrite else { return }
+            guard let text = String(data: content, encoding: .utf8) else { return }
+            UIPasteboard.general.setItems(
+                [[UIPasteboard.typeAutomatic: text]],
+                options: [.expirationDate: Date().addingTimeInterval(60)]
+            )
         }
     }
     nonisolated func iTermContent(source: TerminalView, content: ArraySlice<UInt8>) {}

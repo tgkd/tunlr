@@ -35,7 +35,7 @@ struct HostKeyVerificationIntegrationTests {
             publicKeyData: pubKeyData
         )
 
-        let stored = await store.lookup(hostname: "newhost.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored = try await store.lookup(hostname: "newhost.example.com", port: 22, keyType: "ssh-ed25519")
         #expect(stored != nil)
         #expect(stored?.publicKeyData == pubKeyData)
         #expect(stored?.fingerprint == FingerprintFormatter.sha256Fingerprint(of: pubKeyData))
@@ -63,7 +63,7 @@ struct HostKeyVerificationIntegrationTests {
             publicKeyData: pubKeyData
         )
 
-        let stored = await store.lookup(hostname: "known.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored = try await store.lookup(hostname: "known.example.com", port: 22, keyType: "ssh-ed25519")
         #expect(stored?.publicKeyData == pubKeyData)
     }
 
@@ -122,7 +122,7 @@ struct HostKeyVerificationIntegrationTests {
             publicKeyData: changedKey
         )
 
-        let stored = await store.lookup(hostname: "preserved.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored = try await store.lookup(hostname: "preserved.example.com", port: 22, keyType: "ssh-ed25519")
         #expect(stored?.publicKeyData == originalKey)
     }
 
@@ -148,17 +148,17 @@ struct HostKeyVerificationIntegrationTests {
         }
 
         // The new type must NOT have been auto-stored.
-        let storedEcdsa = await store.lookup(
+        let storedEcdsa = try await store.lookup(
             hostname: "pinned.example.com", port: 22, keyType: "ecdsa-sha2-nistp256"
         )
         #expect(storedEcdsa == nil)
 
         // The verifier exposes the pending decision for the UI.
-        let pending = await verifier.takePendingMismatch()
+        let pending = await verifier.takePendingMismatch(hostname: "pinned.example.com", port: 22)
         #expect(pending?.hostname == "pinned.example.com")
         #expect(pending?.keyType == "ecdsa-sha2-nistp256")
         // Taking it clears it.
-        let cleared = await verifier.takePendingMismatch()
+        let cleared = await verifier.takePendingMismatch(hostname: "pinned.example.com", port: 22)
         #expect(cleared == nil)
     }
 
@@ -177,10 +177,10 @@ struct HostKeyVerificationIntegrationTests {
             hostname: "multi.example.com", port: 22,
             keyType: "ecdsa-sha2-nistp256", publicKeyData: ecdsaKey
         )
-        let pending = await verifier.takePendingMismatch()
+        let pending = await verifier.takePendingMismatch(hostname: "multi.example.com", port: 22)
         #expect(pending != nil)
 
-        await verifier.trust(pending!)
+        try await verifier.trust(pending!)
 
         // Both key types are now pinned and verify cleanly.
         try await verifier.verify(
@@ -191,7 +191,7 @@ struct HostKeyVerificationIntegrationTests {
             hostname: "multi.example.com", port: 22,
             keyType: "ecdsa-sha2-nistp256", publicKeyData: ecdsaKey
         )
-        let all = await store.lookupAll(hostname: "multi.example.com", port: 22)
+        let all = try await store.lookupAll(hostname: "multi.example.com", port: 22)
         #expect(all.count == 2)
     }
 
@@ -207,8 +207,8 @@ struct HostKeyVerificationIntegrationTests {
         try await verifier.verify(hostname: "hostA.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: key1)
         try await verifier.verify(hostname: "hostB.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: key2)
 
-        let storedA = await store.lookup(hostname: "hostA.example.com", port: 22, keyType: "ssh-ed25519")
-        let storedB = await store.lookup(hostname: "hostB.example.com", port: 22, keyType: "ssh-ed25519")
+        let storedA = try await store.lookup(hostname: "hostA.example.com", port: 22, keyType: "ssh-ed25519")
+        let storedB = try await store.lookup(hostname: "hostB.example.com", port: 22, keyType: "ssh-ed25519")
 
         #expect(storedA?.publicKeyData == key1)
         #expect(storedB?.publicKeyData == key2)
@@ -225,8 +225,8 @@ struct HostKeyVerificationIntegrationTests {
         try await verifier.verify(hostname: "shared.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: key1)
         try await verifier.verify(hostname: "shared.example.com", port: 2222, keyType: "ssh-ed25519", publicKeyData: key2)
 
-        let stored22 = await store.lookup(hostname: "shared.example.com", port: 22, keyType: "ssh-ed25519")
-        let stored2222 = await store.lookup(hostname: "shared.example.com", port: 2222, keyType: "ssh-ed25519")
+        let stored22 = try await store.lookup(hostname: "shared.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored2222 = try await store.lookup(hostname: "shared.example.com", port: 2222, keyType: "ssh-ed25519")
 
         #expect(stored22?.publicKeyData == key1)
         #expect(stored2222?.publicKeyData == key2)
@@ -244,8 +244,8 @@ struct HostKeyVerificationIntegrationTests {
         try await verifier.verify(hostname: "fp1.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: pubKeyData)
         try await verifier.verify(hostname: "fp2.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: pubKeyData)
 
-        let stored1 = await store.lookup(hostname: "fp1.example.com", port: 22, keyType: "ssh-ed25519")
-        let stored2 = await store.lookup(hostname: "fp2.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored1 = try await store.lookup(hostname: "fp1.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored2 = try await store.lookup(hostname: "fp2.example.com", port: 22, keyType: "ssh-ed25519")
 
         #expect(stored1?.fingerprint == directFingerprint)
         #expect(stored2?.fingerprint == directFingerprint)
@@ -260,18 +260,18 @@ struct HostKeyVerificationIntegrationTests {
         let key1 = makeTestPublicKeyData(seed: 0xF0)
         try await verifier.verify(hostname: "revoke.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: key1)
 
-        let stored1 = await store.lookup(hostname: "revoke.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored1 = try await store.lookup(hostname: "revoke.example.com", port: 22, keyType: "ssh-ed25519")
         #expect(stored1 != nil)
 
         try await store.revoke(hostname: "revoke.example.com", port: 22)
 
-        let stored2 = await store.lookup(hostname: "revoke.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored2 = try await store.lookup(hostname: "revoke.example.com", port: 22, keyType: "ssh-ed25519")
         #expect(stored2 == nil)
 
         let key2 = makeTestPublicKeyData(seed: 0xF1)
         try await verifier.verify(hostname: "revoke.example.com", port: 22, keyType: "ssh-ed25519", publicKeyData: key2)
 
-        let stored3 = await store.lookup(hostname: "revoke.example.com", port: 22, keyType: "ssh-ed25519")
+        let stored3 = try await store.lookup(hostname: "revoke.example.com", port: 22, keyType: "ssh-ed25519")
         #expect(stored3?.publicKeyData == key2)
     }
 }

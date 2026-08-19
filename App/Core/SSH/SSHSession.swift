@@ -185,10 +185,12 @@ actor SSHSession {
     }
 
     private func startKeepalive(interval: TimeInterval) {
-        guard interval > 0 else { return }
+        guard interval.isFinite,
+              interval >= SSHConnectionProfile.minimumKeepaliveInterval else { return }
+        let bounded = min(interval, SSHConnectionProfile.maximumKeepaliveInterval)
         keepaliveTask = Task {
             while !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+                try? await Task.sleep(for: .seconds(bounded))
                 guard !Task.isCancelled else { break }
                 await self.sendKeepalive()
             }
@@ -206,8 +208,10 @@ actor SSHSession {
         updateState(.disconnected)
     }
 
-    private func handleShellEnded() {
+    private func handleShellEnded() async {
         shellHandle = nil
+        guard connectionState == .connected else { return }
+        await disconnect()
     }
 }
 

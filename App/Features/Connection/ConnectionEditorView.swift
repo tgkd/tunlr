@@ -12,6 +12,7 @@ struct ConnectionEditorView: View {
     @State private var username: String = ""
     @State private var authSelection: AuthSelection = .password
     @State private var password: String = ""
+    @State private var passwordEdited: Bool = false
     @State private var selectedKeyID: UUID?
     @State private var autoReconnect: Bool = false
     @State private var keepaliveIntervalString: String = "60"
@@ -102,8 +103,14 @@ struct ConnectionEditorView: View {
             case .importedKey:
                 importedKeyPicker
             case .password:
-                SecureField("Password", text: $password)
-                    .textContentType(.password)
+                SecureField("Password", text: Binding(
+                    get: { password },
+                    set: { newValue in
+                        password = newValue
+                        passwordEdited = true
+                    }
+                ))
+                .textContentType(.password)
             }
         }
     }
@@ -236,9 +243,9 @@ struct ConnectionEditorView: View {
         }
 
         Task {
-            if let pw = await viewModel.password(for: profile.id) {
-                password = pw
-            }
+            let stored = await viewModel.password(for: profile.id)
+            guard !passwordEdited, let stored else { return }
+            password = stored
         }
     }
 
@@ -269,7 +276,7 @@ struct ConnectionEditorView: View {
                     existing.authMethod = authMethod
                     existing.autoReconnect = autoReconnect
                     existing.keepaliveInterval = keepalive
-                    let pw = authSelection == .password ? password : nil
+                    let pw = authSelection == .password && passwordEdited ? password : nil
                     try await viewModel.updateProfile(existing, password: pw)
                 } else {
                     let pw = authSelection == .password ? password : nil
@@ -320,6 +327,8 @@ struct ConnectionEditorView: View {
             return "Hostname is too long (max 253 characters)."
         case ConnectionViewModelError.usernameTooLong:
             return "Username is too long (max 128 characters)."
+        case ConnectionViewModelError.invalidKeepaliveInterval:
+            return "Keepalive interval must be between 0 and 86400 seconds."
         default:
             return error.localizedDescription
         }

@@ -17,85 +17,100 @@ struct FingerprintURIParserTests {
     }
 
     @Test func parsesValidURIWithDefaultPort() throws {
-        let uri = "ssh-trust://myserver.local?fp=SHA256:abc123DEFghi&type=ssh-ed25519"
+        let uri = "ssh-trust://myserver.local?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         let result = try FingerprintURIParser.parse(uri)
         #expect(result.hostname == "myserver.local")
         #expect(result.port == 22)
     }
 
     @Test func parsesValidURIWithRSAKeyType() throws {
-        let uri = "ssh-trust://host.example:22?fp=SHA256:AAAA&type=ssh-rsa"
+        let uri = "ssh-trust://host.example:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-rsa"
         let result = try FingerprintURIParser.parse(uri)
         #expect(result.keyType == "ssh-rsa")
     }
 
     @Test func parsesValidURIWithECDSA256() throws {
-        let uri = "ssh-trust://host:443?fp=SHA256:fingerprint&type=ecdsa-sha2-nistp256"
+        let uri = "ssh-trust://host:443?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ecdsa-sha2-nistp256"
         let result = try FingerprintURIParser.parse(uri)
         #expect(result.keyType == "ecdsa-sha2-nistp256")
         #expect(result.port == 443)
     }
 
     @Test func parsesValidURIWithECDSA384() throws {
-        let uri = "ssh-trust://host:22?fp=SHA256:xyz&type=ecdsa-sha2-nistp384"
+        let uri = "ssh-trust://host:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ecdsa-sha2-nistp384"
         let result = try FingerprintURIParser.parse(uri)
         #expect(result.keyType == "ecdsa-sha2-nistp384")
     }
 
     @Test func parsesValidURIWithECDSA521() throws {
-        let uri = "ssh-trust://host:22?fp=SHA256:xyz&type=ecdsa-sha2-nistp521"
+        let uri = "ssh-trust://host:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ecdsa-sha2-nistp521"
         let result = try FingerprintURIParser.parse(uri)
         #expect(result.keyType == "ecdsa-sha2-nistp521")
     }
 
     @Test func parsesIPv4Host() throws {
-        let uri = "ssh-trust://192.168.1.100:22?fp=SHA256:abc&type=ssh-ed25519"
+        let uri = "ssh-trust://192.168.1.100:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         let result = try FingerprintURIParser.parse(uri)
         #expect(result.hostname == "192.168.1.100")
     }
 
     @Test func parsesPort1() throws {
-        let uri = "ssh-trust://host:1?fp=SHA256:abc&type=ssh-ed25519"
+        let uri = "ssh-trust://host:1?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         let result = try FingerprintURIParser.parse(uri)
         #expect(result.port == 1)
     }
 
     @Test func parsesPort65535() throws {
-        let uri = "ssh-trust://host:65535?fp=SHA256:abc&type=ssh-ed25519"
+        let uri = "ssh-trust://host:65535?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         let result = try FingerprintURIParser.parse(uri)
         #expect(result.port == 65535)
     }
 
     @Test func parsesFingerprintWithSlashAndPlus() throws {
-        let uri = "ssh-trust://host:22?fp=SHA256:abc+def/ghi&type=ssh-ed25519"
+        let uri = "ssh-trust://host:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         let result = try FingerprintURIParser.parse(uri)
-        #expect(result.fingerprint == "SHA256:abc+def/ghi")
+        #expect(result.fingerprint.contains("+"))
+        #expect(result.fingerprint.contains("/"))
     }
 
-    @Test func parsesFingerprintWithPaddingEquals() throws {
-        let uri = "ssh-trust://host:22?fp=SHA256:abc123==&type=ssh-ed25519"
+    @Test func canonicalisesPaddedFingerprint() throws {
+        let uri = "ssh-trust://host:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=&type=ssh-ed25519"
         let result = try FingerprintURIParser.parse(uri)
-        #expect(result.fingerprint == "SHA256:abc123==")
+        #expect(result.fingerprint == "SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU")
+    }
+
+    @Test func rejectsFingerprintThatIsNotThirtyTwoBytes() {
+        let uri = "ssh-trust://host:22?fp=SHA256:abc&type=ssh-ed25519"
+        #expect(throws: FingerprintURIParserError.invalidFingerprintFormat) {
+            try FingerprintURIParser.parse(uri)
+        }
+    }
+
+    @Test func rejectsFingerprintWithInvalidPadding() {
+        let uri = "ssh-trust://host:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU===&type=ssh-ed25519"
+        #expect(throws: FingerprintURIParserError.invalidFingerprintFormat) {
+            try FingerprintURIParser.parse(uri)
+        }
     }
 
     // MARK: - Invalid Scheme
 
     @Test func rejectsHTTPScheme() {
-        let uri = "http://example.com?fp=SHA256:abc&type=ssh-ed25519"
+        let uri = "http://example.com?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         #expect(throws: FingerprintURIParserError.invalidScheme) {
             try FingerprintURIParser.parse(uri)
         }
     }
 
     @Test func rejectsEmptyScheme() {
-        let uri = "://host?fp=SHA256:abc&type=ssh-ed25519"
+        let uri = "://host?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         #expect(throws: FingerprintURIParserError.invalidScheme) {
             try FingerprintURIParser.parse(uri)
         }
     }
 
     @Test func rejectsNoScheme() {
-        let uri = "example.com?fp=SHA256:abc&type=ssh-ed25519"
+        let uri = "example.com?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         #expect(throws: FingerprintURIParserError.invalidScheme) {
             try FingerprintURIParser.parse(uri)
         }
@@ -104,7 +119,7 @@ struct FingerprintURIParserTests {
     // MARK: - Missing Host
 
     @Test func rejectsMissingHost() {
-        let uri = "ssh-trust://?fp=SHA256:abc&type=ssh-ed25519"
+        let uri = "ssh-trust://?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         #expect(throws: FingerprintURIParserError.missingHost) {
             try FingerprintURIParser.parse(uri)
         }
@@ -113,14 +128,14 @@ struct FingerprintURIParserTests {
     // MARK: - Invalid Port
 
     @Test func rejectsPort0() {
-        let uri = "ssh-trust://host:0?fp=SHA256:abc&type=ssh-ed25519"
+        let uri = "ssh-trust://host:0?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         #expect(throws: FingerprintURIParserError.invalidPort) {
             try FingerprintURIParser.parse(uri)
         }
     }
 
     @Test func rejectsNegativePort() {
-        let uri = "ssh-trust://host:-1?fp=SHA256:abc&type=ssh-ed25519"
+        let uri = "ssh-trust://host:-1?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-ed25519"
         // URLComponents may not parse negative ports; depends on implementation
         do {
             _ = try FingerprintURIParser.parse(uri)
@@ -170,28 +185,28 @@ struct FingerprintURIParserTests {
     // MARK: - Missing/Invalid Key Type
 
     @Test func rejectsMissingKeyType() {
-        let uri = "ssh-trust://host:22?fp=SHA256:abc"
+        let uri = "ssh-trust://host:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU"
         #expect(throws: FingerprintURIParserError.missingKeyType) {
             try FingerprintURIParser.parse(uri)
         }
     }
 
     @Test func rejectsEmptyKeyType() {
-        let uri = "ssh-trust://host:22?fp=SHA256:abc&type="
+        let uri = "ssh-trust://host:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type="
         #expect(throws: FingerprintURIParserError.missingKeyType) {
             try FingerprintURIParser.parse(uri)
         }
     }
 
     @Test func rejectsUnsupportedKeyType() {
-        let uri = "ssh-trust://host:22?fp=SHA256:abc&type=ssh-dss"
+        let uri = "ssh-trust://host:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=ssh-dss"
         #expect(throws: FingerprintURIParserError.unsupportedKeyType("ssh-dss")) {
             try FingerprintURIParser.parse(uri)
         }
     }
 
     @Test func rejectsArbitraryKeyType() {
-        let uri = "ssh-trust://host:22?fp=SHA256:abc&type=not-a-key-type"
+        let uri = "ssh-trust://host:22?fp=SHA256:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU&type=not-a-key-type"
         #expect(throws: FingerprintURIParserError.unsupportedKeyType("not-a-key-type")) {
             try FingerprintURIParser.parse(uri)
         }

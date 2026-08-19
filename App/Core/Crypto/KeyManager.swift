@@ -33,12 +33,13 @@ actor KeyManager {
         return seIdentities + importedKeys
     }
 
-    func deleteKey(identity: SSHIdentity) async {
+    func deleteKey(identity: SSHIdentity) async throws {
         switch identity.storageType {
         case .secureEnclave:
+            let remaining = seIdentities.filter { $0.id != identity.id }
+            try saveSEMetadata(remaining)
+            seIdentities = remaining
             await secureEnclaveManager.deleteKey(tag: identity.id.uuidString)
-            seIdentities.removeAll { $0.id == identity.id }
-            saveSEMetadata()
         case .keychain:
             await keychainManager.deleteKey(id: identity.id)
         }
@@ -57,8 +58,13 @@ actor KeyManager {
 
     func generateSecureEnclaveKey(label: String) async throws -> SSHIdentity {
         let identity = try await secureEnclaveManager.generateKey(label: label)
-        seIdentities.append(identity)
-        saveSEMetadata()
+        do {
+            try saveSEMetadata(seIdentities + [identity])
+            seIdentities.append(identity)
+        } catch {
+            await secureEnclaveManager.deleteKey(tag: identity.id.uuidString)
+            throw error
+        }
         return identity
     }
 
@@ -66,11 +72,10 @@ actor KeyManager {
         try await keychainManager.importKey(pemData: pemData, label: label, passphrase: passphrase)
     }
 
-    private func saveSEMetadata() {
-        if let data = try? JSONEncoder().encode(seIdentities) {
-            try? data.write(to: seMetadataURL, options: .atomic)
-            Self.excludeFromBackup(url: seMetadataURL)
-        }
+    private func saveSEMetadata(_ identities: [SSHIdentity]) throws {
+        let data = try JSONEncoder().encode(identities)
+        try data.write(to: seMetadataURL, options: .atomic)
+        Self.excludeFromBackup(url: seMetadataURL)
     }
 
     private static func excludeFromBackup(url: URL) {

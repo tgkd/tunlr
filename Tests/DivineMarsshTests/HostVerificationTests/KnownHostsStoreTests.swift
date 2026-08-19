@@ -46,7 +46,7 @@ final class KnownHostsStoreTests: XCTestCase {
         let hostKey = makeHostKey()
 
         try await store.trust(hostKey: hostKey)
-        let found = await store.lookup(hostname: "example.com", port: 22, keyType: "ssh-ed25519")
+        let found = try await store.lookup(hostname: "example.com", port: 22, keyType: "ssh-ed25519")
 
         XCTAssertNotNil(found)
         XCTAssertEqual(found?.hostname, "example.com")
@@ -57,7 +57,7 @@ final class KnownHostsStoreTests: XCTestCase {
 
     func testLookupReturnsNilForUnknownHost() async throws {
         let store = try makeStore()
-        let found = await store.lookup(hostname: "unknown.host", port: 22, keyType: "ssh-ed25519")
+        let found = try await store.lookup(hostname: "unknown.host", port: 22, keyType: "ssh-ed25519")
         XCTAssertNil(found)
     }
 
@@ -67,13 +67,13 @@ final class KnownHostsStoreTests: XCTestCase {
 
         try await store.trust(hostKey: hostKey)
 
-        let wrongPort = await store.lookup(hostname: "host.com", port: 22, keyType: "ecdsa-sha2-nistp256")
+        let wrongPort = try await store.lookup(hostname: "host.com", port: 22, keyType: "ecdsa-sha2-nistp256")
         XCTAssertNil(wrongPort)
-        let wrongType = await store.lookup(hostname: "host.com", port: 2222, keyType: "ssh-ed25519")
+        let wrongType = try await store.lookup(hostname: "host.com", port: 2222, keyType: "ssh-ed25519")
         XCTAssertNil(wrongType)
-        let wrongHost = await store.lookup(hostname: "other.com", port: 2222, keyType: "ecdsa-sha2-nistp256")
+        let wrongHost = try await store.lookup(hostname: "other.com", port: 2222, keyType: "ecdsa-sha2-nistp256")
         XCTAssertNil(wrongHost)
-        let correct = await store.lookup(hostname: "host.com", port: 2222, keyType: "ecdsa-sha2-nistp256")
+        let correct = try await store.lookup(hostname: "host.com", port: 2222, keyType: "ecdsa-sha2-nistp256")
         XCTAssertNotNil(correct)
     }
 
@@ -87,7 +87,7 @@ final class KnownHostsStoreTests: XCTestCase {
         try await store.trust(hostKey: key1)
         try await store.trust(hostKey: key2)
 
-        let all = await store.allHostKeys()
+        let all = try await store.allHostKeys()
         XCTAssertEqual(all.count, 1)
         XCTAssertEqual(all.first?.fingerprint, "fp2")
         XCTAssertEqual(all.first?.publicKeyData, Data([4, 5, 6]))
@@ -102,7 +102,7 @@ final class KnownHostsStoreTests: XCTestCase {
         try await store.trust(hostKey: makeHostKey(hostname: "host2.com"))
         try await store.trust(hostKey: makeHostKey(hostname: "host3.com"))
 
-        let all = await store.allHostKeys()
+        let all = try await store.allHostKeys()
         XCTAssertEqual(all.count, 3)
     }
 
@@ -116,7 +116,7 @@ final class KnownHostsStoreTests: XCTestCase {
 
         try await store.revoke(hostname: "revoke.me", port: 22)
 
-        let all = await store.allHostKeys()
+        let all = try await store.allHostKeys()
         XCTAssertTrue(all.isEmpty)
     }
 
@@ -128,7 +128,7 @@ final class KnownHostsStoreTests: XCTestCase {
 
         try await store.revoke(hostname: "revoke.me", port: 22)
 
-        let all = await store.allHostKeys()
+        let all = try await store.allHostKeys()
         XCTAssertEqual(all.count, 1)
         XCTAssertEqual(all.first?.hostname, "keep.me")
     }
@@ -136,7 +136,7 @@ final class KnownHostsStoreTests: XCTestCase {
     func testRevokeNonexistentIsNoOp() async throws {
         let store = try makeStore()
         try await store.revoke(hostname: "nonexistent.host", port: 22)
-        let all = await store.allHostKeys()
+        let all = try await store.allHostKeys()
         XCTAssertTrue(all.isEmpty)
     }
 
@@ -147,7 +147,7 @@ final class KnownHostsStoreTests: XCTestCase {
         try await store1.trust(hostKey: makeHostKey(hostname: "persistent.host"))
 
         let store2 = try KnownHostsStore(directory: tempDir)
-        let all = await store2.allHostKeys()
+        let all = try await store2.allHostKeys()
         XCTAssertEqual(all.count, 1)
         XCTAssertEqual(all.first?.hostname, "persistent.host")
     }
@@ -161,10 +161,84 @@ final class KnownHostsStoreTests: XCTestCase {
 
         try await store.trust(hostKey: makeHostKey(publicKeyData: originalData, fingerprint: "fp-original"))
 
-        let stored = await store.lookup(hostname: "example.com", port: 22, keyType: "ssh-ed25519")
+        let stored = try await store.lookup(hostname: "example.com", port: 22, keyType: "ssh-ed25519")
         XCTAssertNotNil(stored)
         XCTAssertEqual(stored?.publicKeyData, originalData)
         XCTAssertNotEqual(stored?.publicKeyData, mismatchData)
+    }
+
+    func testLookupIsCaseInsensitive() async throws {
+        let store = try makeStore()
+        try await store.trust(hostKey: makeHostKey(hostname: "Example.COM"))
+
+        let lower = try await store.lookup(hostname: "example.com", port: 22, keyType: "ssh-ed25519")
+        let mixed = try await store.lookup(hostname: "ExAmPlE.cOm", port: 22, keyType: "ssh-ed25519")
+        XCTAssertNotNil(lower)
+        XCTAssertNotNil(mixed)
+    }
+
+    func testLookupIgnoresTrailingDot() async throws {
+        let store = try makeStore()
+        try await store.trust(hostKey: makeHostKey(hostname: "example.com."))
+
+        let found = try await store.lookup(hostname: "example.com", port: 22, keyType: "ssh-ed25519")
+        XCTAssertNotNil(found)
+
+        let all = try await store.allHostKeys()
+        XCTAssertEqual(all.count, 1)
+        XCTAssertEqual(all.first?.hostname, "example.com")
+    }
+
+    func testTrustDoesNotDuplicateEquivalentHostnames() async throws {
+        let store = try makeStore()
+        try await store.trust(hostKey: makeHostKey(hostname: "example.com"))
+        try await store.trust(hostKey: makeHostKey(hostname: "EXAMPLE.com."))
+
+        let all = try await store.allHostKeys()
+        XCTAssertEqual(all.count, 1)
+    }
+
+    func testIPv6BracketsAreCanonicalized() async throws {
+        let store = try makeStore()
+        try await store.trust(hostKey: makeHostKey(hostname: "[::1]"))
+
+        let found = try await store.lookup(hostname: "::1", port: 22, keyType: "ssh-ed25519")
+        XCTAssertNotNil(found)
+    }
+
+    func testRevokeIsCanonicalized() async throws {
+        let store = try makeStore()
+        try await store.trust(hostKey: makeHostKey(hostname: "revoke.example.com"))
+
+        try await store.revoke(hostname: "Revoke.Example.Com.", port: 22)
+
+        let all = try await store.allHostKeys()
+        XCTAssertTrue(all.isEmpty)
+    }
+
+    func testUnreadableStoreBlocksLookupsAndMutations() async throws {
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        let fileURL = tempDir.appendingPathComponent("known_hosts.json")
+        try Data("{ not json".utf8).write(to: fileURL)
+
+        let store = try KnownHostsStore(directory: tempDir)
+
+        do {
+            _ = try await store.lookupAll(hostname: "example.com", port: 22)
+            XCTFail("Expected lookupAll to fail closed")
+        } catch {
+            XCTAssertEqual(error as? KnownHostsStoreError, .storeUnreadable)
+        }
+
+        do {
+            try await store.trust(hostKey: makeHostKey())
+            XCTFail("Expected trust to fail closed")
+        } catch {
+            XCTAssertEqual(error as? KnownHostsStoreError, .storeUnreadable)
+        }
+
+        let preserved = try Data(contentsOf: fileURL)
+        XCTAssertEqual(String(data: preserved, encoding: .utf8), "{ not json")
     }
 
     // MARK: - iCloud backup exclusion

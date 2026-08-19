@@ -106,6 +106,14 @@ struct KeyManagerView: View {
                 Text("This will permanently delete \"\(identity.label)\". This action cannot be undone.")
             }
         }
+        .alert("Delete Failed", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { presented in if !presented { viewModel.errorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(viewModel.errorMessage ?? "")
+        }
         .task {
             await viewModel.loadKeys()
         }

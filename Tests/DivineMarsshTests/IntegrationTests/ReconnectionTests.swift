@@ -72,6 +72,9 @@ struct ReconnectionIntegrationTests {
         await manager.handleScenePhaseChange(.background)
         #expect(manager.state == .backgrounded(profileID: profile.id))
         #expect(bgProvider.beginCalled)
+        #expect(bgProvider.expirationHandler != nil)
+
+        await manager.handleBackgroundExpiration()
         #expect(bgProvider.endCalled)
 
         await manager.handleScenePhaseChange(.active)
@@ -89,6 +92,7 @@ struct ReconnectionIntegrationTests {
         await manager.handleScenePhaseChange(.background)
         #expect(manager.state == .backgrounded(profileID: profile.id))
 
+        await manager.handleBackgroundExpiration()
         await manager.handleScenePhaseChange(.active)
         #expect(manager.state == .idle)
         #expect(manager.activeSession == nil)
@@ -210,6 +214,7 @@ struct ReconnectionIntegrationTests {
 
         try await manager.startSession(for: profile)
         await manager.handleScenePhaseChange(.background)
+        await manager.handleBackgroundExpiration()
 
         networkProvider.isSatisfied = false
         await manager.handleScenePhaseChange(.active)
@@ -244,6 +249,7 @@ struct ReconnectionIntegrationTests {
         try await manager.startSession(for: profile)
 
         await manager.handleScenePhaseChange(.background)
+        await manager.handleBackgroundExpiration()
         await manager.handleScenePhaseChange(.active)
 
         #expect(manager.state == .idle)
@@ -263,6 +269,7 @@ struct ReconnectionIntegrationTests {
             await manager.handleScenePhaseChange(.background)
             #expect(manager.state == .backgrounded(profileID: profile.id))
 
+            await manager.handleBackgroundExpiration()
             await manager.handleScenePhaseChange(.active)
         }
 
