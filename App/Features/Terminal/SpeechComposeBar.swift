@@ -13,17 +13,20 @@ struct SpeechComposeBar: View {
 
     @State private var elapsed: Int = 0
 
+    private static let glyphBox: CGFloat = 22
+
     private var isRecording: Bool { state == .recording }
+    private var isTranscribing: Bool { state == .transcribing }
 
     var body: some View {
         Group {
             switch state {
-            case .recording:
-                dictatingBar
-            case .transcribing:
-                transcribingBar
+            case .recording, .transcribing:
+                dictationBar
+            case .preparing:
+                statusBar(title: "Preparing...")
             case .downloading:
-                statusBar(title: "Downloading model...", showsSpinner: true)
+                statusBar(title: "Downloading model...")
             case .noSpeech:
                 noSpeechBar
             case .permissionDenied:
@@ -37,8 +40,8 @@ struct SpeechComposeBar: View {
         .padding(.horizontal, 12)
         .padding(.bottom, 10)
         .task(id: isRecording) {
-            elapsed = 0
             guard isRecording else { return }
+            elapsed = 0
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(1))
                 if Task.isCancelled { return }
@@ -49,10 +52,10 @@ struct SpeechComposeBar: View {
 
     // MARK: - Dictating
 
-    private var dictatingBar: some View {
+    private var dictationBar: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Dictating...")
+                Text(isTranscribing ? "Transcribing..." : "Dictating...")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Text(timeString)
@@ -60,50 +63,42 @@ struct SpeechComposeBar: View {
                     .monospacedDigit()
                     .foregroundStyle(.primary)
             }
+            .lineLimit(1)
+            .fixedSize(horizontal: true, vertical: false)
 
-            LevelMeter(level: level)
+            if isTranscribing {
+                Spacer(minLength: 0)
+            } else {
+                LevelMeter(level: level)
+            }
 
             circularButton(systemImage: "xmark", accessibility: "Cancel dictation", action: onCancel)
 
             Button(action: onStopRecording) {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(.white)
-                    .frame(width: 15, height: 15)
-                    .frame(width: 44, height: 44)
+                Group {
+                    if isTranscribing {
+                        ProgressView()
+                            .controlSize(.small)
+                            .tint(.white)
+                    } else {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(.white)
+                            .frame(width: 14, height: 14)
+                    }
+                }
+                .frame(width: Self.glyphBox, height: Self.glyphBox)
             }
-            .accessibilityLabel("Stop dictation")
+            .accessibilityLabel(isTranscribing ? "Transcribing" : "Stop dictation")
+            .disabled(isTranscribing)
             .voiceBarProminentButton(tint: .red)
             .buttonBorderShape(.circle)
         }
-        .padding(.leading, 16)
-        .padding(.trailing, 6)
-        .frame(height: 56)
+        .barPadding()
         .voiceBarGlass(in: Capsule())
     }
 
     private var timeString: String {
         String(format: "%d:%02d", elapsed / 60, elapsed % 60)
-    }
-
-    // MARK: - Transcribing
-
-    private var transcribingBar: some View {
-        HStack(spacing: 14) {
-            VStack(alignment: .leading, spacing: 9) {
-                Text("Transcribing...")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                ProgressView()
-                    .progressViewStyle(.linear)
-                    .tint(.green)
-            }
-
-            circularButton(systemImage: "xmark", accessibility: "Cancel", action: onCancel)
-        }
-        .padding(.leading, 16)
-        .padding(.trailing, 6)
-        .frame(height: 56)
-        .voiceBarGlass(in: Capsule())
     }
 
     // MARK: - Transcript
@@ -117,21 +112,22 @@ struct SpeechComposeBar: View {
                 .lineLimit(1...4)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 11)
-                .frame(minHeight: 44)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color(.separator), lineWidth: 0.5)
+                        .stroke(Color.primary.opacity(0.25), lineWidth: 1)
                 )
 
             HStack(spacing: 8) {
                 circularButton(systemImage: "xmark", accessibility: "Discard transcript", action: onCancel)
                 circularButton(systemImage: "mic", accessibility: "Dictate again", action: onRestart)
 
-                Spacer(minLength: 0)
+                Spacer(minLength: 8)
 
                 Button("Insert", action: onInsert)
+                    .lineLimit(1)
                     .voiceBarButton()
                 Button("Run", action: onRun)
+                    .lineLimit(1)
                     .voiceBarProminentButton(tint: .green)
             }
         }
@@ -143,24 +139,14 @@ struct SpeechComposeBar: View {
 
     private var noSpeechBar: some View {
         HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text("No speech detected")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                Text("Nothing was recorded.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer(minLength: 0)
+            titleBlock("No speech detected")
 
             circularButton(systemImage: "xmark", accessibility: "Dismiss", action: onCancel)
             Button("Try Again", action: onRestart)
+                .lineLimit(1)
                 .voiceBarProminentButton(tint: .green)
         }
-        .padding(.leading, 18)
-        .padding(.trailing, 8)
-        .frame(minHeight: 64)
+        .barPadding()
         .voiceBarGlass(in: Capsule())
     }
 
@@ -174,46 +160,33 @@ struct SpeechComposeBar: View {
                 .frame(width: 30, height: 30)
                 .background(Color.orange.opacity(0.22), in: Circle())
 
-            VStack(alignment: .leading, spacing: 1) {
-                Text("Microphone Access")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                Text("Needed for voice input.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer(minLength: 0)
+            titleBlock("Microphone Access")
 
             Button("Open Settings", action: onOpenSettings)
+                .lineLimit(1)
                 .voiceBarProminentButton(tint: .green)
         }
-        .padding(.leading, 10)
-        .padding(.trailing, 6)
-        .padding(.vertical, 9)
-        .frame(minHeight: 64)
+        .barPadding()
         .voiceBarGlass(in: Capsule())
     }
 
     // MARK: - Status and error
 
-    private func statusBar(title: String, showsSpinner: Bool) -> some View {
+    private func statusBar(title: String) -> some View {
         HStack(spacing: 12) {
-            if showsSpinner {
-                ProgressView()
-                    .controlSize(.small)
-            }
+            ProgressView()
+                .controlSize(.small)
+
             Text(title)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.primary)
-
-            Spacer(minLength: 0)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             circularButton(systemImage: "xmark", accessibility: "Dismiss", action: onCancel)
         }
-        .padding(.leading, 16)
-        .padding(.trailing, 6)
-        .frame(height: 56)
+        .barPadding()
         .voiceBarGlass(in: Capsule())
     }
 
@@ -226,19 +199,26 @@ struct SpeechComposeBar: View {
             Text(message)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.secondary)
-                .lineLimit(2)
-
-            Spacer(minLength: 0)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             circularButton(systemImage: "xmark", accessibility: "Dismiss", action: onCancel)
         }
-        .padding(.leading, 16)
-        .padding(.trailing, 6)
-        .frame(minHeight: 56)
+        .barPadding()
         .voiceBarGlass(in: Capsule())
     }
 
     // MARK: - Shared
+
+    private func titleBlock(_ title: String) -> some View {
+        Text(title)
+            .font(.headline)
+            .foregroundStyle(.primary)
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
 
     private func circularButton(
         systemImage: String,
@@ -247,8 +227,8 @@ struct SpeechComposeBar: View {
     ) -> some View {
         Button(action: action) {
             Image(systemName: systemImage)
-                .font(.system(size: 15, weight: .medium))
-                .frame(width: 44, height: 44)
+                .font(.body)
+                .frame(width: Self.glyphBox, height: Self.glyphBox)
         }
         .accessibilityLabel(accessibility)
         .voiceBarButton()
@@ -261,18 +241,22 @@ struct SpeechComposeBar: View {
 private struct LevelMeter: View {
     let level: Float
 
-    @State private var history: [Float] = Array(repeating: 0, count: 24)
+    @State private var history: [Float] = Array(repeating: 0, count: 22)
+
+    private var scale: Float {
+        max(history.max() ?? 0, 0.02)
+    }
 
     var body: some View {
         HStack(spacing: 4) {
             ForEach(Array(history.enumerated()), id: \.offset) { _, value in
                 Capsule()
                     .fill(Color.primary)
-                    .frame(width: 3, height: max(4, CGFloat(value) * 30))
+                    .frame(width: 3, height: 3 + CGFloat(min(1, value / scale)) * 19)
             }
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
-        .frame(height: 30)
+        .frame(height: 22)
         .clipped()
         .mask(
             LinearGradient(
@@ -294,6 +278,12 @@ private struct LevelMeter: View {
 // MARK: - Native material helpers
 
 private extension View {
+    func barPadding() -> some View {
+        padding(.leading, 16)
+            .padding(.trailing, 8)
+            .padding(.vertical, 8)
+    }
+
     @ViewBuilder
     func voiceBarGlass(in shape: some Shape) -> some View {
         if #available(iOS 26.0, *) {

@@ -30,6 +30,7 @@ enum WhisperModelSize: String, CaseIterable, Sendable {
 
 enum WhisperServiceState: Sendable, Equatable {
     case idle
+    case preparing
     case downloading
     case recording
     case transcribing
@@ -68,6 +69,7 @@ actor WhisperService {
     nonisolated var currentLevel: Float { levelBox.value }
 
     private var whisperKit: WhisperKit?
+    private var modelLoadTask: Task<Void, Error>?
     private var audioEngine: AVAudioEngine?
     private var audioFilePath: URL?
     private var audioFile: AVAudioFile?
@@ -121,22 +123,43 @@ actor WhisperService {
     }
 
     func ensureModelReady() async throws {
-        let desired = WhisperModelSize.stored
-        if whisperKit != nil, loadedModelSize == desired { return }
+        if whisperKit != nil, loadedModelSize == WhisperModelSize.stored { return }
 
+        if let inFlight = modelLoadTask {
+            try await inFlight.value
+            return
+        }
+
+        let task = Task { [weak self] in
+            guard let self else { return }
+            try await self.loadModel()
+        }
+        modelLoadTask = task
+        defer { modelLoadTask = nil }
+        try await task.value
+    }
+
+    private func loadModel() async throws {
+        let desired = WhisperModelSize.stored
         whisperKit = nil
         loadedModelSize = nil
         state = .downloading
-        let kit = try await WhisperKit(model: desired.rawValue)
-        whisperKit = kit
-        loadedModelSize = desired
-        state = .idle
+        do {
+            let kit = try await WhisperKit(model: desired.rawValue)
+            whisperKit = kit
+            loadedModelSize = desired
+            state = .idle
+        } catch {
+            state = .idle
+            throw error
+        }
     }
 
     func startRecording() async throws {
-        guard state == .idle else { return }
+        guard state != .recording else { return }
 
         try await ensureModelReady()
+        guard state != .recording else { return }
 
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.record, mode: .measurement, options: .duckOthers)
@@ -170,8 +193,7 @@ actor WhisperService {
                 for index in 0..<count {
                     sumOfSquares += samples[index] * samples[index]
                 }
-                let rms = count > 0 ? (sumOfSquares / Float(count)).squareRoot() : 0
-                levelBox.value = min(1, rms * 6)
+                levelBox.value = count > 0 ? (sumOfSquares / Float(count)).squareRoot() : 0
             }
             guard let converter else { return }
             let frameCount = AVAudioFrameCount(

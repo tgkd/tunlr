@@ -28,6 +28,12 @@ struct TerminalScreen: View {
 
     @State private var keyboardHeight: CGFloat = 0
 
+    private var accessoryRowHeight: CGFloat {
+        guard keyboardHeight > 0 else { return 0 }
+        let isPad = UIDevice.current.userInterfaceIdiom == .pad
+        return appearanceViewModel.appearance.toolbarSize.rowHeight(isPad: isPad)
+    }
+
     var body: some View {
         ZStack(alignment: .bottom) {
             themeBackgroundColor
@@ -65,7 +71,7 @@ struct TerminalScreen: View {
                     onRestart: { Task { await startRecording() } },
                     onOpenSettings: { openSystemSettings() }
                 )
-                .padding(.bottom, keyboardHeight)
+                .padding(.bottom, keyboardHeight + accessoryRowHeight)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -233,9 +239,12 @@ struct TerminalScreen: View {
                     await startRecording()
                 }
             case .granted:
-                if whisperState == .recording {
+                switch whisperState {
+                case .recording:
                     stopRecording()
-                } else {
+                case .preparing, .downloading, .transcribing:
+                    break
+                case .idle, .noSpeech, .permissionDenied, .error:
                     await startRecording()
                 }
             case .denied:
@@ -247,10 +256,14 @@ struct TerminalScreen: View {
 
     private func startRecording() async {
         transcribedText = ""
-        whisperState = whisperService.isModelCached() ? .recording : .downloading
+        whisperState = whisperService.isModelCached() ? .preparing : .downloading
         withAnimation { showComposeBar = true }
         do {
             try await whisperService.startRecording()
+            guard showComposeBar else {
+                await whisperService.cancel()
+                return
+            }
             whisperState = .recording
         } catch {
             whisperState = .error(error.localizedDescription)
