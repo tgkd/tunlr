@@ -19,7 +19,10 @@ final class TerminalViewController: UIViewController {
     private var currentAppearance: TerminalAppearance?
     private var toolbarAccessory: SimpleTerminalAccessory?
     private var toolbarHeightConstraint: NSLayoutConstraint!
-    private let toolbarVisibleHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
+    private var toolbarVisibleHeight: CGFloat {
+        let size = currentAppearance?.toolbarSize ?? .regular
+        return size.rowHeight(isPad: traitCollection.userInterfaceIdiom == .pad)
+    }
 
     init(dataSource: SSHTerminalDataSource) {
         self.dataSource = dataSource
@@ -157,11 +160,11 @@ final class TerminalViewController: UIViewController {
         // Metal path renders one extra partial row past the visible viewport so
         // the bottom row appears clipped under the keyboard accessory toolbar.
         // CoreGraphics path is unaffected. Source: SwiftTerm
-        // MetalTerminalRenderer.swift `rowInfo` uses
-        // `Int(floor((offsetY + viewHeight - 1) / cellHeight))` for `lastRow`
+        // MetalTerminalRenderer.swift `visibleRowRange` computes `lastRow` as
+        // `Int(floor((offsetY + viewHeight - 1) / cellHeight))`
         // (any row touching the viewport) instead of `Int(viewHeight/cellHeight)`
-        // (only fully-fitting rows). No upstream fix as of pin 8e7a1e1; revisit
-        // when SwiftTerm is bumped or file an upstream PR.
+        // (only fully-fitting rows). Still reproduces on 1.20.0 (5d14406);
+        // revisit when SwiftTerm is bumped or file an upstream PR.
         let wantsMetal = appearance.useMetalRenderer
         let hadMetal = terminalView.isUsingMetalRenderer
         if wantsMetal != hadMetal {
@@ -174,10 +177,13 @@ final class TerminalViewController: UIViewController {
         }
 
         if let accessory = toolbarAccessory {
-            let btnBg = theme.isDark ? UIColor(white: 0.22, alpha: 1) : UIColor(white: 0.88, alpha: 1)
             let txtColor: UIColor = theme.isDark ? .white : .black
-            accessory.updateColors(buttonBg: btnBg, textColor: txtColor)
+            accessory.size = appearance.toolbarSize
+            accessory.updateColors(textColor: txtColor)
             accessory.panels = Self.buildPanels(from: appearance)
+            if toolbarHeightConstraint.constant != 0 {
+                toolbarHeightConstraint.constant = toolbarVisibleHeight
+            }
         }
     }
 

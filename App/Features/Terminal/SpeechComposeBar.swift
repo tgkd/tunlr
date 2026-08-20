@@ -2,252 +2,322 @@ import SwiftUI
 
 struct SpeechComposeBar: View {
     let state: WhisperServiceState
+    let level: Float
     @Binding var transcribedText: String
-    let onSend: () -> Void
+    let onInsert: () -> Void
     let onRun: () -> Void
     let onCancel: () -> Void
     let onStopRecording: () -> Void
+    let onRestart: () -> Void
+    let onOpenSettings: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
+    @State private var elapsed: Int = 0
 
-    private var isDark: Bool { colorScheme == .dark }
-    private var barBackground: Color { Color(white: isDark ? 0.15 : 0.9) }
-    private var textColor: Color { isDark ? .white : .black }
-    private var subtleTextColor: Color { isDark ? .white.opacity(0.7) : .black.opacity(0.5) }
-    private var dismissBg: Color { isDark ? .white.opacity(0.15) : .black.opacity(0.1) }
-    private var dismissFg: Color { isDark ? .white.opacity(0.6) : .black.opacity(0.5) }
+    private var isRecording: Bool { state == .recording }
 
     var body: some View {
         Group {
             switch state {
             case .recording:
-                recordingBar
+                dictatingBar
             case .transcribing:
                 transcribingBar
             case .downloading:
-                downloadingBar
+                statusBar(title: "Downloading model...", showsSpinner: true)
+            case .noSpeech:
+                noSpeechBar
+            case .permissionDenied:
+                permissionBar
             case .error(let message):
                 errorBar(message: message)
-            default:
-                reviewBar
+            case .idle:
+                transcriptCard
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .padding(.bottom, 10)
+        .task(id: isRecording) {
+            elapsed = 0
+            guard isRecording else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                if Task.isCancelled { return }
+                elapsed += 1
+            }
+        }
     }
 
-    // MARK: - Recording
+    // MARK: - Dictating
 
-    private var recordingBar: some View {
-        HStack(spacing: 12) {
-            DictationDots()
-
-            Text("Dictating...")
-                .font(.system(.subheadline, weight: .medium))
-                .foregroundStyle(textColor)
-
-            Spacer()
-
-            dismissButton
-
-            Button {
-                onStopRecording()
-            } label: {
-                Image(systemName: "pause.fill")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 36, height: 36)
-                    .background(.red, in: Circle())
+    private var dictatingBar: some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Dictating...")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(timeString)
+                    .font(.system(size: 17, design: .monospaced))
+                    .monospacedDigit()
+                    .foregroundStyle(.primary)
             }
+
+            LevelMeter(level: level)
+
+            circularButton(systemImage: "xmark", accessibility: "Cancel dictation", action: onCancel)
+
+            Button(action: onStopRecording) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(.white)
+                    .frame(width: 15, height: 15)
+                    .frame(width: 44, height: 44)
+            }
+            .accessibilityLabel("Stop dictation")
+            .voiceBarProminentButton(tint: .red)
+            .buttonBorderShape(.circle)
         }
         .padding(.leading, 16)
-        .padding(.trailing, 5)
-        .padding(.vertical, 5)
-        .frame(minHeight: 46)
-        .background(
-            Capsule()
-                .fill(barBackground)
-        )
+        .padding(.trailing, 6)
+        .frame(height: 56)
+        .voiceBarGlass(in: Capsule())
+    }
+
+    private var timeString: String {
+        String(format: "%d:%02d", elapsed / 60, elapsed % 60)
     }
 
     // MARK: - Transcribing
 
     private var transcribingBar: some View {
-        HStack(spacing: 12) {
-            WaveformIcon(color: textColor)
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 9) {
+                Text("Transcribing...")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                ProgressView()
+                    .progressViewStyle(.linear)
+                    .tint(.green)
+            }
 
-            Text("Transcribing...")
-                .font(.system(.subheadline, weight: .medium))
-                .foregroundStyle(textColor)
-
-            Spacer()
-
-            dismissButton
+            circularButton(systemImage: "xmark", accessibility: "Cancel", action: onCancel)
         }
         .padding(.leading, 16)
-        .padding(.trailing, 9)
-        .padding(.vertical, 5)
-        .frame(minHeight: 46)
-        .background(
-            Capsule()
-                .fill(barBackground)
-        )
+        .padding(.trailing, 6)
+        .frame(height: 56)
+        .voiceBarGlass(in: Capsule())
     }
 
-    // MARK: - Downloading
+    // MARK: - Transcript
 
-    private var downloadingBar: some View {
-        HStack(spacing: 12) {
-            ProgressView()
-                .controlSize(.small)
-                .tint(textColor)
-
-            Text("Downloading model...")
-                .font(.system(.subheadline, weight: .medium))
-                .foregroundStyle(textColor)
-
-            Spacer()
-
-            dismissButton
-        }
-        .padding(.leading, 16)
-        .padding(.trailing, 9)
-        .padding(.vertical, 5)
-        .frame(minHeight: 46)
-        .background(
-            Capsule()
-                .fill(barBackground)
-        )
-    }
-
-    // MARK: - Error
-
-    private func errorBar(message: String) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.red)
-                .font(.system(size: 14))
-
-            Text(message)
-                .font(.system(.subheadline, weight: .medium))
-                .foregroundStyle(subtleTextColor)
-                .lineLimit(1)
-
-            Spacer()
-
-            dismissButton
-        }
-        .padding(.leading, 16)
-        .padding(.trailing, 9)
-        .padding(.vertical, 5)
-        .frame(minHeight: 46)
-        .background(
-            Capsule()
-                .fill(barBackground)
-        )
-    }
-
-    // MARK: - Review
-
-    private var reviewBar: some View {
-        HStack(alignment: .bottom, spacing: 8) {
+    private var transcriptCard: some View {
+        VStack(spacing: 10) {
             TextField("", text: $transcribedText, axis: .vertical)
-                .font(.system(.subheadline, design: .monospaced))
-                .foregroundStyle(textColor)
+                .font(.system(size: 15, design: .monospaced))
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .lineLimit(1...4)
                 .padding(.horizontal, 12)
-                .padding(.vertical, 10)
-                .background(
-                    RoundedRectangle(cornerRadius: 18)
-                        .stroke(isDark ? Color.white.opacity(0.2) : Color(.separator), lineWidth: 0.5)
+                .padding(.vertical, 11)
+                .frame(minHeight: 44)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color(.separator), lineWidth: 0.5)
                 )
 
-            dismissButton
+            HStack(spacing: 8) {
+                circularButton(systemImage: "xmark", accessibility: "Discard transcript", action: onCancel)
+                circularButton(systemImage: "mic", accessibility: "Dictate again", action: onRestart)
 
-            Button {
-                onRun()
-            } label: {
-                Image(systemName: "arrow.up")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 36, height: 36)
-                    .background(Color(.systemGreen), in: Circle())
+                Spacer(minLength: 0)
+
+                Button("Insert", action: onInsert)
+                    .voiceBarButton()
+                Button("Run", action: onRun)
+                    .voiceBarProminentButton(tint: .green)
             }
         }
-        .padding(.leading, 12)
-        .padding(.trailing, 5)
-        .padding(.vertical, 5)
-        .background(
-            RoundedRectangle(cornerRadius: 26)
-                .fill(barBackground)
-        )
+        .padding(12)
+        .voiceBarGlass(in: RoundedRectangle(cornerRadius: 22))
+    }
+
+    // MARK: - No speech
+
+    private var noSpeechBar: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text("No speech detected")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Text("Nothing was recorded.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 0)
+
+            circularButton(systemImage: "xmark", accessibility: "Dismiss", action: onCancel)
+            Button("Try Again", action: onRestart)
+                .voiceBarProminentButton(tint: .green)
+        }
+        .padding(.leading, 18)
+        .padding(.trailing, 8)
+        .frame(minHeight: 64)
+        .voiceBarGlass(in: Capsule())
+    }
+
+    // MARK: - Permission
+
+    private var permissionBar: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "mic.slash")
+                .font(.system(size: 15))
+                .foregroundStyle(.orange)
+                .frame(width: 30, height: 30)
+                .background(Color.orange.opacity(0.22), in: Circle())
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Microphone Access")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Text("Needed for voice input.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 0)
+
+            Button("Open Settings", action: onOpenSettings)
+                .voiceBarProminentButton(tint: .green)
+        }
+        .padding(.leading, 10)
+        .padding(.trailing, 6)
+        .padding(.vertical, 9)
+        .frame(minHeight: 64)
+        .voiceBarGlass(in: Capsule())
+    }
+
+    // MARK: - Status and error
+
+    private func statusBar(title: String, showsSpinner: Bool) -> some View {
+        HStack(spacing: 12) {
+            if showsSpinner {
+                ProgressView()
+                    .controlSize(.small)
+            }
+            Text(title)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.primary)
+
+            Spacer(minLength: 0)
+
+            circularButton(systemImage: "xmark", accessibility: "Dismiss", action: onCancel)
+        }
+        .padding(.leading, 16)
+        .padding(.trailing, 6)
+        .frame(height: 56)
+        .voiceBarGlass(in: Capsule())
+    }
+
+    private func errorBar(message: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 14))
+                .foregroundStyle(.red)
+
+            Text(message)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+
+            Spacer(minLength: 0)
+
+            circularButton(systemImage: "xmark", accessibility: "Dismiss", action: onCancel)
+        }
+        .padding(.leading, 16)
+        .padding(.trailing, 6)
+        .frame(minHeight: 56)
+        .voiceBarGlass(in: Capsule())
     }
 
     // MARK: - Shared
 
-    private var dismissButton: some View {
-        Button {
-            onCancel()
-        } label: {
-            Image(systemName: "xmark")
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(dismissFg)
-                .frame(width: 28, height: 28)
-                .background(dismissBg, in: Circle())
+    private func circularButton(
+        systemImage: String,
+        accessibility: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: 15, weight: .medium))
+                .frame(width: 44, height: 44)
+        }
+        .accessibilityLabel(accessibility)
+        .voiceBarButton()
+        .buttonBorderShape(.circle)
+    }
+}
+
+// MARK: - Level Meter
+
+private struct LevelMeter: View {
+    let level: Float
+
+    @State private var history: [Float] = Array(repeating: 0, count: 24)
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(Array(history.enumerated()), id: \.offset) { _, value in
+                Capsule()
+                    .fill(Color.primary)
+                    .frame(width: 3, height: max(4, CGFloat(value) * 30))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .frame(height: 30)
+        .clipped()
+        .mask(
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0),
+                    .init(color: .black, location: 0.42)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
+        .onChange(of: level) { _, newValue in
+            history.removeFirst()
+            history.append(newValue)
         }
     }
 }
 
-// MARK: - Animated Dictation Dots
+// MARK: - Native material helpers
 
-private struct DictationDots: View {
-    @State private var active = false
-
-    var body: some View {
-        HStack(spacing: 3) {
-            ForEach(0..<5, id: \.self) { index in
-                Circle()
-                    .fill(.red)
-                    .frame(width: 5, height: 5)
-                    .opacity(active ? 1.0 : 0.25)
-                    .animation(
-                        .easeInOut(duration: 0.4)
-                            .repeatForever(autoreverses: true)
-                            .delay(Double(index) * 0.12),
-                        value: active
-                    )
-            }
+private extension View {
+    @ViewBuilder
+    func voiceBarGlass(in shape: some Shape) -> some View {
+        if #available(iOS 26.0, *) {
+            glassEffect(.regular, in: shape)
+        } else {
+            background(.ultraThinMaterial, in: shape)
         }
-        .onAppear { active = true }
-    }
-}
-
-// MARK: - Waveform Icon
-
-private struct WaveformIcon: View {
-    let color: Color
-    @State private var active = false
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(Array(zip([0,1,2,3], [0.6, 0.3, 0.5, 0.15] as [Double])), id: \.0) { index, delay in
-                RoundedRectangle(cornerRadius: 1)
-                    .fill(color)
-                    .frame(width: 3, height: active ? heights1[index] : heights2[index])
-                    .animation(
-                        .easeInOut(duration: 0.5)
-                            .repeatForever(autoreverses: true)
-                            .delay(delay),
-                        value: active
-                    )
-            }
-        }
-        .frame(height: 16)
-        .onAppear { active = true }
     }
 
-    private let heights1: [CGFloat] = [12, 6, 14, 8]
-    private let heights2: [CGFloat] = [6, 14, 8, 12]
+    @ViewBuilder
+    func voiceBarButton() -> some View {
+        if #available(iOS 26.0, *) {
+            buttonStyle(.glass)
+        } else {
+            buttonStyle(.bordered)
+        }
+    }
+
+    @ViewBuilder
+    func voiceBarProminentButton(tint: Color) -> some View {
+        if #available(iOS 26.0, *) {
+            buttonStyle(.glassProminent).tint(tint)
+        } else {
+            buttonStyle(.borderedProminent).tint(tint)
+        }
+    }
 }

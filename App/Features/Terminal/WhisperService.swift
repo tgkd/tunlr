@@ -1,5 +1,5 @@
 @preconcurrency import AVFoundation
-@preconcurrency import WhisperKit
+import WhisperKit
 
 enum WhisperModelSize: String, CaseIterable, Sendable {
     case tiny = "openai_whisper-tiny"
@@ -33,16 +33,41 @@ enum WhisperServiceState: Sendable, Equatable {
     case downloading
     case recording
     case transcribing
+    case noSpeech
+    case permissionDenied
     case error(String)
 }
 
 enum WhisperTranscriptionResult: Sendable {
     case transcription(String)
+    case noSpeech
     case error(String)
 }
 
+final class AudioLevelBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storedValue: Float = 0
+
+    var value: Float {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return storedValue
+        }
+        set {
+            lock.lock()
+            storedValue = newValue
+            lock.unlock()
+        }
+    }
+}
+
 actor WhisperService {
-    private nonisolated(unsafe) var whisperKit: WhisperKit?
+    private let levelBox = AudioLevelBox()
+
+    nonisolated var currentLevel: Float { levelBox.value }
+
+    private var whisperKit: WhisperKit?
     private var audioEngine: AVAudioEngine?
     private var audioFilePath: URL?
     private var audioFile: AVAudioFile?
@@ -138,7 +163,16 @@ actor WhisperService {
         let sampleRateRatio = 16000.0 / recordingFormat.sampleRate
 
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) {
-            [wavFormat] buffer, _ in
+            [wavFormat, levelBox] buffer, _ in
+            if let samples = buffer.floatChannelData?[0] {
+                let count = Int(buffer.frameLength)
+                var sumOfSquares: Float = 0
+                for index in 0..<count {
+                    sumOfSquares += samples[index] * samples[index]
+                }
+                let rms = count > 0 ? (sumOfSquares / Float(count)).squareRoot() : 0
+                levelBox.value = min(1, rms * 6)
+            }
             guard let converter else { return }
             let frameCount = AVAudioFrameCount(
                 Double(buffer.frameLength) * sampleRateRatio
@@ -176,6 +210,7 @@ actor WhisperService {
         audioEngine?.stop()
         audioEngine = nil
         audioFile = nil
+        levelBox.value = 0
 
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
 
@@ -194,11 +229,12 @@ actor WhisperService {
         do {
             let audioPath = filePath.path()
             let results = try await whisperKit.transcribe(audioPath: audioPath)
-            let text = results.map { $0.text }.joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
+            let joined = results.map { $0.text }.joined(separator: " ")
+            let text = Self.strippingNonSpeechMarkers(joined)
             state = .idle
 
             if text.isEmpty {
-                return .error("No speech detected")
+                return .noSpeech
             }
             return .transcription(text)
         } catch {
@@ -207,11 +243,24 @@ actor WhisperService {
         }
     }
 
+    static func strippingNonSpeechMarkers(_ raw: String) -> String {
+        let pattern = "\\[\\s*(BLANK_AUDIO|SILENCE|INAUDIBLE|MUSIC|NOISE|SOUND|APPLAUSE|LAUGHTER)\\s*\\]"
+        let stripped = raw.replacingOccurrences(
+            of: pattern,
+            with: " ",
+            options: [.regularExpression, .caseInsensitive]
+        )
+        return stripped
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     func cancel() {
         audioEngine?.inputNode.removeTap(onBus: 0)
         audioEngine?.stop()
         audioEngine = nil
         audioFile = nil
+        levelBox.value = 0
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
 
         if let path = audioFilePath {

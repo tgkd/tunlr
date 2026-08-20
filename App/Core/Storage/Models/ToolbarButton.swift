@@ -35,6 +35,13 @@ enum ToolbarButtonKind: String, Codable, Sendable, CaseIterable, Identifiable {
         }
     }
 
+    var isRepeatable: Bool {
+        switch self {
+        case .arrowUp, .arrowDown, .arrowLeft, .arrowRight: return true
+        default: return false
+        }
+    }
+
     var settingsLabel: String {
         switch self {
         case .esc: return "Esc"

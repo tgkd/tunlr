@@ -23,10 +23,15 @@ struct KeyboardSettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                Picker("Size", selection: binding(\.toolbarSize)) {
+                    ForEach(ToolbarSize.allCases, id: \.self) { size in
+                        Text(size.displayName).tag(size)
+                    }
+                }
             } header: {
                 Text("Toolbar")
             } footer: {
-                Text("Custom keys always appear as the first panel.")
+                Text("Custom keys always appear as the first panel. Hold an arrow key to repeat it; tap Ctrl or Alt once for the next key only, twice to lock.")
             }
 
             Section("Shortcut Packs") {
@@ -85,6 +90,17 @@ struct KeyboardSettingsView: View {
         }
         .navigationTitle("Keyboard")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func binding<T>(_ keyPath: WritableKeyPath<TerminalAppearance, T>) -> Binding<T> {
+        Binding(
+            get: { viewModel.appearance[keyPath: keyPath] },
+            set: { newValue in
+                var updated = viewModel.appearance
+                updated[keyPath: keyPath] = newValue
+                Task { await viewModel.update(updated) }
+            }
+        )
     }
 }
 

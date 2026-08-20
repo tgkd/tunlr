@@ -17,7 +17,7 @@ struct TerminalScreen: View {
     @State private var whisperState: WhisperServiceState = .idle
     @State private var showComposeBar = false
     @State private var transcribedText = ""
-    @State private var showMicPermissionAlert = false
+    @State private var micLevel: Float = 0
     @State private var showAppearance = false
     @State private var showNotifications = false
     @Environment(\.dismiss) private var dismiss
@@ -56,11 +56,14 @@ struct TerminalScreen: View {
             if showComposeBar {
                 SpeechComposeBar(
                     state: whisperState,
+                    level: micLevel,
                     transcribedText: $transcribedText,
-                    onSend: { sendTranscription(withEnter: false) },
+                    onInsert: { sendTranscription(withEnter: false) },
                     onRun: { sendTranscription(withEnter: true) },
                     onCancel: { cancelSpeech() },
-                    onStopRecording: { stopRecording() }
+                    onStopRecording: { stopRecording() },
+                    onRestart: { Task { await startRecording() } },
+                    onOpenSettings: { openSystemSettings() }
                 )
                 .padding(.bottom, keyboardHeight)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -151,19 +154,16 @@ struct TerminalScreen: View {
         } message: {
             Text("Are you sure you want to disconnect from \(profile.host)?")
         }
-        .alert("Microphone Access", isPresented: $showMicPermissionAlert) {
-            Button("Open Settings") {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("tunlr needs microphone access for voice input. Enable it in Settings.")
-        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
             if showComposeBar {
                 cancelSpeech()
+            }
+        }
+        .task(id: whisperState) {
+            guard whisperState == .recording else { return }
+            while !Task.isCancelled {
+                micLevel = whisperService.currentLevel
+                try? await Task.sleep(for: .milliseconds(50))
             }
         }
         .task {
@@ -239,7 +239,8 @@ struct TerminalScreen: View {
                     await startRecording()
                 }
             case .denied:
-                showMicPermissionAlert = true
+                whisperState = .permissionDenied
+                withAnimation { showComposeBar = true }
             }
         }
     }
@@ -264,6 +265,8 @@ struct TerminalScreen: View {
             case .transcription(let text):
                 transcribedText = text
                 whisperState = .idle
+            case .noSpeech:
+                whisperState = .noSpeech
             case .error(let message):
                 whisperState = .error(message)
             }
@@ -284,6 +287,11 @@ struct TerminalScreen: View {
         }
     }
 
+    private func openSystemSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
+    }
+
     private func cancelSpeech() {
         Task {
             await whisperService.cancel()
@@ -291,6 +299,7 @@ struct TerminalScreen: View {
         withAnimation { showComposeBar = false }
         whisperState = .idle
         transcribedText = ""
+        micLevel = 0
     }
 }
 
