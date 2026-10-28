@@ -4,6 +4,10 @@ import UIKit
 
 enum SSHSessionManagerError: Error, Equatable {
     case superseded
+    case noPendingSession
+    case remoteSessionCreateUnsupported(SessionBackendKind)
+    case remoteSessionCreateFailed(String)
+    case remoteSessionNotFound(String)
 }
 
 enum SessionManagerState: Sendable, Equatable {
@@ -50,11 +54,30 @@ final class SSHSessionManager: ObservableObject, Sendable {
     private let networkPathProvider: any NetworkPathProviding
     private let backgroundTaskProvider: any BackgroundTaskProviding
     private let sessionDiscovery: @Sendable (any RemoteCommandRunning) async -> [RemoteSessionEntry]
+    private let sessionBackends: [any RemoteSessionBackend]
 
     private var scenePhaseTask: Task<Void, Never>?
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
     private var connectionGeneration: Int = 0
     private var restoredPTY: (profileID: UUID, configuration: PTYConfiguration)?
+    private var pendingAttach: PendingAttach?
+    private var reconnectTarget: AttachTarget?
+
+    private struct PendingAttach {
+        let session: SSHSession
+        let profileID: UUID
+        let generation: Int
+    }
+
+    private struct AttachTarget: Equatable {
+        let backend: SessionBackendKind
+        let name: String
+    }
+
+    private enum AttachResolution {
+        case attach(RemoteSessionEntry?)
+        case choose(entries: [RemoteSessionEntry], missingName: String?)
+    }
 
     init(
         connectionHandlerFactory: @escaping @Sendable () -> any SSHConnectionHandling,
@@ -66,7 +89,8 @@ final class SSHSessionManager: ObservableObject, Sendable {
         backgroundTaskProvider: any BackgroundTaskProviding = DefaultBackgroundTaskProvider(),
         sessionDiscovery: @escaping @Sendable (any RemoteCommandRunning) async -> [RemoteSessionEntry] = {
             await RemoteSessionDiscovery().discover(using: $0)
-        }
+        },
+        sessionBackends: [any RemoteSessionBackend] = RemoteSessionBackends.all
     ) {
         self.connectionHandlerFactory = connectionHandlerFactory
         self.profileStore = profileStore
@@ -76,13 +100,17 @@ final class SSHSessionManager: ObservableObject, Sendable {
         self.networkPathProvider = networkPathProvider
         self.backgroundTaskProvider = backgroundTaskProvider
         self.sessionDiscovery = sessionDiscovery
+        self.sessionBackends = sessionBackends
     }
 
     func startSession(for profile: SSHConnectionProfile) async throws {
-        await cleanupCurrentSession()
-
         connectionGeneration += 1
         let generation = connectionGeneration
+
+        await cleanupCurrentSession()
+        guard generation == connectionGeneration else {
+            throw SSHSessionManagerError.superseded
+        }
 
         let session = SSHSession(connectionHandler: connectionHandlerFactory())
         if let restoredPTY, restoredPTY.profileID == profile.id {
@@ -118,9 +146,26 @@ final class SSHSessionManager: ObservableObject, Sendable {
             await session.disconnect()
             throw SSHSessionManagerError.superseded
         }
-        activeSession = session
-        state = .active(profileID: profile.id)
-        startScenePhaseObservation()
+
+        let resolution = try await resolveAttachment(
+            for: profile.sessionAttach,
+            session: session,
+            generation: generation
+        )
+        switch resolution {
+        case .attach(let entry):
+            await session.setShellCommand(entry?.attachCommand)
+            try await ensureCurrent(generation, disconnecting: session)
+            activate(session: session, profileID: profile.id, entry: entry)
+        case .choose(let entries, let missingName):
+            hold(
+                session: session,
+                profileID: profile.id,
+                generation: generation,
+                entries: entries,
+                missingName: missingName
+            )
+        }
     }
 
     /// Pin the key the user approved from the mismatch warning. Takes the value
@@ -137,9 +182,43 @@ final class SSHSessionManager: ObservableObject, Sendable {
         pendingHostKeyMismatch = nil
     }
 
-    func chooseRemoteSession(_ entry: RemoteSessionEntry?) async {}
+    func chooseRemoteSession(_ entry: RemoteSessionEntry?) async {
+        guard let pending = pendingAttach, pending.generation == connectionGeneration else { return }
+        pendingAttach = nil
 
-    func createRemoteSession(backend: SessionBackendKind, name: String) async throws {}
+        await pending.session.setShellCommand(entry?.attachCommand)
+        guard pending.generation == connectionGeneration else {
+            await pending.session.disconnect()
+            return
+        }
+        activate(session: pending.session, profileID: pending.profileID, entry: entry)
+    }
+
+    func createRemoteSession(backend: SessionBackendKind, name: String) async throws {
+        guard let pending = pendingAttach, pending.generation == connectionGeneration else {
+            throw SSHSessionManagerError.noPendingSession
+        }
+        guard let command = createCommand(for: backend, name: name) else {
+            throw SSHSessionManagerError.remoteSessionCreateUnsupported(backend)
+        }
+
+        let result = try await pending.session.runCommand(command)
+        guard isCurrentPending(pending) else {
+            throw SSHSessionManagerError.superseded
+        }
+        guard result.termination == .exited(status: 0) else {
+            throw SSHSessionManagerError.remoteSessionCreateFailed(failureDescription(for: result))
+        }
+
+        let entries = await sessionDiscovery(pending.session)
+        guard isCurrentPending(pending) else {
+            throw SSHSessionManagerError.superseded
+        }
+        guard let match = matchingEntry(in: entries, backend: backend, name: name) else {
+            throw SSHSessionManagerError.remoteSessionNotFound(name)
+        }
+        await chooseRemoteSession(match)
+    }
 
     func disconnect() async {
         connectionGeneration += 1
@@ -289,6 +368,36 @@ final class SSHSessionManager: ObservableObject, Sendable {
             await session.disconnect()
             return
         }
+
+        guard let target = reconnectTarget else {
+            activeSession = session
+            state = .active(profileID: profileID)
+            return
+        }
+
+        let entries = await sessionDiscovery(session)
+        guard generation == connectionGeneration else {
+            await session.disconnect()
+            return
+        }
+
+        guard let match = matchingEntry(in: entries, backend: target.backend, name: target.name) else {
+            activeSession = nil
+            hold(
+                session: session,
+                profileID: profileID,
+                generation: generation,
+                entries: entries,
+                missingName: target.name
+            )
+            return
+        }
+
+        await session.setShellCommand(match.attachCommand)
+        guard generation == connectionGeneration else {
+            await session.disconnect()
+            return
+        }
         activeSession = session
         state = .active(profileID: profileID)
     }
@@ -298,10 +407,121 @@ final class SSHSessionManager: ObservableObject, Sendable {
     private func cleanupCurrentSession() async {
         scenePhaseTask?.cancel()
         scenePhaseTask = nil
+        let pending = pendingAttach
+        pendingAttach = nil
+        sessionChoice = nil
+        reconnectTarget = nil
         if let session = activeSession {
             await session.disconnect()
         }
+        if let pending {
+            await pending.session.disconnect()
+        }
         endBackgroundTaskIfNeeded()
+    }
+
+    private func resolveAttachment(
+        for preference: SessionAttachPreference,
+        session: SSHSession,
+        generation: Int
+    ) async throws -> AttachResolution {
+        switch preference {
+        case .shell:
+            return .attach(nil)
+        case .pick:
+            let entries = try await discoverSessions(on: session, generation: generation)
+            if entries.isEmpty {
+                return .attach(nil)
+            }
+            return .choose(entries: entries, missingName: nil)
+        case .always(let backend, let name):
+            let entries = try await discoverSessions(on: session, generation: generation)
+            if let match = matchingEntry(in: entries, backend: backend, name: name) {
+                return .attach(match)
+            }
+            guard let command = createCommand(for: backend, name: name) else {
+                return .choose(entries: entries, missingName: name)
+            }
+            let result = try? await session.runCommand(command)
+            try await ensureCurrent(generation, disconnecting: session)
+            guard let result, result.termination == .exited(status: 0) else {
+                return .choose(entries: entries, missingName: name)
+            }
+            let refreshed = try await discoverSessions(on: session, generation: generation)
+            if let match = matchingEntry(in: refreshed, backend: backend, name: name) {
+                return .attach(match)
+            }
+            return .choose(entries: refreshed, missingName: name)
+        }
+    }
+
+    private func discoverSessions(on session: SSHSession, generation: Int) async throws -> [RemoteSessionEntry] {
+        let entries = await sessionDiscovery(session)
+        try await ensureCurrent(generation, disconnecting: session)
+        return entries
+    }
+
+    private func ensureCurrent(_ generation: Int, disconnecting session: SSHSession) async throws {
+        guard generation == connectionGeneration else {
+            await session.disconnect()
+            throw SSHSessionManagerError.superseded
+        }
+    }
+
+    private func isCurrentPending(_ pending: PendingAttach) -> Bool {
+        pending.generation == connectionGeneration && pendingAttach?.session === pending.session
+    }
+
+    private func activate(session: SSHSession, profileID: UUID, entry: RemoteSessionEntry?) {
+        reconnectTarget = entry.map { AttachTarget(backend: $0.backend, name: $0.name) }
+        pendingAttach = nil
+        sessionChoice = nil
+        activeSession = session
+        state = .active(profileID: profileID)
+        if scenePhaseTask == nil {
+            startScenePhaseObservation()
+        }
+    }
+
+    private func hold(
+        session: SSHSession,
+        profileID: UUID,
+        generation: Int,
+        entries: [RemoteSessionEntry],
+        missingName: String?
+    ) {
+        pendingAttach = PendingAttach(session: session, profileID: profileID, generation: generation)
+        sessionChoice = RemoteSessionChoice(profileID: profileID, entries: entries, missingName: missingName)
+    }
+
+    private func matchingEntry(
+        in entries: [RemoteSessionEntry],
+        backend: SessionBackendKind,
+        name: String
+    ) -> RemoteSessionEntry? {
+        entries.first { $0.backend == backend && $0.name == name }
+    }
+
+    private func createCommand(for backend: SessionBackendKind, name: String) -> String? {
+        sessionBackends.first { $0.kind == backend }?.createCommand(name: name)
+    }
+
+    private func failureDescription(for result: CommandResult) -> String {
+        let stderr = String(decoding: result.stderr, as: UTF8.self)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if !stderr.isEmpty {
+            return stderr
+        }
+        switch result.termination {
+        case .exited(let status):
+            return "exit status \(status)"
+        case .signaled(let name):
+            return "terminated by signal \(name)"
+        case .failed(let message):
+            return message
+        case .closedWithoutStatus:
+            return "closed without exit status"
+        }
     }
 
     private func endBackgroundTaskIfNeeded() {
