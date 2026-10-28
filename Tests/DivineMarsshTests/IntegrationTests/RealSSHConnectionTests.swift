@@ -423,7 +423,7 @@ struct RealSSHConnectionTests {
     func discoverAndAttachThroughTmuxBackend() async throws {
         let deps = try Self.makeDeps()
         defer { Task { await deps.cleanup() } }
-        let name = "tunlr disc '\(UUID().uuidString.prefix(6))'"
+        let name = "tunlr it’s 日本 '\(UUID().uuidString.prefix(6))'"
 
         let session = try await Self.connectWithPassword(deps)
         let backend = TmuxSessionBackend()

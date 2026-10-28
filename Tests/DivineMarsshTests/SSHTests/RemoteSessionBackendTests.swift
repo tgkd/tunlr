@@ -24,7 +24,7 @@ struct TmuxSessionBackendTests {
     let backend = TmuxSessionBackend()
 
     @Test func listCommandPutsTheNameLast() {
-        #expect(backend.listCommand == pathPrefix + "tmux list-sessions -F '#{session_id} #{session_windows} #{session_attached} #{session_name}' 2>/dev/null")
+        #expect(backend.listCommand == pathPrefix + "tmux -u list-sessions -F '#{session_id} #{session_windows} #{session_attached} #{session_name}' 2>/dev/null")
         #expect(!backend.listCommand.contains("\t"))
     }
 
@@ -37,7 +37,7 @@ struct TmuxSessionBackendTests {
             targetID: "$0",
             name: "main",
             detail: "2 windows, attached",
-            attachCommand: pathPrefix + "tmux attach-session -t '$0'"
+            attachCommand: pathPrefix + "tmux -u attach-session -t '$0'"
         ))
         #expect(entries[1].targetID == "$3")
         #expect(entries[1].name == "work stuff")
@@ -69,7 +69,7 @@ struct TmuxSessionBackendTests {
 
     @Test func attachQuotesSessionID() {
         let entries = backend.parse(listOutput: "$12 1 0 it's mine")
-        #expect(entries.first?.attachCommand == pathPrefix + "tmux attach-session -t '$12'")
+        #expect(entries.first?.attachCommand == pathPrefix + "tmux -u attach-session -t '$12'")
         #expect(entries.first?.attachCommand.contains("new") == false)
     }
 

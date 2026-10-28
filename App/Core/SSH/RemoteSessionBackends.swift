@@ -25,7 +25,7 @@ private enum RemoteShell {
 struct TmuxSessionBackend: RemoteSessionBackend {
     let kind = SessionBackendKind.tmux
     let listCommand = RemoteShell.command(
-        "tmux list-sessions -F "
+        "tmux -u list-sessions -F "
             + ShellQuote.quote("#{session_id} #{session_windows} #{session_attached} #{session_name}")
             + " 2>/dev/null"
     )
@@ -57,7 +57,7 @@ struct TmuxSessionBackend: RemoteSessionBackend {
             targetID: sessionID,
             name: name,
             detail: detail,
-            attachCommand: RemoteShell.command("tmux attach-session -t \(ShellQuote.quote(sessionID))")
+            attachCommand: RemoteShell.command("tmux -u attach-session -t \(ShellQuote.quote(sessionID))")
         )
     }
 }
