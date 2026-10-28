@@ -382,7 +382,6 @@ final class SSHSessionManager: ObservableObject, Sendable {
         }
 
         guard let match = matchingEntry(in: entries, backend: target.backend, name: target.name) else {
-            activeSession = nil
             hold(
                 session: session,
                 profileID: profileID,
@@ -490,6 +489,7 @@ final class SSHSessionManager: ObservableObject, Sendable {
         entries: [RemoteSessionEntry],
         missingName: String?
     ) {
+        activeSession = nil
         pendingAttach = PendingAttach(session: session, profileID: profileID, generation: generation)
         sessionChoice = RemoteSessionChoice(profileID: profileID, entries: entries, missingName: missingName)
     }

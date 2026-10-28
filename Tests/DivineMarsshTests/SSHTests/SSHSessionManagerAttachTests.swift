@@ -568,6 +568,21 @@ struct SSHSessionManagerAttachTests {
         #expect(await session.shellCommand == nil)
     }
 
+    @Test @MainActor func pickAfterLiveSessionDropsStaleActiveSession() async throws {
+        let discovery = AttachTestDiscovery([[workEntry]])
+        let manager = try makeManager(client: MockSSHClient(), discovery: discovery)
+
+        try await manager.startSession(for: makeProfile(attach: .shell))
+        #expect(manager.activeSession != nil)
+
+        let pickProfile = makeProfile(attach: .pick)
+        try await manager.startSession(for: pickProfile)
+
+        #expect(manager.activeSession == nil)
+        #expect(manager.activeProfile?.id == pickProfile.id)
+        #expect(manager.sessionChoice?.entries == [workEntry])
+    }
+
     @Test @MainActor func startingNewSessionDiscardsPendingChoice() async throws {
         let discovery = AttachTestDiscovery([[workEntry]])
         let manager = try makeManager(client: MockSSHClient(), discovery: discovery)
