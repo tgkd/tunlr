@@ -360,6 +360,41 @@ struct ConnectionViewModelCRUDTests {
         #expect(sorted[2].autoReconnect == true)
     }
 
+    @Test @MainActor func addProfilePersistsSessionAttach() async throws {
+        let (vm, store) = try makeViewModelWithStore()
+
+        try await vm.addProfile(
+            host: "attach.example.com",
+            port: 22,
+            username: "dev",
+            authMethod: .password,
+            password: nil,
+            autoReconnect: false,
+            sessionAttach: .always(backend: .tmux, name: "work")
+        )
+
+        #expect(vm.profiles.first?.sessionAttach == .always(backend: .tmux, name: "work"))
+        let stored = await store.allProfiles()
+        #expect(stored.first?.sessionAttach == .always(backend: .tmux, name: "work"))
+    }
+
+    @Test @MainActor func addProfileDefaultsSessionAttachToShell() async throws {
+        let (vm, store) = try makeViewModelWithStore()
+
+        try await vm.addProfile(
+            host: "plain.example.com",
+            port: 22,
+            username: "dev",
+            authMethod: .password,
+            password: nil,
+            autoReconnect: false
+        )
+
+        #expect(vm.profiles.first?.sessionAttach == .shell)
+        let stored = await store.allProfiles()
+        #expect(stored.first?.sessionAttach == .shell)
+    }
+
     @MainActor
     private func makeViewModelWithStore() throws -> (ConnectionViewModel, ProfileStore) {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
