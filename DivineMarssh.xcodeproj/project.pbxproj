@@ -35,7 +35,7 @@
 		68B6CE365228FB402E99CA9B /* KeyManagerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABDEBA215FDB5E01EFD84A0 /* KeyManagerViewModelTests.swift */; };
 		6DD9D02790B5F682F1C8A3AD /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = 92EA5E8D61BCE96DD58C6501 /* NIOCore */; };
 		6E44F8FBA9BC1FECE6AAAEBB /* SSHSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0D88A32DF62ECFAF577D31 /* SSHSession.swift */; };
-		7166E0F2AECB2FB81FEC5E76 /* AlgorithmPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DBE39F3294FA62B01A27117 /* AlgorithmPolicy.swift */; };
+		A1F00000000000000000B001 /* SSHTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F00000000000000000F001 /* SSHTransport.swift */; };
 		74545C46A6C481D944520447 /* MemoryHygiene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515EA309AAE8FAB2BA989AE2 /* MemoryHygiene.swift */; };
 		762BB8779441EE0283CFD570 /* SEKeyAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1BD15FB37ED81BF14121F53 /* SEKeyAuthenticator.swift */; };
 		762E30621CDCE08821016F86 /* TerminalStateCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35753F36627AD6653BD5FF32 /* TerminalStateCacheTests.swift */; };
@@ -69,7 +69,6 @@
 		C128ECD0BC522408E822547B /* SecureEnclaveKeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */; };
 		C7A5E85448F40F0E0375BBFE /* KnownHostsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C052B361AFB7594E6E138D /* KnownHostsStore.swift */; };
 		C84CCEF2AF6526D10E0A3CE8 /* FingerprintURIParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4765ACF8EE3591F7B6CB52D /* FingerprintURIParser.swift */; };
-		C89E4165FA151140B6705CCB /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 4E31904FC034D29999A090B0 /* Citadel */; };
 		CC0001010000001200000012 /* ToolbarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002010000001200000012 /* ToolbarButton.swift */; };
 		CC0001020000001300000013 /* ShortcutPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002020000001300000013 /* ShortcutPack.swift */; };
 		CC0001030000001400000014 /* ShortcutPackCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0002030000001400000014 /* ShortcutPackCatalog.swift */; };
@@ -122,7 +121,6 @@
 		34E955FDE77CC95F55C1A9E1 /* QRFingerprintScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRFingerprintScanner.swift; sourceTree = "<group>"; };
 		35753F36627AD6653BD5FF32 /* TerminalStateCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStateCacheTests.swift; sourceTree = "<group>"; };
 		3B562EF274C82AFFF805DE46 /* SSHAuthMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAuthMethod.swift; sourceTree = "<group>"; };
-		3DBE39F3294FA62B01A27117 /* AlgorithmPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorithmPolicy.swift; sourceTree = "<group>"; };
 		3E17AD78D5767695C19EABB7 /* DivineMarssh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DivineMarssh.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F57D93D45F2499CF1E02E79 /* SSHConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConnectionTests.swift; sourceTree = "<group>"; };
 		515EA309AAE8FAB2BA989AE2 /* MemoryHygiene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryHygiene.swift; sourceTree = "<group>"; };
@@ -130,6 +128,7 @@
 		52E6BD37B47C60DDD8F83455 /* KeyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailView.swift; sourceTree = "<group>"; };
 		57C3886FBAF9693C0C5F0500 /* SecureEnclaveKeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveKeyManagerTests.swift; sourceTree = "<group>"; };
 		5D0D88A32DF62ECFAF577D31 /* SSHSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHSession.swift; sourceTree = "<group>"; };
+		A1F00000000000000000F001 /* SSHTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHTransport.swift; sourceTree = "<group>"; };
 		5E83A2CA8BCE8225B9D60542 /* FingerprintURIParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintURIParserTests.swift; sourceTree = "<group>"; };
 		65CB9F284DEC861AED210B86 /* ImportedKeyAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportedKeyAuthenticator.swift; sourceTree = "<group>"; };
 		65CBEA2E281AD276CBBFD52B /* KeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyManager.swift; sourceTree = "<group>"; };
@@ -202,7 +201,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C89E4165FA151140B6705CCB /* Citadel in Frameworks */,
 				145AADBA8576FC4C69BF1BC8 /* SwiftTerm in Frameworks */,
 				29DFEFD0CD9ED0BB2FF51FF8 /* NIOTransportServices in Frameworks */,
 				2B4576C4667EBB7F97E71218 /* NIOSSH in Frameworks */,
@@ -286,9 +284,9 @@
 		39A255D7F7A7AD62D9E0C604 /* SSH */ = {
 			isa = PBXGroup;
 			children = (
-				3DBE39F3294FA62B01A27117 /* AlgorithmPolicy.swift */,
 				9B428FC24145CC0B43756EDB /* ConnectionState.swift */,
 				5D0D88A32DF62ECFAF577D31 /* SSHSession.swift */,
+				A1F00000000000000000F001 /* SSHTransport.swift */,
 				D9286C2B03FA0F033E38A698 /* SSHSessionManager.swift */,
 				A1B2C3D4E5F60001A0000002 /* IdleTimerController.swift */,
 			);
@@ -558,7 +556,6 @@
 			);
 			name = DivineMarssh;
 			packageProductDependencies = (
-				4E31904FC034D29999A090B0 /* Citadel */,
 				2405A6660E321E153729E2BD /* SwiftTerm */,
 				147FB2FE6B85F58CA50C609B /* NIOTransportServices */,
 				F20B148135D06BE4E3C65086 /* NIOSSH */,
@@ -588,7 +585,6 @@
 			mainGroup = A57D1C9882F2CC206C9DFF62;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				133525F71FE2A99E164C834F /* XCRemoteSwiftPackageReference "Citadel" */,
 				8254571F16D4110681EEA05A /* XCRemoteSwiftPackageReference "SwiftTerm" */,
 				9A0008B6E2F67C6B4DD19153 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				88F528284E3C592B308D605F /* XCRemoteSwiftPackageReference "swift-nio-ssh" */,
@@ -633,7 +629,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7166E0F2AECB2FB81FEC5E76 /* AlgorithmPolicy.swift in Sources */,
 				41FF003C2E5E39F9C8A6EC91 /* BiometricPolicy.swift in Sources */,
 				E80C391E44A3D00F71AD5B05 /* ConnectionEditorView.swift in Sources */,
 				D2E23856384289A09491A18A /* ConnectionListView.swift in Sources */,
@@ -662,6 +657,7 @@
 				0DEBBFCAFF7A86632663F198 /* SSHHostKey.swift in Sources */,
 				199A969FC03066258287619B /* SSHIdentity.swift in Sources */,
 				6E44F8FBA9BC1FECE6AAAEBB /* SSHSession.swift in Sources */,
+				A1F00000000000000000B001 /* SSHTransport.swift in Sources */,
 				B2F78DA4D46B2128C871379E /* SSHSessionManager.swift in Sources */,
 				A1B2C3D4E5F60001A0000001 /* IdleTimerController.swift in Sources */,
 				4B9DEA460021D7BDD124B72C /* SSHTerminalDataSource.swift in Sources */,
@@ -984,14 +980,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		133525F71FE2A99E164C834F /* XCRemoteSwiftPackageReference "Citadel" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/orlandos-nl/Citadel";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.0;
-			};
-		};
 		65D4C24FB86B685B2DCDCC17 /* XCRemoteSwiftPackageReference "swift-nio-transport-services" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-nio-transport-services";
@@ -1010,10 +998,10 @@
 		};
 		88F528284E3C592B308D605F /* XCRemoteSwiftPackageReference "swift-nio-ssh" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Joannis/swift-nio-ssh.git";
+			repositoryURL = "https://github.com/apple/swift-nio-ssh.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.4;
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.15.1;
 			};
 		};
 		9A0008B6E2F67C6B4DD19153 /* XCRemoteSwiftPackageReference "swift-nio" */ = {
@@ -1044,11 +1032,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8254571F16D4110681EEA05A /* XCRemoteSwiftPackageReference "SwiftTerm" */;
 			productName = SwiftTerm;
-		};
-		4E31904FC034D29999A090B0 /* Citadel */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 133525F71FE2A99E164C834F /* XCRemoteSwiftPackageReference "Citadel" */;
-			productName = Citadel;
 		};
 		92EA5E8D61BCE96DD58C6501 /* NIOCore */ = {
 			isa = XCSwiftPackageProductDependency;

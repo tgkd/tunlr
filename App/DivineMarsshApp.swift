@@ -32,7 +32,7 @@ struct DivineMarsshApp: App {
 
         _sessionManager = StateObject(wrappedValue: SSHSessionManager(
             connectionHandlerFactory: {
-                CitadelConnectionHandler(
+                NIOSSHConnectionHandler(
                     hostKeyVerifier: hostKeyVerifier,
                     keyManager: km,
                     profileStore: store

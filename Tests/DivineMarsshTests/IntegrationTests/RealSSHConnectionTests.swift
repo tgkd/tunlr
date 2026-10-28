@@ -92,8 +92,8 @@ struct RealSSHConnectionTests {
         )
     }
 
-    private static func makeHandler(_ deps: TestDeps) -> CitadelConnectionHandler {
-        CitadelConnectionHandler(
+    private static func makeHandler(_ deps: TestDeps) -> NIOSSHConnectionHandler {
+        NIOSSHConnectionHandler(
             hostKeyVerifier: deps.hostKeyVerifier,
             keyManager: deps.keyManager,
             profileStore: deps.profileStore

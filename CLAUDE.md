@@ -56,8 +56,8 @@ To add a new setting: add property with default to `TerminalAppearance` + add `d
 
 ### Connection Lifecycle
 1. User taps profile → `SSHSessionManager.startSession(profile)` → creates `SSHSession` actor
-2. `SSHSession.connect()` sets state to `.connecting`, delegates to `CitadelConnectionHandler`
-3. `CitadelConnectionHandler` resolves auth, validates host key (TOFU), calls Citadel `SSHClient.connect()` (10s timeout)
+2. `SSHSession.connect()` sets state to `.connecting`, delegates to `NIOSSHConnectionHandler` (`SSHTransport.swift`)
+3. `NIOSSHConnectionHandler` resolves auth, validates host key (TOFU) and connects with apple/swift-nio-ssh directly over NIOTransportServices; there is no Citadel layer, so session channels (PTY, exec, window change) are built by hand in the same file
 4. On success: state → `.connected`, opens PTY (80×24, xterm-256color) + shell channel
 5. `SSHTerminalDataSource` bridges SSH I/O ↔ SwiftTerm `TerminalView`
 6. Disconnect: cancels shell, closes client, state → `.disconnected`
