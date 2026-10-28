@@ -22,6 +22,7 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     private var outputTask: Task<Void, Never>?
     private var resizeDebounceTask: Task<Void, Never>?
     private weak var terminalView: TerminalView?
+    private var oscObservation: TerminalOscObservation?
 
     private(set) var currentTitle: String = ""
     private(set) var currentScrollPosition: Double = 0.0
@@ -39,7 +40,7 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
     func attachTerminalView(_ terminalView: TerminalView) {
         self.terminalView = terminalView
         terminalView.terminalDelegate = self
-        registerOscHandlers(terminalView)
+        observeOscEvents(terminalView)
         beginShellOutputFeed()
     }
 
@@ -150,12 +151,21 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
 
     // MARK: - Private
 
-    private func registerOscHandlers(_ terminalView: TerminalView) {
-        let terminal = terminalView.getTerminal()
+    private func observeOscEvents(_ terminalView: TerminalView) {
+        oscObservation = terminalView.observeOscEvents { [weak self] oscEvent in
+            guard let event = Self.terminalEvent(from: oscEvent) else { return }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.delegate?.dataSource(self, didEmitEvent: event)
+            }
+        }
+    }
 
-        terminal.registerOscHandler(code: 133) { [weak self] data in
-            let str = String(bytes: data, encoding: .utf8) ?? ""
-            let event: TerminalEvent? = switch str {
+    private nonisolated static func terminalEvent(from oscEvent: TerminalOscEvent) -> TerminalEvent? {
+        let str = String(bytes: oscEvent.payload, encoding: .utf8) ?? ""
+        switch oscEvent.code {
+        case 133:
+            return switch str {
             case "A":
                 .promptReady
             case "B":
@@ -167,24 +177,12 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
             default:
                 nil
             }
-            if let event {
-                Task { @MainActor [weak self] in
-                    guard let self else { return }
-                    self.delegate?.dataSource(self, didEmitEvent: event)
-                }
-            }
-        }
-
-        terminal.registerOscHandler(code: 777) { [weak self] data in
-            let str = String(bytes: data, encoding: .utf8) ?? ""
+        case 777:
             let parts = str.split(separator: ";", maxSplits: 2)
-            guard parts.first == "notify", parts.count >= 3 else { return }
-            let title = String(parts[1])
-            let body = String(parts[2])
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                self.delegate?.dataSource(self, didEmitEvent: .notification(title: title, body: body))
-            }
+            guard parts.first == "notify", parts.count >= 3 else { return nil }
+            return .notification(title: String(parts[1]), body: String(parts[2]))
+        default:
+            return nil
         }
     }
 

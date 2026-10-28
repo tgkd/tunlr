@@ -149,8 +149,8 @@ final class TerminalViewController: UIViewController {
             case (.bar, false): return .steadyBar
             }
         }()
-        terminalView.getTerminal().setCursorStyle(swiftTermCursorStyle)
-        terminalView.getTerminal().changeHistorySize(appearance.scrollbackSize.rawValue)
+        terminalView.setCursorStyle(swiftTermCursorStyle)
+        terminalView.changeScrollback(appearance.scrollbackSize.rawValue)
 
         terminalView.selectedTextBackgroundColor = theme.isDark
             ? UIColor(white: 0.3, alpha: 0.6)
@@ -193,9 +193,9 @@ final class TerminalViewController: UIViewController {
 
     func terminalSize() -> (cols: Int, rows: Int)? {
         guard let terminalView, terminalView.bounds.width > 0 else { return nil }
-        let terminal = terminalView.getTerminal()
-        let cols = terminal.cols
-        let rows = terminal.rows
+        let dimensions = terminalView.terminalDimensions
+        let cols = dimensions.cols
+        let rows = dimensions.rows
         guard cols > 0, rows > 0 else { return nil }
         return (cols: cols, rows: rows)
     }
