@@ -73,6 +73,7 @@ actor SSHSession {
     private(set) var connectionState: ConnectionState = .disconnected
     private(set) var ptyConfiguration: PTYConfiguration = PTYConfiguration()
     private(set) var lastTermination: SessionTermination?
+    private(set) var shellCommand: String?
 
     private var client: (any SSHClientWrapping)?
     private var shellHandle: (any SSHShellHandle)?
@@ -149,6 +150,10 @@ actor SSHSession {
         ptyConfiguration = PTYConfiguration(cols: cols, rows: rows, term: term)
     }
 
+    func setShellCommand(_ command: String?) {
+        shellCommand = command
+    }
+
     func openShellChannel(command: String? = nil) async throws -> AsyncStream<ShellOutput> {
         guard let client, connectionState == .connected else {
             throw SSHSessionError.notConnected
@@ -159,7 +164,7 @@ actor SSHSession {
 
         let handle = try await client.openShell(
             pty: ptyConfiguration,
-            command: command,
+            command: command ?? shellCommand,
             onOutput: { data in
                 continuation.yield(data)
             },

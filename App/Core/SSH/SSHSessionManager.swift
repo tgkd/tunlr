@@ -40,6 +40,7 @@ final class SSHSessionManager: ObservableObject, Sendable {
     @Published private(set) var activeProfile: SSHConnectionProfile?
     @Published private(set) var restoredProfileID: UUID?
     @Published private(set) var pendingHostKeyMismatch: PendingHostKeyMismatch?
+    @Published private(set) var sessionChoice: RemoteSessionChoice?
 
     private let connectionHandlerFactory: @Sendable () -> any SSHConnectionHandling
     private let profileStore: ProfileStore
@@ -48,6 +49,7 @@ final class SSHSessionManager: ObservableObject, Sendable {
     private let scenePhaseProvider: any ScenePhaseProviding
     private let networkPathProvider: any NetworkPathProviding
     private let backgroundTaskProvider: any BackgroundTaskProviding
+    private let sessionDiscovery: @Sendable (any RemoteCommandRunning) async -> [RemoteSessionEntry]
 
     private var scenePhaseTask: Task<Void, Never>?
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
@@ -61,7 +63,10 @@ final class SSHSessionManager: ObservableObject, Sendable {
         hostKeyVerifier: HostKeyVerifier? = nil,
         scenePhaseProvider: any ScenePhaseProviding = DefaultScenePhaseProvider(),
         networkPathProvider: any NetworkPathProviding = DefaultNetworkPathProvider(),
-        backgroundTaskProvider: any BackgroundTaskProviding = DefaultBackgroundTaskProvider()
+        backgroundTaskProvider: any BackgroundTaskProviding = DefaultBackgroundTaskProvider(),
+        sessionDiscovery: @escaping @Sendable (any RemoteCommandRunning) async -> [RemoteSessionEntry] = {
+            await RemoteSessionDiscovery().discover(using: $0)
+        }
     ) {
         self.connectionHandlerFactory = connectionHandlerFactory
         self.profileStore = profileStore
@@ -70,6 +75,7 @@ final class SSHSessionManager: ObservableObject, Sendable {
         self.scenePhaseProvider = scenePhaseProvider
         self.networkPathProvider = networkPathProvider
         self.backgroundTaskProvider = backgroundTaskProvider
+        self.sessionDiscovery = sessionDiscovery
     }
 
     func startSession(for profile: SSHConnectionProfile) async throws {
@@ -130,6 +136,10 @@ final class SSHSessionManager: ObservableObject, Sendable {
     func dismissPendingHostKey() {
         pendingHostKeyMismatch = nil
     }
+
+    func chooseRemoteSession(_ entry: RemoteSessionEntry?) async {}
+
+    func createRemoteSession(backend: SessionBackendKind, name: String) async throws {}
 
     func disconnect() async {
         connectionGeneration += 1

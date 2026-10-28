@@ -12,6 +12,7 @@ struct SSHConnectionProfile: Codable, Sendable, Identifiable, Equatable {
     var lastConnected: Date?
     var autoReconnect: Bool
     var keepaliveInterval: TimeInterval
+    var sessionAttach: SessionAttachPreference
 
     init(
         id: UUID = UUID(),
@@ -21,7 +22,8 @@ struct SSHConnectionProfile: Codable, Sendable, Identifiable, Equatable {
         authMethod: SSHAuthMethod,
         lastConnected: Date? = nil,
         autoReconnect: Bool = false,
-        keepaliveInterval: TimeInterval = 60
+        keepaliveInterval: TimeInterval = 60,
+        sessionAttach: SessionAttachPreference = .shell
     ) {
         self.id = id
         self.host = host
@@ -31,6 +33,7 @@ struct SSHConnectionProfile: Codable, Sendable, Identifiable, Equatable {
         self.lastConnected = lastConnected
         self.autoReconnect = autoReconnect
         self.keepaliveInterval = keepaliveInterval
+        self.sessionAttach = sessionAttach
     }
 
     init(from decoder: Decoder) throws {
@@ -43,5 +46,6 @@ struct SSHConnectionProfile: Codable, Sendable, Identifiable, Equatable {
         lastConnected = try container.decodeIfPresent(Date.self, forKey: .lastConnected)
         autoReconnect = try container.decodeIfPresent(Bool.self, forKey: .autoReconnect) ?? false
         keepaliveInterval = try container.decodeIfPresent(TimeInterval.self, forKey: .keepaliveInterval) ?? 60
+        sessionAttach = try container.decodeIfPresent(SessionAttachPreference.self, forKey: .sessionAttach) ?? .shell
     }
 }
