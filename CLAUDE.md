@@ -62,6 +62,12 @@ To add a new setting: add property with default to `TerminalAppearance` + add `d
 5. `SSHTerminalDataSource` bridges SSH I/O ↔ SwiftTerm `TerminalView`
 6. Disconnect: cancels shell, closes client, state → `.disconnected`
 
+### Attaching to Remote Sessions (tmux, zmx, agterm)
+- A profile's `sessionAttach` preference (shell / pick / always attach to a named session) is resolved by `SSHSessionManager` after connect: it runs discovery over exec channels, then either publishes a `RemoteSessionChoice` (ContentView shows `SessionPickerView`) or attaches directly.
+- Attaching means `SSHSession.setShellCommand(entry.attachCommand)` before the session is published; `openShellChannel()` then requests a PTY and execs that command instead of a login shell. Foreground reconnect rediscovers and re-attaches the same session by backend and name.
+- Backends are data: conform to `RemoteSessionBackend` (list command, parser, attach command baked into each entry, optional create command) and append to `RemoteSessionBackends.all`. Remote commands run in a non-login shell, so they extend `PATH` themselves.
+- tmux attach uses `attach-session -t <session_id>`, never `new -A`: a vanished session must fail, not silently become a new one. zmx attach creates on a missing name, which is why zmx/agterm are marked experimental.
+
 ### Background/Foreground Handling (`SSHSessionManager`)
 - Background: caches terminal state, gracefully disconnects SSH session
 - Foreground: if `autoReconnect` enabled + network available → reconnects and restores PTY config
