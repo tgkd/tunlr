@@ -10,6 +10,10 @@ final class MockSSHClient: SSHClientWrapping, @unchecked Sendable {
     var disconnectCallbacks: [@Sendable () -> Void] = []
     var shellOpened = false
     var lastPTY: PTYConfiguration?
+    var lastCommand: String?
+    var lastOnEnd: (@Sendable (SessionTermination) -> Void)?
+    var executedCommands: [String] = []
+    var commandResults: [String: CommandResult] = [:]
 
     func close() async throws {
         isConnected = false
@@ -20,13 +24,21 @@ final class MockSSHClient: SSHClientWrapping, @unchecked Sendable {
         disconnectCallbacks.append(perform)
     }
 
+    func execute(_ command: String) async throws -> CommandResult {
+        executedCommands.append(command)
+        return commandResults[command] ?? CommandResult(stdout: Data(), stderr: Data(), termination: .exited(status: 0))
+    }
+
     func openShell(
         pty: PTYConfiguration,
+        command: String?,
         onOutput: @escaping @Sendable (ShellOutput) -> Void,
-        onEnd: @escaping @Sendable () -> Void
+        onEnd: @escaping @Sendable (SessionTermination) -> Void
     ) async throws -> any SSHShellHandle {
         shellOpened = true
         lastPTY = pty
+        lastCommand = command
+        lastOnEnd = onEnd
         return MockShellHandle(onOutput: onOutput, onEnd: onEnd)
     }
 
@@ -43,11 +55,11 @@ final class MockShellHandle: SSHShellHandle, @unchecked Sendable {
     var windowChanges: [(cols: Int, rows: Int)] = []
     var cancelled = false
     let onOutput: @Sendable (ShellOutput) -> Void
-    let onEnd: @Sendable () -> Void
+    let onEnd: @Sendable (SessionTermination) -> Void
 
     init(
         onOutput: @escaping @Sendable (ShellOutput) -> Void,
-        onEnd: @escaping @Sendable () -> Void
+        onEnd: @escaping @Sendable (SessionTermination) -> Void
     ) {
         self.onOutput = onOutput
         self.onEnd = onEnd
@@ -71,10 +83,14 @@ final class FailingSSHClient: SSHClientWrapping, @unchecked Sendable {
 
     func close() async throws {}
     func onDisconnect(perform: @escaping @Sendable () -> Void) {}
+    func execute(_ command: String) async throws -> CommandResult {
+        throw SSHSessionError.notConnected
+    }
     func openShell(
         pty: PTYConfiguration,
+        command: String?,
         onOutput: @escaping @Sendable (ShellOutput) -> Void,
-        onEnd: @escaping @Sendable () -> Void
+        onEnd: @escaping @Sendable (SessionTermination) -> Void
     ) async throws -> any SSHShellHandle {
         throw SSHSessionError.noActiveShell
     }

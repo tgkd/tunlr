@@ -243,49 +243,113 @@ final class NIOSSHClientConnection: SSHClientWrapping, @unchecked Sendable {
 
     func openShell(
         pty: PTYConfiguration,
+        command: String?,
         onOutput: @escaping @Sendable (ShellOutput) -> Void,
-        onEnd: @escaping @Sendable () -> Void
+        onEnd: @escaping @Sendable (SessionTermination) -> Void
     ) async throws -> any SSHShellHandle {
+        let mode: SessionChannelHandler.Mode = if let command { .terminalCommand(pty, command) } else { .shell(pty) }
+        do {
+            let childChannel = try await openSessionChannel(mode: mode, onOutput: onOutput, onEnd: onEnd)
+            return NIOSSHShellHandle(channel: childChannel)
+        } catch {
+            throw SSHSessionError.noActiveShell
+        }
+    }
+
+    func execute(_ command: String) async throws -> CommandResult {
+        let collector = CommandOutputCollector()
+        let (ended, endedContinuation) = AsyncStream.makeStream(of: SessionTermination.self)
+        _ = try await openSessionChannel(
+            mode: .command(command),
+            onOutput: { collector.append($0) },
+            onEnd: { termination in
+                endedContinuation.yield(termination)
+                endedContinuation.finish()
+            }
+        )
+        var termination = SessionTermination.closedWithoutStatus
+        for await value in ended {
+            termination = value
+        }
+        return collector.result(termination: termination)
+    }
+
+    private func openSessionChannel(
+        mode: SessionChannelHandler.Mode,
+        onOutput: @escaping @Sendable (ShellOutput) -> Void,
+        onEnd: @escaping @Sendable (SessionTermination) -> Void
+    ) async throws -> Channel {
         let parent = channel
         let ready = parent.eventLoop.makePromise(of: Void.self)
-        let childChannel: Channel
         do {
-            childChannel = try await parent.pipeline.handler(type: NIOSSHHandler.self).flatMap { sshHandler in
+            let childChannel = try await parent.pipeline.handler(type: NIOSSHHandler.self).flatMap { sshHandler in
                 let created = parent.eventLoop.makePromise(of: Channel.self)
                 sshHandler.createChannel(created, channelType: .session) { child, _ in
                     child.eventLoop.makeCompletedFuture {
                         try child.pipeline.syncOperations.addHandler(
-                            SessionChannelHandler(pty: pty, ready: ready, onOutput: onOutput, onEnd: onEnd)
+                            SessionChannelHandler(mode: mode, ready: ready, onOutput: onOutput, onEnd: onEnd)
                         )
                     }
                 }
                 return created.futureResult
             }.get()
             try await ready.futureResult.get()
+            return childChannel
         } catch {
             ready.fail(error)
-            throw SSHSessionError.noActiveShell
+            throw error
         }
-        return NIOSSHShellHandle(channel: childChannel)
+    }
+}
+
+final class CommandOutputCollector: @unchecked Sendable {
+    static let limit = 1 << 20
+
+    private let lock = NSLock()
+    private var stdout = Data()
+    private var stderr = Data()
+
+    func append(_ output: ShellOutput) {
+        lock.withLock {
+            switch output {
+            case .stdout(let data):
+                stdout.append(data.prefix(max(0, Self.limit - stdout.count)))
+            case .stderr(let data):
+                stderr.append(data.prefix(max(0, Self.limit - stderr.count)))
+            }
+        }
+    }
+
+    func result(termination: SessionTermination) -> CommandResult {
+        lock.withLock {
+            CommandResult(stdout: stdout, stderr: stderr, termination: termination)
+        }
     }
 }
 
 final class SessionChannelHandler: ChannelInboundHandler {
     typealias InboundIn = SSHChannelData
 
-    private let pty: PTYConfiguration
+    enum Mode {
+        case shell(PTYConfiguration)
+        case terminalCommand(PTYConfiguration, String)
+        case command(String)
+    }
+
+    private let mode: Mode
     private let ready: EventLoopPromise<Void>
     private let onOutput: @Sendable (ShellOutput) -> Void
-    private let onEnd: @Sendable () -> Void
+    private let onEnd: @Sendable (SessionTermination) -> Void
     private var pendingReplies = 0
+    private var termination: SessionTermination = .closedWithoutStatus
 
     init(
-        pty: PTYConfiguration,
+        mode: Mode,
         ready: EventLoopPromise<Void>,
         onOutput: @escaping @Sendable (ShellOutput) -> Void,
-        onEnd: @escaping @Sendable () -> Void
+        onEnd: @escaping @Sendable (SessionTermination) -> Void
     ) {
-        self.pty = pty
+        self.mode = mode
         self.ready = ready
         self.onOutput = onOutput
         self.onEnd = onEnd
@@ -298,7 +362,24 @@ final class SessionChannelHandler: ChannelInboundHandler {
     }
 
     func channelActive(context: ChannelHandlerContext) {
-        let ptyRequest = SSHChannelRequestEvent.PseudoTerminalRequest(
+        var requests: [Any] = []
+        switch mode {
+        case .shell(let pty):
+            requests = [Self.ptyRequest(pty), SSHChannelRequestEvent.ShellRequest(wantReply: true)]
+        case .terminalCommand(let pty, let command):
+            requests = [Self.ptyRequest(pty), SSHChannelRequestEvent.ExecRequest(command: command, wantReply: true)]
+        case .command(let command):
+            requests = [SSHChannelRequestEvent.ExecRequest(command: command, wantReply: true)]
+        }
+        pendingReplies = requests.count
+        for request in requests {
+            context.triggerUserOutboundEvent(request, promise: nil)
+        }
+        context.fireChannelActive()
+    }
+
+    private static func ptyRequest(_ pty: PTYConfiguration) -> SSHChannelRequestEvent.PseudoTerminalRequest {
+        SSHChannelRequestEvent.PseudoTerminalRequest(
             wantReply: true,
             term: pty.term,
             terminalCharacterWidth: pty.cols,
@@ -307,10 +388,6 @@ final class SessionChannelHandler: ChannelInboundHandler {
             terminalPixelHeight: 0,
             terminalModes: SSHTerminalModes([:])
         )
-        pendingReplies = 2
-        context.triggerUserOutboundEvent(ptyRequest, promise: nil)
-        context.triggerUserOutboundEvent(SSHChannelRequestEvent.ShellRequest(wantReply: true), promise: nil)
-        context.fireChannelActive()
     }
 
     func channelRead(context: ChannelHandlerContext, data: NIOAny) {
@@ -335,19 +412,26 @@ final class SessionChannelHandler: ChannelInboundHandler {
         case is ChannelFailureEvent:
             ready.fail(SSHSessionError.noActiveShell)
             context.close(promise: nil)
+        case let status as SSHChannelRequestEvent.ExitStatus:
+            termination = .exited(status: status.exitStatus)
+        case let signal as SSHChannelRequestEvent.ExitSignal:
+            termination = .signaled(name: signal.signalName)
         default:
             context.fireUserInboundEventTriggered(event)
         }
     }
 
     func errorCaught(context: ChannelHandlerContext, error: any Error) {
+        if termination == .closedWithoutStatus {
+            termination = .failed(String(describing: error))
+        }
         ready.fail(error)
         context.close(promise: nil)
     }
 
     func channelInactive(context: ChannelHandlerContext) {
         ready.fail(SSHSessionError.noActiveShell)
-        onEnd()
+        onEnd(termination)
         context.fireChannelInactive()
     }
 }

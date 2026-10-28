@@ -10,7 +10,7 @@ final class MockTerminalSSHClient: SSHClientWrapping, @unchecked Sendable {
     var shellOpened = false
     var lastPTY: PTYConfiguration?
     var lastOnOutput: (@Sendable (ShellOutput) -> Void)?
-    var lastOnEnd: (@Sendable () -> Void)?
+    var lastOnEnd: (@Sendable (SessionTermination) -> Void)?
 
     func close() async throws {
         isConnected = false
@@ -19,10 +19,15 @@ final class MockTerminalSSHClient: SSHClientWrapping, @unchecked Sendable {
 
     func onDisconnect(perform: @escaping @Sendable () -> Void) {}
 
+    func execute(_ command: String) async throws -> CommandResult {
+        CommandResult(stdout: Data(), stderr: Data(), termination: .exited(status: 0))
+    }
+
     func openShell(
         pty: PTYConfiguration,
+        command: String?,
         onOutput: @escaping @Sendable (ShellOutput) -> Void,
-        onEnd: @escaping @Sendable () -> Void
+        onEnd: @escaping @Sendable (SessionTermination) -> Void
     ) async throws -> any SSHShellHandle {
         shellOpened = true
         lastPTY = pty

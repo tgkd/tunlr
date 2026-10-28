@@ -17,6 +17,23 @@ struct PTYConfiguration: Sendable, Equatable {
     }
 }
 
+enum SessionTermination: Sendable, Equatable {
+    case exited(status: Int)
+    case signaled(name: String)
+    case failed(String)
+    case closedWithoutStatus
+}
+
+struct CommandResult: Sendable, Equatable {
+    let stdout: Data
+    let stderr: Data
+    let termination: SessionTermination
+
+    var standardOutput: String {
+        String(decoding: stdout, as: UTF8.self)
+    }
+}
+
 enum SSHSessionError: Error, Equatable {
     case notConnected
     case alreadyConnected
@@ -37,9 +54,11 @@ protocol SSHClientWrapping: AnyObject, Sendable {
     func onDisconnect(perform: @escaping @Sendable () -> Void)
     func openShell(
         pty: PTYConfiguration,
+        command: String?,
         onOutput: @escaping @Sendable (ShellOutput) -> Void,
-        onEnd: @escaping @Sendable () -> Void
+        onEnd: @escaping @Sendable (SessionTermination) -> Void
     ) async throws -> any SSHShellHandle
+    func execute(_ command: String) async throws -> CommandResult
 }
 
 protocol SSHShellHandle: Sendable {
@@ -53,6 +72,7 @@ protocol SSHShellHandle: Sendable {
 actor SSHSession {
     private(set) var connectionState: ConnectionState = .disconnected
     private(set) var ptyConfiguration: PTYConfiguration = PTYConfiguration()
+    private(set) var lastTermination: SessionTermination?
 
     private var client: (any SSHClientWrapping)?
     private var shellHandle: (any SSHShellHandle)?
@@ -129,26 +149,35 @@ actor SSHSession {
         ptyConfiguration = PTYConfiguration(cols: cols, rows: rows, term: term)
     }
 
-    func openShellChannel() async throws -> AsyncStream<ShellOutput> {
+    func openShellChannel(command: String? = nil) async throws -> AsyncStream<ShellOutput> {
         guard let client, connectionState == .connected else {
             throw SSHSessionError.notConnected
         }
 
         let (stream, continuation) = AsyncStream<ShellOutput>.makeStream()
+        lastTermination = nil
 
         let handle = try await client.openShell(
             pty: ptyConfiguration,
+            command: command,
             onOutput: { data in
                 continuation.yield(data)
             },
-            onEnd: { [weak self] in
+            onEnd: { [weak self] termination in
                 continuation.finish()
-                Task { await self?.handleShellEnded() }
+                Task { await self?.handleShellEnded(termination) }
             }
         )
 
         self.shellHandle = handle
         return stream
+    }
+
+    func runCommand(_ command: String) async throws -> CommandResult {
+        guard let client, connectionState == .connected else {
+            throw SSHSessionError.notConnected
+        }
+        return try await client.execute(command)
     }
 
     func sendWindowChange(cols: Int, rows: Int) async throws {
@@ -204,7 +233,8 @@ actor SSHSession {
         updateState(.disconnected)
     }
 
-    private func handleShellEnded() async {
+    private func handleShellEnded(_ termination: SessionTermination) async {
+        lastTermination = termination
         shellHandle = nil
         guard connectionState == .connected else { return }
         await disconnect()
