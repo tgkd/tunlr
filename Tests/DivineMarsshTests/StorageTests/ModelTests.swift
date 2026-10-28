@@ -116,6 +116,49 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(decoded.authMethod, .importedKey(keyID: keyID))
     }
 
+    func testConnectionProfileWithoutSessionAttachDecodesToShell() throws {
+        let profile = SSHConnectionProfile(
+            host: "legacy.example.com",
+            username: "user",
+            authMethod: .password,
+            sessionAttach: .always(backend: .zmx, name: "old")
+        )
+        let encoded = try encoder.encode(profile)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        XCTAssertNotNil(object.removeValue(forKey: "sessionAttach"))
+        let legacyData = try JSONSerialization.data(withJSONObject: object)
+        let decoded = try decoder.decode(SSHConnectionProfile.self, from: legacyData)
+        XCTAssertEqual(decoded.sessionAttach, .shell)
+        XCTAssertEqual(decoded.host, "legacy.example.com")
+    }
+
+    func testSessionAttachPreferenceRoundTrips() throws {
+        let preferences: [SessionAttachPreference] = [
+            .shell,
+            .pick,
+            .always(backend: .tmux, name: "work"),
+            .always(backend: .zmx, name: "build"),
+            .always(backend: .agterm, name: "agent")
+        ]
+        for preference in preferences {
+            let data = try encoder.encode(preference)
+            let decoded = try decoder.decode(SessionAttachPreference.self, from: data)
+            XCTAssertEqual(decoded, preference)
+        }
+    }
+
+    func testConnectionProfileSessionAttachRoundTrip() throws {
+        let profile = SSHConnectionProfile(
+            host: "host.com",
+            username: "deploy",
+            authMethod: .password,
+            sessionAttach: .always(backend: .agterm, name: "main")
+        )
+        let data = try encoder.encode(profile)
+        let decoded = try decoder.decode(SSHConnectionProfile.self, from: data)
+        XCTAssertEqual(decoded.sessionAttach, .always(backend: .agterm, name: "main"))
+    }
+
     // MARK: - Sendable conformance (compile-time check)
 
     func testModelsSendable() {

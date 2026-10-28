@@ -16,6 +16,9 @@ struct ConnectionEditorView: View {
     @State private var selectedKeyID: UUID?
     @State private var autoReconnect: Bool = false
     @State private var keepaliveIntervalString: String = "60"
+    @State private var sessionAttachSelection: SessionAttachSelection = .shell
+    @State private var attachBackend: SessionBackendKind = .tmux
+    @State private var attachSessionName: String = ""
 
     @State private var errorMessage: String?
     @State private var showingError: Bool = false
@@ -27,12 +30,19 @@ struct ConnectionEditorView: View {
         case password = "Password"
     }
 
+    enum SessionAttachSelection: String, CaseIterable {
+        case shell = "Shell"
+        case pick = "Choose session"
+        case always = "Always attach"
+    }
+
     var isEditing: Bool { existingProfile != nil }
 
     var body: some View {
         Form {
             connectionSection
             authSection
+            sessionSection
             advancedSection
             testSection
         }
@@ -111,6 +121,27 @@ struct ConnectionEditorView: View {
                     }
                 ))
                 .textContentType(.password)
+            }
+        }
+    }
+
+    private var sessionSection: some View {
+        Section("Session") {
+            Picker("On connect", selection: $sessionAttachSelection) {
+                ForEach(SessionAttachSelection.allCases, id: \.self) { option in
+                    Text(option.rawValue).tag(option)
+                }
+            }
+
+            if sessionAttachSelection == .always {
+                Picker("Backend", selection: $attachBackend) {
+                    ForEach(SessionBackendKind.allCases, id: \.self) { backend in
+                        Text(backend.displayName).tag(backend)
+                    }
+                }
+                TextField("Session name", text: $attachSessionName)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
             }
         }
     }
@@ -231,6 +262,17 @@ struct ConnectionEditorView: View {
         autoReconnect = profile.autoReconnect
         keepaliveIntervalString = String(Int(profile.keepaliveInterval))
 
+        switch profile.sessionAttach {
+        case .shell:
+            sessionAttachSelection = .shell
+        case .pick:
+            sessionAttachSelection = .pick
+        case .always(let backend, let name):
+            sessionAttachSelection = .always
+            attachBackend = backend
+            attachSessionName = name
+        }
+
         switch profile.authMethod {
         case .secureEnclaveKey(let keyTag):
             authSelection = .secureEnclaveKey
@@ -266,6 +308,12 @@ struct ConnectionEditorView: View {
             return
         }
 
+        guard let sessionAttach = buildSessionAttach() else {
+            errorMessage = "Session name is required to always attach."
+            showingError = true
+            return
+        }
+
         Task {
             do {
                 let keepalive = TimeInterval(keepaliveIntervalString) ?? 60
@@ -276,6 +324,7 @@ struct ConnectionEditorView: View {
                     existing.authMethod = authMethod
                     existing.autoReconnect = autoReconnect
                     existing.keepaliveInterval = keepalive
+                    existing.sessionAttach = sessionAttach
                     let pw = authSelection == .password && passwordEdited ? password : nil
                     try await viewModel.updateProfile(existing, password: pw)
                 } else {
@@ -287,7 +336,8 @@ struct ConnectionEditorView: View {
                         authMethod: authMethod,
                         password: pw,
                         autoReconnect: autoReconnect,
-                        keepaliveInterval: keepalive
+                        keepaliveInterval: keepalive,
+                        sessionAttach: sessionAttach
                     )
                 }
                 onSave()
@@ -308,6 +358,21 @@ struct ConnectionEditorView: View {
             return .importedKey(keyID: keyID)
         case .password:
             return .password
+        }
+    }
+
+    private func buildSessionAttach() -> SessionAttachPreference? {
+        switch sessionAttachSelection {
+        case .shell:
+            return .shell
+        case .pick:
+            return .pick
+        case .always:
+            let name = attachSessionName.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !name.isEmpty else {
+                return nil
+            }
+            return .always(backend: attachBackend, name: name)
         }
     }
 

@@ -53,7 +53,8 @@ final class ConnectionViewModel: ObservableObject, Sendable {
         authMethod: SSHAuthMethod,
         password: String?,
         autoReconnect: Bool,
-        keepaliveInterval: TimeInterval = 60
+        keepaliveInterval: TimeInterval = 60,
+        sessionAttach: SessionAttachPreference = .shell
     ) async throws {
         try validateFields(host: host, username: username, port: port)
         try validateKeepaliveInterval(keepaliveInterval)
@@ -64,7 +65,8 @@ final class ConnectionViewModel: ObservableObject, Sendable {
             username: username.trimmingCharacters(in: .whitespacesAndNewlines),
             authMethod: authMethod,
             autoReconnect: autoReconnect,
-            keepaliveInterval: keepaliveInterval
+            keepaliveInterval: keepaliveInterval,
+            sessionAttach: sessionAttach
         )
         try await profileStore.addProfile(profile, password: password)
         await loadProfiles()
