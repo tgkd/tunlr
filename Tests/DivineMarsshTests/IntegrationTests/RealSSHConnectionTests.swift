@@ -418,5 +418,33 @@ struct RealSSHConnectionTests {
         _ = try await cleanup.runCommand("tmux kill-session -t '\(name)'")
         await cleanup.disconnect()
     }
+
+    @Test(.tags(.integration), .enabled(if: RealSSHConnectionTests.serverReachable, "requires the docker SSH server with tmux (docker compose up -d)"))
+    func discoverAndAttachThroughTmuxBackend() async throws {
+        let deps = try Self.makeDeps()
+        defer { Task { await deps.cleanup() } }
+        let name = "tunlr disc '\(UUID().uuidString.prefix(6))'"
+
+        let session = try await Self.connectWithPassword(deps)
+        let backend = TmuxSessionBackend()
+        let created = try await session.runCommand(try #require(backend.createCommand(name: name)))
+        #expect(created.termination == .exited(status: 0))
+
+        let entries = await RemoteSessionDiscovery().discover(using: session)
+        let entry = try #require(entries.first { $0.backend == .tmux && $0.name == name })
+        #expect(entry.detail.contains("1 window"))
+
+        await session.requestPTY(cols: 90, rows: 30)
+        await session.setShellCommand(entry.attachCommand)
+        let stream = try await session.openShellChannel()
+        try await session.write(Data("echo DISCOVERED_$((6*7))\r".utf8))
+        let output = try await Self.readUntil(stream: stream, containing: "DISCOVERED_42")
+        #expect(output.contains("DISCOVERED_42"))
+        await session.disconnect()
+
+        let cleanup = try await Self.connectWithPassword(deps)
+        _ = try await cleanup.runCommand("tmux kill-session -t \(ShellQuote.quote(name))")
+        await cleanup.disconnect()
+    }
 }
 

@@ -21,6 +21,11 @@ struct ContentView: View {
     @State private var showingConnectionError = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
     @State private var isSwitchingConnection = false
+    @State private var sessionCreateError: String?
+
+    private static let creatableBackends: [SessionBackendKind] = RemoteSessionBackends.all.compactMap { backend in
+        backend.createCommand(name: "tunlr") == nil ? nil : backend.kind
+    }
 
     var body: some View {
         Group {
@@ -45,6 +50,40 @@ struct ContentView: View {
                             terminalOrConnecting
                         }
                 }
+            }
+        }
+        .sheet(item: Binding(
+            get: { sessionManager.sessionChoice },
+            set: { _ in }
+        )) { choice in
+            SessionPickerView(
+                choice: choice,
+                creatableBackends: Self.creatableBackends,
+                onSelect: { entry in
+                    Task { await sessionManager.chooseRemoteSession(entry) }
+                },
+                onCreate: { backend, name in
+                    Task {
+                        do {
+                            try await sessionManager.createRemoteSession(backend: backend, name: name)
+                        } catch {
+                            sessionCreateError = Self.sessionCreateMessage(for: error)
+                        }
+                    }
+                },
+                onCancel: {
+                    showTerminal = false
+                    selectedProfile = nil
+                }
+            )
+            .interactiveDismissDisabled()
+            .alert("Could Not Create Session", isPresented: Binding(
+                get: { sessionCreateError != nil },
+                set: { presented in if !presented { sessionCreateError = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(sessionCreateError ?? "")
             }
         }
         .alert("Connection Failed", isPresented: $showingConnectionError) {
@@ -134,6 +173,19 @@ struct ContentView: View {
             case .idle, .active:
                 break
             }
+        }
+    }
+
+    private static func sessionCreateMessage(for error: Error) -> String {
+        switch error as? SSHSessionManagerError {
+        case .remoteSessionCreateFailed(let detail):
+            return detail
+        case .remoteSessionNotFound(let name):
+            return "“\(name)” was created but the server does not list it."
+        case .remoteSessionCreateUnsupported(let backend):
+            return "tunlr cannot create \(backend.displayName) sessions."
+        default:
+            return error.localizedDescription
         }
     }
 

@@ -26,7 +26,7 @@ struct TmuxSessionBackend: RemoteSessionBackend {
     let kind = SessionBackendKind.tmux
     let listCommand = RemoteShell.command(
         "tmux list-sessions -F "
-            + ShellQuote.quote(["#{session_id}", "#{session_name}", "#{session_windows}", "#{session_attached}"].joined(separator: "\t"))
+            + ShellQuote.quote("#{session_id} #{session_windows} #{session_attached} #{session_name}")
             + " 2>/dev/null"
     )
 
@@ -39,13 +39,13 @@ struct TmuxSessionBackend: RemoteSessionBackend {
     }
 
     private func entry(from line: Substring) -> RemoteSessionEntry? {
-        let fields = line.split(separator: "\t", omittingEmptySubsequences: false).map(String.init)
+        let fields = line.split(separator: " ", maxSplits: 3, omittingEmptySubsequences: false).map(String.init)
         guard fields.count == 4 else { return nil }
         let sessionID = fields[0]
-        let name = fields[1]
-        guard !sessionID.isEmpty, !name.isEmpty,
-              let windows = Int(fields[2]),
-              let attached = Int(fields[3]) else {
+        let name = fields[3]
+        guard sessionID.hasPrefix("$"), !name.isEmpty,
+              let windows = Int(fields[1]),
+              let attached = Int(fields[2]) else {
             return nil
         }
         var detail = RemoteShell.plural(windows, "window")

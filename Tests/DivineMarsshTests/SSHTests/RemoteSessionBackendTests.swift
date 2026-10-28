@@ -23,14 +23,13 @@ struct ShellQuoteTests {
 struct TmuxSessionBackendTests {
     let backend = TmuxSessionBackend()
 
-    @Test func listCommandUsesTabSeparatedFormat() {
-        #expect(backend.listCommand == pathPrefix + "tmux list-sessions -F '#{session_id}\t#{session_name}\t#{session_windows}\t#{session_attached}' 2>/dev/null")
-        #expect(backend.listCommand.contains("\t"))
-        #expect(!backend.listCommand.contains("\\t"))
+    @Test func listCommandPutsTheNameLast() {
+        #expect(backend.listCommand == pathPrefix + "tmux list-sessions -F '#{session_id} #{session_windows} #{session_attached} #{session_name}' 2>/dev/null")
+        #expect(!backend.listCommand.contains("\t"))
     }
 
     @Test func parsesMultipleSessions() {
-        let output = "$0\tmain\t2\t1\n$3\twork stuff\t1\t0\n$7\tlogs\t5\t2\n"
+        let output = "$0 2 1 main\n$3 1 0 work stuff\n$7 5 2 logs\n"
         let entries = backend.parse(listOutput: output)
         #expect(entries.count == 3)
         #expect(entries[0] == RemoteSessionEntry(
@@ -48,13 +47,13 @@ struct TmuxSessionBackendTests {
     }
 
     @Test func ignoresMalformedLines() {
-        let output = "garbage line\n$1\tonly\t3\n$2\tok\t1\t0\n$3\ttoo\tmany\t1\t0\n$4\tbad\tx\t0\n\t\t1\t0\n"
+        let output = "garbage line\n$1 3 only\n$2 1 0 ok\nwork 1 0 nodollar\n$4 x 0 bad\n$5 1 0 \n"
         let entries = backend.parse(listOutput: output)
         #expect(entries.map(\.targetID) == ["$2"])
     }
 
     @Test func handlesCarriageReturns() {
-        let entries = backend.parse(listOutput: "$1\tone\t1\t0\r\n$2\ttwo\t2\t0\r\n")
+        let entries = backend.parse(listOutput: "$1 1 0 one\r\n$2 2 0 two\r\n")
         #expect(entries.map(\.name) == ["one", "two"])
         #expect(entries[1].detail == "2 windows")
     }
@@ -69,7 +68,7 @@ struct TmuxSessionBackendTests {
     }
 
     @Test func attachQuotesSessionID() {
-        let entries = backend.parse(listOutput: "$12\tit's mine\t1\t0")
+        let entries = backend.parse(listOutput: "$12 1 0 it's mine")
         #expect(entries.first?.attachCommand == pathPrefix + "tmux attach-session -t '$12'")
         #expect(entries.first?.attachCommand.contains("new") == false)
     }
@@ -235,7 +234,7 @@ struct RemoteSessionBackendsTests {
             #expect(backend.listCommand.hasPrefix(pathPrefix))
         }
         #expect(TmuxSessionBackend().createCommand(name: "x")?.hasPrefix(pathPrefix) == true)
-        let tmuxEntries = TmuxSessionBackend().parse(listOutput: "$1\tx\t1\t0")
+        let tmuxEntries = TmuxSessionBackend().parse(listOutput: "$1 1 0 x")
         let zmxEntries = ZmxSessionBackend().parse(listOutput: "  name=x\tclients=0")
         let agtermEntries = AgtermSessionBackend().parse(listOutput: AgtermSessionBackendTests.splitTree)
         for entry in tmuxEntries + zmxEntries + agtermEntries {
@@ -300,7 +299,7 @@ struct RemoteSessionDiscoveryTests {
 
     @Test func parsesOutputRegardlessOfExitStatus() async {
         let runner = FakeRemoteCommandRunner(responses: [
-            TmuxSessionBackend().listCommand: .output("$1\tmain\t1\t0\n", status: 1),
+            TmuxSessionBackend().listCommand: .output("$1 1 0 main\n", status: 1),
         ])
         let entries = await RemoteSessionDiscovery().discover(using: runner)
         #expect(entries.map(\.id) == ["tmux:$1"])
