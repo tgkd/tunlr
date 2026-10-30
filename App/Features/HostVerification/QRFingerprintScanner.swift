@@ -79,7 +79,7 @@ struct QRFingerprintScanner: View {
                 Text("Fingerprint Trusted")
                     .font(.headline)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Host: \(parsed.hostname):\(parsed.port)")
+                    Text("Host: \(parsed.hostname):\(String(parsed.port))")
                     Text("Type: \(parsed.keyType)")
                     Text(parsed.fingerprint)
                         .font(.caption.monospaced())

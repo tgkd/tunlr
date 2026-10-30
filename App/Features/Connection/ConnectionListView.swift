@@ -140,7 +140,7 @@ struct ConnectionRow: View {
                 Text("\(profile.username)@\(profile.host)")
                     .font(.body.monospaced())
                 if profile.port != 22 {
-                    Text(":\(profile.port)")
+                    Text(":\(String(profile.port))")
                         .font(.caption.monospaced())
                         .foregroundStyle(.secondary)
                 }
