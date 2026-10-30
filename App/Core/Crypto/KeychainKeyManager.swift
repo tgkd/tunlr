@@ -225,9 +225,12 @@ actor KeychainKeyManager {
     // MARK: - PEM Parsing
 
     static func parsePEM(_ data: Data, passphrase: String? = nil) throws -> ParsedSSHKey {
-        guard let pemString = String(data: data, encoding: .utf8) else {
+        guard let rawString = String(data: data, encoding: .utf8) else {
             throw KeychainKeyError.invalidPEMFormat
         }
+        let pemString = rawString
+            .replacingOccurrences(of: "\u{2014}", with: "--")
+            .replacingOccurrences(of: "\u{2013}", with: "-")
         let lines = pemString.components(separatedBy: .newlines)
         guard let headerIndex = lines.firstIndex(where: { $0.hasPrefix("-----BEGIN ") }),
               let footerIndex = lines.firstIndex(where: { $0.hasPrefix("-----END ") }),

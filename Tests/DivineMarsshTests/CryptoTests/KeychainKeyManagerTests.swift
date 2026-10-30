@@ -36,6 +36,14 @@ struct KeychainKeyManagerTests {
         #expect(restored.publicKey.rawRepresentation == key.publicKey.rawRepresentation)
     }
 
+    @Test func parsePEMAcceptsSmartDashesFromTyping() throws {
+        let key = Curve25519.Signing.PrivateKey()
+        let pem = try #require(String(data: Self.buildEd25519PEM(key), encoding: .utf8))
+        let typed = pem.replacingOccurrences(of: "--", with: "\u{2014}")
+        let parsed = try KeychainKeyManager.parsePEM(Data(typed.utf8))
+        #expect(parsed.publicKeyData == Data(key.publicKey.rawRepresentation))
+    }
+
     // MARK: - PEM Parsing: ECDSA
 
     @Test func parsePEMECDSAProducesCorrectKeyType() throws {
