@@ -93,7 +93,6 @@ struct ConnectionEditorView: View {
                 .keyboardType(.numberPad)
 
             TextField("Username", text: $username)
-                .textContentType(.username)
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
         }
@@ -120,7 +119,7 @@ struct ConnectionEditorView: View {
                         passwordEdited = true
                     }
                 ))
-                .textContentType(.password)
+                .textContentType(.oneTimeCode)
             }
         }
     }
