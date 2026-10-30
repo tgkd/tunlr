@@ -56,6 +56,16 @@ enum TerminalThemeCatalog {
         case .rosePine: return rosePine
         case .synthwave: return synthwave
         case .kanagawa: return kanagawa
+        case .gruvboxDark: return gruvboxDark
+        case .githubDark: return githubDark
+        case .everforestDark: return everforestDark
+        case .ayuMirage: return ayuMirage
+        case .nightOwl: return nightOwl
+        case .tomorrowNight: return tomorrowNight
+        case .oneLight: return oneLight
+        case .catppuccinLatte: return catppuccinLatte
+        case .rosePineDawn: return rosePineDawn
+        case .tokyoNightDay: return tokyoNightDay
         }
     }
 
@@ -441,5 +451,275 @@ enum TerminalThemeCatalog {
             ColorValue(red: 197, green: 201, blue: 197),     // bright white
         ],
         isDark: true
+    )
+
+    private static let gruvboxDark = TerminalTheme(
+        name: .gruvboxDark,
+        displayName: "Gruvbox Dark",
+        backgroundColor: ColorValue(red: 40, green: 40, blue: 40),
+        foregroundColor: ColorValue(red: 235, green: 219, blue: 178),
+        cursorColor: ColorValue(red: 235, green: 219, blue: 178),
+        ansiColors: [
+            ColorValue(red: 40, green: 40, blue: 40),
+            ColorValue(red: 204, green: 36, blue: 29),
+            ColorValue(red: 152, green: 151, blue: 26),
+            ColorValue(red: 215, green: 153, blue: 33),
+            ColorValue(red: 69, green: 133, blue: 136),
+            ColorValue(red: 177, green: 98, blue: 134),
+            ColorValue(red: 104, green: 157, blue: 106),
+            ColorValue(red: 168, green: 153, blue: 132),
+            ColorValue(red: 146, green: 131, blue: 116),
+            ColorValue(red: 251, green: 73, blue: 52),
+            ColorValue(red: 184, green: 187, blue: 38),
+            ColorValue(red: 250, green: 189, blue: 47),
+            ColorValue(red: 131, green: 165, blue: 152),
+            ColorValue(red: 211, green: 134, blue: 155),
+            ColorValue(red: 142, green: 192, blue: 124),
+            ColorValue(red: 235, green: 219, blue: 178),
+        ],
+        isDark: true
+    )
+
+    private static let githubDark = TerminalTheme(
+        name: .githubDark,
+        displayName: "GitHub Dark",
+        backgroundColor: ColorValue(red: 13, green: 17, blue: 23),
+        foregroundColor: ColorValue(red: 230, green: 237, blue: 243),
+        cursorColor: ColorValue(red: 47, green: 129, blue: 247),
+        ansiColors: [
+            ColorValue(red: 72, green: 79, blue: 88),
+            ColorValue(red: 255, green: 123, blue: 114),
+            ColorValue(red: 63, green: 185, blue: 80),
+            ColorValue(red: 210, green: 153, blue: 34),
+            ColorValue(red: 88, green: 166, blue: 255),
+            ColorValue(red: 188, green: 140, blue: 255),
+            ColorValue(red: 57, green: 197, blue: 207),
+            ColorValue(red: 177, green: 186, blue: 196),
+            ColorValue(red: 110, green: 118, blue: 129),
+            ColorValue(red: 255, green: 161, blue: 152),
+            ColorValue(red: 86, green: 211, blue: 100),
+            ColorValue(red: 227, green: 179, blue: 65),
+            ColorValue(red: 121, green: 192, blue: 255),
+            ColorValue(red: 210, green: 168, blue: 255),
+            ColorValue(red: 86, green: 212, blue: 221),
+            ColorValue(red: 255, green: 255, blue: 255),
+        ],
+        isDark: true
+    )
+
+    private static let everforestDark = TerminalTheme(
+        name: .everforestDark,
+        displayName: "Everforest Dark",
+        backgroundColor: ColorValue(red: 35, green: 42, blue: 46),
+        foregroundColor: ColorValue(red: 211, green: 198, blue: 170),
+        cursorColor: ColorValue(red: 230, green: 152, blue: 117),
+        ansiColors: [
+            ColorValue(red: 122, green: 132, blue: 120),
+            ColorValue(red: 230, green: 126, blue: 128),
+            ColorValue(red: 167, green: 192, blue: 128),
+            ColorValue(red: 219, green: 188, blue: 127),
+            ColorValue(red: 127, green: 187, blue: 179),
+            ColorValue(red: 214, green: 153, blue: 182),
+            ColorValue(red: 131, green: 192, blue: 146),
+            ColorValue(red: 242, green: 239, blue: 223),
+            ColorValue(red: 166, green: 176, blue: 160),
+            ColorValue(red: 248, green: 85, blue: 82),
+            ColorValue(red: 141, green: 161, blue: 1),
+            ColorValue(red: 223, green: 160, blue: 0),
+            ColorValue(red: 58, green: 148, blue: 197),
+            ColorValue(red: 223, green: 105, blue: 186),
+            ColorValue(red: 53, green: 167, blue: 124),
+            ColorValue(red: 255, green: 251, blue: 239),
+        ],
+        isDark: true
+    )
+
+    private static let ayuMirage = TerminalTheme(
+        name: .ayuMirage,
+        displayName: "Ayu Mirage",
+        backgroundColor: ColorValue(red: 31, green: 36, blue: 48),
+        foregroundColor: ColorValue(red: 204, green: 202, blue: 194),
+        cursorColor: ColorValue(red: 255, green: 204, blue: 102),
+        ansiColors: [
+            ColorValue(red: 23, green: 27, blue: 36),
+            ColorValue(red: 237, green: 130, blue: 116),
+            ColorValue(red: 135, green: 217, blue: 108),
+            ColorValue(red: 250, green: 204, blue: 110),
+            ColorValue(red: 109, green: 203, blue: 250),
+            ColorValue(red: 218, green: 186, blue: 250),
+            ColorValue(red: 144, green: 225, blue: 198),
+            ColorValue(red: 199, green: 199, blue: 199),
+            ColorValue(red: 104, green: 104, blue: 104),
+            ColorValue(red: 242, green: 135, blue: 121),
+            ColorValue(red: 213, green: 255, blue: 128),
+            ColorValue(red: 255, green: 209, blue: 115),
+            ColorValue(red: 115, green: 208, blue: 255),
+            ColorValue(red: 223, green: 191, blue: 255),
+            ColorValue(red: 149, green: 230, blue: 203),
+            ColorValue(red: 255, green: 255, blue: 255),
+        ],
+        isDark: true
+    )
+
+    private static let nightOwl = TerminalTheme(
+        name: .nightOwl,
+        displayName: "Night Owl",
+        backgroundColor: ColorValue(red: 1, green: 22, blue: 39),
+        foregroundColor: ColorValue(red: 214, green: 222, blue: 235),
+        cursorColor: ColorValue(red: 126, green: 87, blue: 194),
+        ansiColors: [
+            ColorValue(red: 1, green: 22, blue: 39),
+            ColorValue(red: 239, green: 83, blue: 80),
+            ColorValue(red: 34, green: 218, blue: 110),
+            ColorValue(red: 173, green: 219, blue: 103),
+            ColorValue(red: 130, green: 170, blue: 255),
+            ColorValue(red: 199, green: 146, blue: 234),
+            ColorValue(red: 33, green: 199, blue: 168),
+            ColorValue(red: 255, green: 255, blue: 255),
+            ColorValue(red: 87, green: 86, blue: 86),
+            ColorValue(red: 239, green: 83, blue: 80),
+            ColorValue(red: 34, green: 218, blue: 110),
+            ColorValue(red: 255, green: 235, blue: 149),
+            ColorValue(red: 130, green: 170, blue: 255),
+            ColorValue(red: 199, green: 146, blue: 234),
+            ColorValue(red: 127, green: 219, blue: 202),
+            ColorValue(red: 255, green: 255, blue: 255),
+        ],
+        isDark: true
+    )
+
+    private static let tomorrowNight = TerminalTheme(
+        name: .tomorrowNight,
+        displayName: "Tomorrow Night",
+        backgroundColor: ColorValue(red: 29, green: 31, blue: 33),
+        foregroundColor: ColorValue(red: 197, green: 200, blue: 198),
+        cursorColor: ColorValue(red: 197, green: 200, blue: 198),
+        ansiColors: [
+            ColorValue(red: 0, green: 0, blue: 0),
+            ColorValue(red: 204, green: 102, blue: 102),
+            ColorValue(red: 181, green: 189, blue: 104),
+            ColorValue(red: 240, green: 198, blue: 116),
+            ColorValue(red: 129, green: 162, blue: 190),
+            ColorValue(red: 178, green: 148, blue: 187),
+            ColorValue(red: 138, green: 190, blue: 183),
+            ColorValue(red: 255, green: 255, blue: 255),
+            ColorValue(red: 76, green: 76, blue: 76),
+            ColorValue(red: 204, green: 102, blue: 102),
+            ColorValue(red: 181, green: 189, blue: 104),
+            ColorValue(red: 240, green: 198, blue: 116),
+            ColorValue(red: 129, green: 162, blue: 190),
+            ColorValue(red: 178, green: 148, blue: 187),
+            ColorValue(red: 138, green: 190, blue: 183),
+            ColorValue(red: 255, green: 255, blue: 255),
+        ],
+        isDark: true
+    )
+
+    private static let oneLight = TerminalTheme(
+        name: .oneLight,
+        displayName: "One Light",
+        backgroundColor: ColorValue(red: 249, green: 249, blue: 249),
+        foregroundColor: ColorValue(red: 42, green: 44, blue: 51),
+        cursorColor: ColorValue(red: 82, green: 111, blue: 255),
+        ansiColors: [
+            ColorValue(red: 0, green: 0, blue: 0),
+            ColorValue(red: 222, green: 62, blue: 53),
+            ColorValue(red: 63, green: 149, blue: 58),
+            ColorValue(red: 210, green: 182, blue: 124),
+            ColorValue(red: 47, green: 90, blue: 243),
+            ColorValue(red: 149, green: 0, blue: 149),
+            ColorValue(red: 63, green: 149, blue: 58),
+            ColorValue(red: 187, green: 187, blue: 187),
+            ColorValue(red: 0, green: 0, blue: 0),
+            ColorValue(red: 222, green: 62, blue: 53),
+            ColorValue(red: 63, green: 149, blue: 58),
+            ColorValue(red: 210, green: 182, blue: 124),
+            ColorValue(red: 47, green: 90, blue: 243),
+            ColorValue(red: 160, green: 0, blue: 149),
+            ColorValue(red: 63, green: 149, blue: 58),
+            ColorValue(red: 255, green: 255, blue: 255),
+        ],
+        isDark: false
+    )
+
+    private static let catppuccinLatte = TerminalTheme(
+        name: .catppuccinLatte,
+        displayName: "Catppuccin Latte",
+        backgroundColor: ColorValue(red: 239, green: 241, blue: 245),
+        foregroundColor: ColorValue(red: 76, green: 79, blue: 105),
+        cursorColor: ColorValue(red: 220, green: 138, blue: 120),
+        ansiColors: [
+            ColorValue(red: 188, green: 192, blue: 204),
+            ColorValue(red: 210, green: 15, blue: 57),
+            ColorValue(red: 64, green: 160, blue: 43),
+            ColorValue(red: 223, green: 142, blue: 29),
+            ColorValue(red: 30, green: 102, blue: 245),
+            ColorValue(red: 234, green: 118, blue: 203),
+            ColorValue(red: 23, green: 146, blue: 153),
+            ColorValue(red: 92, green: 95, blue: 119),
+            ColorValue(red: 172, green: 176, blue: 190),
+            ColorValue(red: 231, green: 16, blue: 63),
+            ColorValue(red: 70, green: 176, blue: 47),
+            ColorValue(red: 228, green: 153, blue: 49),
+            ColorValue(red: 56, green: 120, blue: 246),
+            ColorValue(red: 239, green: 149, blue: 215),
+            ColorValue(red: 25, green: 161, blue: 168),
+            ColorValue(red: 108, green: 111, blue: 133),
+        ],
+        isDark: false
+    )
+
+    private static let rosePineDawn = TerminalTheme(
+        name: .rosePineDawn,
+        displayName: "Rosé Pine Dawn",
+        backgroundColor: ColorValue(red: 250, green: 244, blue: 237),
+        foregroundColor: ColorValue(red: 87, green: 82, blue: 121),
+        cursorColor: ColorValue(red: 87, green: 82, blue: 121),
+        ansiColors: [
+            ColorValue(red: 242, green: 233, blue: 225),
+            ColorValue(red: 180, green: 99, blue: 122),
+            ColorValue(red: 40, green: 105, blue: 131),
+            ColorValue(red: 234, green: 157, blue: 52),
+            ColorValue(red: 86, green: 148, blue: 159),
+            ColorValue(red: 144, green: 122, blue: 169),
+            ColorValue(red: 215, green: 130, blue: 126),
+            ColorValue(red: 87, green: 82, blue: 121),
+            ColorValue(red: 152, green: 147, blue: 165),
+            ColorValue(red: 180, green: 99, blue: 122),
+            ColorValue(red: 40, green: 105, blue: 131),
+            ColorValue(red: 234, green: 157, blue: 52),
+            ColorValue(red: 86, green: 148, blue: 159),
+            ColorValue(red: 144, green: 122, blue: 169),
+            ColorValue(red: 215, green: 130, blue: 126),
+            ColorValue(red: 87, green: 82, blue: 121),
+        ],
+        isDark: false
+    )
+
+    private static let tokyoNightDay = TerminalTheme(
+        name: .tokyoNightDay,
+        displayName: "Tokyo Night Day",
+        backgroundColor: ColorValue(red: 225, green: 226, blue: 231),
+        foregroundColor: ColorValue(red: 55, green: 96, blue: 191),
+        cursorColor: ColorValue(red: 55, green: 96, blue: 191),
+        ansiColors: [
+            ColorValue(red: 233, green: 233, blue: 237),
+            ColorValue(red: 245, green: 42, blue: 101),
+            ColorValue(red: 88, green: 117, blue: 57),
+            ColorValue(red: 140, green: 108, blue: 62),
+            ColorValue(red: 46, green: 125, blue: 233),
+            ColorValue(red: 152, green: 84, blue: 241),
+            ColorValue(red: 0, green: 113, blue: 151),
+            ColorValue(red: 97, green: 114, blue: 176),
+            ColorValue(red: 161, green: 166, blue: 197),
+            ColorValue(red: 245, green: 42, blue: 101),
+            ColorValue(red: 88, green: 117, blue: 57),
+            ColorValue(red: 140, green: 108, blue: 62),
+            ColorValue(red: 46, green: 125, blue: 233),
+            ColorValue(red: 152, green: 84, blue: 241),
+            ColorValue(red: 0, green: 113, blue: 151),
+            ColorValue(red: 55, green: 96, blue: 191),
+        ],
+        isDark: false
     )
 }
