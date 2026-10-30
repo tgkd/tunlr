@@ -384,8 +384,8 @@ final class SessionChannelHandler: ChannelInboundHandler {
             term: pty.term,
             terminalCharacterWidth: pty.cols,
             terminalRowHeight: pty.rows,
-            terminalPixelWidth: 0,
-            terminalPixelHeight: 0,
+            terminalPixelWidth: pty.pixelWidth,
+            terminalPixelHeight: pty.pixelHeight,
             terminalModes: SSHTerminalModes([:])
         )
     }
@@ -448,13 +448,13 @@ final class NIOSSHShellHandle: SSHShellHandle, @unchecked Sendable {
         try await channel.writeAndFlush(SSHChannelData(type: .channel, data: .byteBuffer(buffer)))
     }
 
-    func changeWindowSize(cols: Int, rows: Int) async throws {
+    func changeWindowSize(cols: Int, rows: Int, pixelWidth: Int, pixelHeight: Int) async throws {
         try await channel.triggerUserOutboundEvent(
             SSHChannelRequestEvent.WindowChangeRequest(
                 terminalCharacterWidth: cols,
                 terminalRowHeight: rows,
-                terminalPixelWidth: 0,
-                terminalPixelHeight: 0
+                terminalPixelWidth: pixelWidth,
+                terminalPixelHeight: pixelHeight
             )
         ).get()
     }

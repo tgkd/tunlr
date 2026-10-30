@@ -39,15 +39,15 @@ final class MockTerminalSSHClient: SSHClientWrapping, @unchecked Sendable {
 
 final class RecordingShellHandle: SSHShellHandle, @unchecked Sendable {
     var writtenData: [Data] = []
-    var windowChanges: [(cols: Int, rows: Int)] = []
+    var windowChanges: [(cols: Int, rows: Int, pixelWidth: Int, pixelHeight: Int)] = []
     var cancelled = false
 
     func write(_ data: Data) async throws {
         writtenData.append(data)
     }
 
-    func changeWindowSize(cols: Int, rows: Int) async throws {
-        windowChanges.append((cols: cols, rows: rows))
+    func changeWindowSize(cols: Int, rows: Int, pixelWidth: Int, pixelHeight: Int) async throws {
+        windowChanges.append((cols: cols, rows: rows, pixelWidth: pixelWidth, pixelHeight: pixelHeight))
     }
 
     func cancel() {

@@ -46,9 +46,11 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
 
     private func beginShellOutputFeed() {
         outputTask?.cancel()
+        let cellSize = cellPixelSize()
         outputTask = Task { [weak self] in
             guard let self else { return }
             do {
+                await self.sshSession.setCellPixelSize(width: cellSize.width, height: cellSize.height)
                 let stream = try await self.sshSession.openShellChannel()
                 for await output in stream {
                     guard !Task.isCancelled else { break }
@@ -216,8 +218,21 @@ final class SSHTerminalDataSource: NSObject, TerminalViewDelegate {
             guard !Task.isCancelled else { return }
             guard let self, let resize = self.pendingResize else { return }
             self.pendingResize = nil
+            let cellSize = self.cellPixelSize()
+            await self.sshSession.setCellPixelSize(width: cellSize.width, height: cellSize.height)
             try? await self.sshSession.sendWindowChange(cols: resize.cols, rows: resize.rows)
         }
+    }
+
+    private func cellPixelSize() -> (width: Int, height: Int) {
+        guard let terminalView else { return (width: 0, height: 0) }
+        let font = terminalView.font
+        let scale = max(terminalView.traitCollection.displayScale, 1)
+        let advance = ("W" as NSString).size(withAttributes: [.font: font]).width
+        return (
+            width: Int((advance * scale).rounded(.up)),
+            height: Int((font.lineHeight * scale).rounded(.up))
+        )
     }
 
     deinit {

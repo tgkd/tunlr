@@ -10,6 +10,7 @@ final class MockSSHClient: SSHClientWrapping, @unchecked Sendable {
     var disconnectCallbacks: [@Sendable () -> Void] = []
     var shellOpened = false
     var lastPTY: PTYConfiguration?
+    var lastHandle: MockShellHandle?
     var lastCommand: String?
     var lastOnEnd: (@Sendable (SessionTermination) -> Void)?
     var executedCommands: [String] = []
@@ -39,7 +40,9 @@ final class MockSSHClient: SSHClientWrapping, @unchecked Sendable {
         lastPTY = pty
         lastCommand = command
         lastOnEnd = onEnd
-        return MockShellHandle(onOutput: onOutput, onEnd: onEnd)
+        let handle = MockShellHandle(onOutput: onOutput, onEnd: onEnd)
+        lastHandle = handle
+        return handle
     }
 
     func simulateDisconnect() {
@@ -52,7 +55,7 @@ final class MockSSHClient: SSHClientWrapping, @unchecked Sendable {
 
 final class MockShellHandle: SSHShellHandle, @unchecked Sendable {
     var writtenData: [Data] = []
-    var windowChanges: [(cols: Int, rows: Int)] = []
+    var windowChanges: [(cols: Int, rows: Int, pixelWidth: Int, pixelHeight: Int)] = []
     var cancelled = false
     let onOutput: @Sendable (ShellOutput) -> Void
     let onEnd: @Sendable (SessionTermination) -> Void
@@ -69,8 +72,8 @@ final class MockShellHandle: SSHShellHandle, @unchecked Sendable {
         writtenData.append(data)
     }
 
-    func changeWindowSize(cols: Int, rows: Int) async throws {
-        windowChanges.append((cols: cols, rows: rows))
+    func changeWindowSize(cols: Int, rows: Int, pixelWidth: Int, pixelHeight: Int) async throws {
+        windowChanges.append((cols: cols, rows: rows, pixelWidth: pixelWidth, pixelHeight: pixelHeight))
     }
 
     func cancel() {
@@ -363,6 +366,32 @@ struct SSHSessionShellTests {
         let config = await session.ptyConfiguration
         #expect(config.cols == 200)
         #expect(config.rows == 50)
+    }
+
+    @Test func ptyRequestCarriesPixelSizeFromCellSize() async throws {
+        let mockClient = MockSSHClient()
+        let session = SSHSession(connectionHandler: MockConnectionHandler(client: mockClient))
+        try await session.connect(profile: makeTestProfile())
+        await session.setCellPixelSize(width: 21, height: 42)
+        await session.requestPTY(cols: 100, rows: 30)
+        _ = try await session.openShellChannel()
+
+        #expect(mockClient.lastPTY?.pixelWidth == 2100)
+        #expect(mockClient.lastPTY?.pixelHeight == 1260)
+    }
+
+    @Test func sendWindowChangeCarriesPixelSize() async throws {
+        let mockClient = MockSSHClient()
+        let session = SSHSession(connectionHandler: MockConnectionHandler(client: mockClient))
+        try await session.connect(profile: makeTestProfile())
+        await session.setCellPixelSize(width: 20, height: 40)
+        _ = try await session.openShellChannel()
+
+        try await session.sendWindowChange(cols: 120, rows: 45)
+
+        let change = try #require(mockClient.lastHandle?.windowChanges.last)
+        #expect(change.pixelWidth == 2400)
+        #expect(change.pixelHeight == 1800)
     }
 }
 

@@ -9,12 +9,25 @@ struct PTYConfiguration: Sendable, Equatable {
     var cols: Int
     var rows: Int
     var term: String
+    var cellPixelWidth: Int
+    var cellPixelHeight: Int
 
-    init(cols: Int = 80, rows: Int = 24, term: String = "xterm-256color") {
+    init(
+        cols: Int = 80,
+        rows: Int = 24,
+        term: String = "xterm-256color",
+        cellPixelWidth: Int = 0,
+        cellPixelHeight: Int = 0
+    ) {
         self.cols = cols
         self.rows = rows
         self.term = term
+        self.cellPixelWidth = cellPixelWidth
+        self.cellPixelHeight = cellPixelHeight
     }
+
+    var pixelWidth: Int { cols * cellPixelWidth }
+    var pixelHeight: Int { rows * cellPixelHeight }
 }
 
 enum SessionTermination: Sendable, Equatable {
@@ -63,7 +76,7 @@ protocol SSHClientWrapping: AnyObject, Sendable {
 
 protocol SSHShellHandle: Sendable {
     func write(_ data: Data) async throws
-    func changeWindowSize(cols: Int, rows: Int) async throws
+    func changeWindowSize(cols: Int, rows: Int, pixelWidth: Int, pixelHeight: Int) async throws
     func cancel()
 }
 
@@ -147,7 +160,18 @@ actor SSHSession {
     }
 
     func requestPTY(cols: Int, rows: Int, term: String = "xterm-256color") {
-        ptyConfiguration = PTYConfiguration(cols: cols, rows: rows, term: term)
+        ptyConfiguration = PTYConfiguration(
+            cols: cols,
+            rows: rows,
+            term: term,
+            cellPixelWidth: ptyConfiguration.cellPixelWidth,
+            cellPixelHeight: ptyConfiguration.cellPixelHeight
+        )
+    }
+
+    func setCellPixelSize(width: Int, height: Int) {
+        ptyConfiguration.cellPixelWidth = width
+        ptyConfiguration.cellPixelHeight = height
     }
 
     func setShellCommand(_ command: String?) {
@@ -189,7 +213,12 @@ actor SSHSession {
         guard let shellHandle else {
             throw SSHSessionError.noActiveShell
         }
-        try await shellHandle.changeWindowSize(cols: cols, rows: rows)
+        try await shellHandle.changeWindowSize(
+            cols: cols,
+            rows: rows,
+            pixelWidth: cols * ptyConfiguration.cellPixelWidth,
+            pixelHeight: rows * ptyConfiguration.cellPixelHeight
+        )
         ptyConfiguration.cols = cols
         ptyConfiguration.rows = rows
     }
