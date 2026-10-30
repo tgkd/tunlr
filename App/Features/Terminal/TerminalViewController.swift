@@ -134,6 +134,8 @@ final class TerminalViewController: UIViewController {
         let theme = TerminalThemeCatalog.theme(for: appearance.themeName)
         terminalView.nativeBackgroundColor = theme.backgroundColor.uiColor
         terminalView.nativeForegroundColor = theme.foregroundColor.uiColor
+        terminalView.caretColor = theme.cursorColor.uiColor
+        terminalView.caretTextColor = theme.backgroundColor.uiColor
         view.backgroundColor = theme.backgroundColor.uiColor
 
         let ansiColors = theme.ansiColors.map { $0.swiftTermColor }
